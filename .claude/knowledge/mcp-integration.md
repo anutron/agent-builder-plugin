@@ -12,8 +12,6 @@ Model Context Protocol (MCP) servers provide Claude Code with access to external
 - **@modelcontextprotocol/server-github** - GitHub repositories
 - **@modelcontextprotocol/server-google-drive** - Google Drive files
 - **@modelcontextprotocol/server-gmail** - Gmail access
-- **@modelcontextprotocol/server-postgres** - PostgreSQL databases
-- **@modelcontextprotocol/server-sqlite** - SQLite databases
 
 ### When to Use MCPs vs APIs
 
@@ -23,11 +21,42 @@ Model Context Protocol (MCP) servers provide Claude Code with access to external
 - Need structured, validated access
 - Want automatic retries and error handling
 
-**Use APIs directly when**:
-- No MCP available
-- Very custom integration needs
-- Simple one-off requests
-- Performance critical operations
+**When no MCP exists**:
+Instead of using APIs directly in your workflow, create a local MCP server:
+
+1. **Inform user of effort**: "No MCP exists for [system]. We'll create a custom MCP server for you. This takes extra time upfront but makes your workflow cleaner and more maintainable."
+
+2. **Create local MCP server**:
+   - Generate `mcp-servers/[system-name]/` directory in the workflow project
+   - Implement MCP server using the system's APIs
+   - Follow MCP protocol specifications
+   - Include error handling, retries, and validation
+   - Document required API credentials
+
+3. **Update setup for local MCP**:
+   - Add to `/setup` command: how to install dependencies
+   - Document in `/setup`: how to configure credentials
+   - Add to `.claude/settings.local.json` template
+   - Update README with local MCP instructions
+
+4. **Quality checks before commit**:
+   - Invoke `software-best-practices` skill (tests, linting, error handling)
+   - Invoke `security-checker` skill (no hardcoded credentials)
+   - Test MCP connection with simple query
+   - Document MCP endpoints in workflow knowledge files
+
+**Benefits of local MCP approach**:
+- ✅ Cleaner workflow code (uses MCP tools, not raw API calls)
+- ✅ Reusable across multiple workflows
+- ✅ Error handling in one place
+- ✅ Easier testing and maintenance
+- ✅ Can be published for others to use
+- ✅ Consistent with other MCP patterns
+
+**Only use raw APIs when**:
+- Very simple one-off operation (single GET request)
+- Performance absolutely critical
+- Custom needs can't fit MCP model
 
 ## Integration Patterns
 

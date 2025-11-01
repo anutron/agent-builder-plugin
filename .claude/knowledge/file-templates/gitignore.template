@@ -15,6 +15,11 @@
 # Session data (workflow-specific)
 # [WORKFLOW_SESSIONS_DIR]/
 
+# Local MCP servers (dependencies and credentials)
+mcp-servers/**/node_modules/
+mcp-servers/**/.env
+mcp-servers/**/*.log
+
 # System files
 .DS_Store
 *.swp

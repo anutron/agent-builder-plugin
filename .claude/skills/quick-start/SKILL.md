@@ -113,10 +113,15 @@ Guide the user through 5 phases to create a working V1 workflow:
    - Jira: Check for Atlassian MCP plugins
 
    **If no MCP available**:
-   - Recommend using APIs directly
-   - Check if system has REST API
-   - Document API setup requirements
-   - Consider if this should be V2 (build simpler V1 first)
+   - Follow guidance in `.claude/knowledge/mcp-integration.md` "When no MCP exists"
+   - **Recommended**: Create a local MCP server in the workflow project
+     - Inform user: this takes extra time but provides better maintainability
+     - Generate `mcp-servers/[system-name]/` directory
+     - Implement MCP using system's APIs
+     - Update `/setup` to document local MCP installation
+     - Run `software-best-practices` and `security-checker` before commit
+   - **Alternative**: Use APIs directly only for simple one-off operations
+   - **Fallback**: Consider deferring to V2 (build simpler V1 first without this source)
 
 4. **Create setup checklist** in `project-plan/data-source-setup.md`:
 
