@@ -265,12 +265,13 @@ Use **Knowledge files** for reference materials:
 
 **Process**:
 1. Set up file structure
-2. Configure permissions and update /setup
+2. Configure permissions and create /setup command
 3. Implement main command
 4. Implement research phase (agents/skills)
 5. Create knowledge files
-6. Test workflow
-7. Document usage
+6. Run /setup to validate environment
+7. Test workflow
+8. Document usage
 
 **4.1 File Structure**
 
@@ -392,7 +393,35 @@ Create `.claude/knowledge/[reference].md` for:
 - Guidelines (quality criteria)
 - Examples (what good looks like)
 
-**4.6 Testing**
+**4.6 Validate Setup**
+
+Run the `/setup` command to validate the environment:
+
+```bash
+# In the user's workflow project
+/setup
+```
+
+**What this validates**:
+1. Git is installed and accessible
+2. Required MCPs are available (uses `ListMcpResourcesTool`)
+3. File structure is correct
+4. Permissions are configured (if applicable)
+5. Environment variables documented (if applicable)
+
+**If setup finds issues**:
+- Missing MCPs: Add installation instructions to `/setup` command
+- Incorrect paths: Fix in `/setup` documentation
+- Missing files: Check file structure creation
+- Update `/setup` command based on findings
+
+**Why this matters**:
+- Catches errors in the `/setup` command itself
+- Validates that setup instructions are complete and correct
+- Ensures environment is ready before testing workflow
+- Better user experience (setup catches issues, not workflow execution)
+
+**4.7 Testing**
 
 Test the workflow:
 1. Run command with test data
@@ -401,7 +430,11 @@ Test the workflow:
 4. Test error handling
 5. Document any issues in `project-plan/IMPROVEMENTS.md`
 
-**4.7 Documentation**
+**If workflow fails due to environment**:
+- Update `/setup` command to catch that issue
+- Re-run `/setup` to verify the fix
+
+**4.8 Documentation**
 
 Create `README.md` using template from `.claude/knowledge/file-templates/README.template`:
 - Features
