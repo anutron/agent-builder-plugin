@@ -157,36 +157,42 @@ Guide the user through 5 phases to create a working V1 workflow:
 [What user needs to do before continuing]
 ```
 
-5. **Offer manual data option** (IMPORTANT):
-   For each data source, give user choice:
+5. **Handle missing MCPs** (IMPORTANT):
+   For each data source, check MCP availability:
 
-   **Option A: Automated with MCP** (recommended for iteration speed)
-   - Set up MCP now or document in `/setup` for later
-   - Workflow can automatically fetch/write data
-   - Faster iterations, less manual work
+   **If MCP exists** (official or org-provided):
+   - Proceed with MCP-based workflow
+   - Document MCP requirements in data-source-setup.md
+   - User will verify MCP setup when running `/setup` later
+   - No manual option needed
 
-   **Option B: Manual data gathering** (simpler V1)
-   - User provides data manually (copy-paste, files, etc.)
-   - Workflow processes data and generates outputs locally
-   - Automation can be added in V2
-   - **Don't block workflow creation on MCP setup**
+   **If NO MCP exists**:
+   - Warn user: "No MCP exists for [system]. We can create a custom MCP server, but this is tedious and takes extra time."
+   - Offer choice:
+     - **Option A**: "We can build a custom MCP server now" (follow guidance in mcp-integration.md)
+     - **Option B**: "We can defer this and do it manually for now"
+   - If user chooses Option B (defer):
+     - Add to `project-plan/IMPROVEMENTS.md`: "V2: Create custom MCP for [system]"
+     - Document in workflow: "Manual step: User provides [system] data via [copy-paste/file/etc.]"
+     - Instruct user how to gather/provide data manually
+     - Workflow processes data from manual input
+   - **Don't block workflow creation** - manual is always an option
 
    Example dialogue:
    ```
-   "You mentioned gathering data from Notion and Slack. For V1, you have two options:
+   "You mentioned Airtable. There's no official Airtable MCP. We have two options:
 
-   1. Set up Notion and Slack MCPs now - the workflow will automatically fetch data
-   2. Start with manual data - you copy-paste context, workflow generates output
+   1. Build a custom Airtable MCP server now - this is tedious but makes the workflow fully automated
+   2. Handle Airtable data manually for V1 - you export data or copy-paste it, we'll automate in V2
 
-   Option 2 lets us build the workflow today and add automation later. Which would you prefer?"
+   Which would you prefer?"
    ```
 
 6. **Decision point**:
-   Based on user choices:
-   - **MCPs ready?** → Proceed to Phase 3 with automated workflow
-   - **Manual data?** → Proceed to Phase 3 with manual input workflow
-   - **Mix?** → Some automated, some manual (document both in `/setup`)
-   - **Blocked on MCPs?** → Recommend manual V1, automate in V2
+   Based on availability and user choice:
+   - **All sources have MCPs?** → Proceed to Phase 3 with automated workflow
+   - **User chose to build custom MCP?** → Create local MCP, then proceed to Phase 3
+   - **User chose manual for missing MCPs?** → Add to IMPROVEMENTS.md, document manual steps, proceed to Phase 3
 
 **Output**:
 - `project-plan/data-source-setup.md` with checklist
