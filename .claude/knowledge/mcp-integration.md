@@ -97,15 +97,57 @@ First gather context, then take action:
 - Plan: Identify what sections need updates
 - Action: Write updates to Notion
 
-### Pattern 3: Validation Before Write
-Validate data before writing to external systems:
+### Pattern 3: Validation Before Write (with Parallel Writes)
+Generate and validate content locally before writing to external systems in parallel:
 
-1. **Generate**: Create content locally
+1. **Generate**: Create all content locally in session directory
+   - Write draft files to disk: `draft-section1.md`, `draft-section2.md`, etc.
+   - Each draft is a complete, validated piece of content
+   - Local files allow inspection and recovery if writes fail
+
 2. **Validate**: Check against rules/schema
-3. **Review**: Show user (optional)
-4. **Write**: Send to MCP
+   - Validate each draft file independently
+   - Check for required fields, format, consistency
+   - Fix issues before attempting writes
 
-**Benefit**: Prevents bad data in production systems
+3. **Review**: Show user summary (optional)
+   - "Generated 5 sections, ready to write to [system]"
+   - User can inspect draft-*.md files if desired
+
+4. **Parallel Write**: Launch write agents simultaneously
+   - Each agent reads one draft file and writes to MCP
+   - All writes happen in parallel (not serial)
+   - Example: 5 sections write in 30s instead of 2.5min
+
+5. **Verify & Archive**: Confirm success and clean up
+   - Check all writes succeeded
+   - Archive draft files (external system is now source of truth)
+   - Report any failures explicitly
+
+**From prd-sidekick pattern**:
+```markdown
+Phase 3: Serial generation (local files)
+- Generate draft-background.md
+- Generate draft-problem.md
+- Generate draft-solution.md
+(Each section reads previous sections to avoid duplication)
+
+Phase 4: Parallel writes to Notion
+Launch agents simultaneously:
+- Agent 1: Write draft-background.md → Notion
+- Agent 2: Write draft-problem.md → Notion
+- Agent 3: Write draft-solution.md → Notion
+
+Phase 5: Archive drafts
+- Move draft-*.md to drafts-archived/
+- Notion is now source of truth
+```
+
+**Benefits**:
+- Prevents bad data in production systems
+- Parallel writes = significant time savings
+- Local drafts = resumable, inspectable, recoverable
+- Clear separation: generation (serial) vs writes (parallel)
 
 ### Pattern 4: Error Handling with Retries
 MCPs can fail due to network, rate limits, etc:

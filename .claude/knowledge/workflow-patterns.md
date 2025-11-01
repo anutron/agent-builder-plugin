@@ -103,7 +103,36 @@ Both validate work before finalizing:
 
 **Pattern**: Catch errors early, not in production
 
-### 8. **MCP as Integration Layer**
+### 8. **Local-First Drafting with Parallel Writes**
+Generate content locally, then write to external systems in parallel:
+
+**PRD Sidekick pattern**:
+- Phase 3: Generate all sections as local `draft-*.md` files (serial)
+  - Each section reads previous sections to avoid duplication
+  - All drafts validated before any writes
+  - Local files = inspectable, recoverable, resumable
+- Phase 4: Write all sections to Notion simultaneously (parallel)
+  - Each write agent reads one draft file
+  - 5 sections write in 30s instead of 2.5min serial
+  - Verify all writes succeeded
+- Phase 5: Archive drafts, external system is source of truth
+
+**Benefits**:
+- **Speed**: Parallel writes dramatically faster than serial
+- **Safety**: Validate all content before any production writes
+- **Reliability**: Local drafts survive write failures
+- **Transparency**: User can inspect drafts before write
+- **Resumability**: Failed writes can retry from drafts
+
+**When to use**:
+- Writing multiple related pieces of content (sections, pages, records)
+- Content generation is interdependent (needs to read previous work)
+- External system writes are independent (can be parallelized)
+- Write failures need to be recoverable
+
+**Anti-pattern**: Don't generate and write simultaneously - if write fails, you lose the content
+
+### 9. **MCP as Integration Layer**
 Both heavily use MCP servers for external systems:
 
 **PRD Sidekick**:
@@ -117,7 +146,7 @@ Both heavily use MCP servers for external systems:
 
 **Pattern**: MCPs abstract external system complexity
 
-### 9. **Research Before Action**
+### 10. **Research Before Action**
 Both mandate research phase before generation:
 
 **PRD Sidekick**:
@@ -132,7 +161,7 @@ Both mandate research phase before generation:
 
 **Pattern**: Context gathering prevents errors
 
-### 10. **Permissions as Configuration**
+### 11. **Permissions as Configuration**
 Both use `.claude/settings.local.json` for fine-grained permissions:
 - MCP tool permissions
 - Bash command patterns
