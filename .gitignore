@@ -1,0 +1,5 @@
+# Local settings with explicit paths - don't commit
+.claude/settings.local.json
+
+# System files
+.DS_Store

@@ -1,0 +1,134 @@
+# Setup - Validate Environment
+
+Validate that the environment is properly configured for [WORKFLOW_NAME].
+
+## Overview
+
+This command checks:
+1. Git availability
+2. Required MCP servers
+3. File structure
+4. Security issues
+5. Environment configuration
+6. Local permissions configuration
+
+## Instructions
+
+### 1. Git Status
+
+Check git is available:
+```bash
+git --version
+```
+
+If git not available:
+- Explain why git is needed (version control, collaboration, history)
+- Offer to help install
+- Provide installation instructions for their OS
+
+### 2. MCP Servers
+
+Required MCPs for this workflow:
+[MCP_LIST]
+
+For each MCP:
+- Check if installed and configured
+- Try a simple test call
+- Report status
+
+**Example output**:
+```
+Checking MCP servers...
+✅ notion - Connected
+✅ slack - Connected
+❌ jira - Not configured
+   Install: npm install -g @atlassian/mcp-jira
+   Configure in .claude/settings.local.json
+```
+
+### 3. File Structure
+
+Verify expected directories exist:
+- `.claude/commands/`
+- `.claude/[agents|skills]/`
+- `.claude/knowledge/`
+- `project-plan/`
+- `[WORKFLOW_SESSIONS_DIR]/`
+
+### 4. Security Check
+
+Scan for security issues:
+- Hardcoded secrets in code
+- Missing .gitignore patterns
+- Sensitive files accidentally committed
+
+### 5. Environment Variables
+
+[ENV_VARS_SECTION]
+
+### 6. Local Permissions Configuration
+
+**Required**: Create `.claude/config.json` with project-specific permissions.
+
+**Check if exists**:
+```bash
+ls -la .claude/config.json
+```
+
+**If missing, create it**:
+```bash
+cat > .claude/config.json << 'EOF'
+{
+  "permissions": {
+    "allow": [
+      "Read(/full/path/to/project/**)",
+      "Write(/full/path/to/project/**)",
+      "Edit(/full/path/to/project/**)",
+      "Glob(/full/path/to/project/**)",
+      "Grep(/full/path/to/project/**)",
+      "Bash(tree:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(cp:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(echo:*)",
+      "Bash(find:*)"
+    ]
+  }
+}
+EOF
+```
+
+**IMPORTANT**: Replace `/full/path/to/project` with your actual project directory path.
+Example: `/Users/yourname/projects/my-workflow`
+
+This file is `.gitignore`d and should NEVER be committed.
+
+[ADDITIONAL_LOCAL_SETTINGS]
+
+### Report
+
+Show comprehensive status:
+```
+🔧 Environment Setup Status
+
+Git: ✅ version 2.39.0
+MCPs: [STATUS]
+Files: ✅ All directories present
+Security: ✅ No issues found
+Environment: [STATUS]
+Permissions: [STATUS]
+
+[ACTION_ITEMS]
+
+Once complete, run your workflow: /[WORKFLOW_NAME]
+```
+
+## Troubleshooting
+
+[TROUBLESHOOTING_TIPS]
+
+## User Experience
+
+This is a diagnostic command that helps troubleshoot setup issues. Be helpful and specific about how to fix problems.

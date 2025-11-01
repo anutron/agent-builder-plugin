@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Read([PROJECT_PATH]/**)",
+      "Write([PROJECT_PATH]/**)",
+      "Edit([PROJECT_PATH]/**)",
+      "Glob([PROJECT_PATH]/**)",
+      "Grep([PROJECT_PATH]/**)",
+      "Bash(tree:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(cp:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(echo:*)",
+      "Bash(find:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

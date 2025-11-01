@@ -1,0 +1,223 @@
+# [WORKFLOW_NAME]
+
+[One-line description of what this workflow does]
+
+## Features
+
+- [Key feature 1]
+- [Key feature 2]
+- [Key feature 3]
+- Time savings: [X minutes/hours saved per use]
+
+## Installation
+
+### Prerequisites
+
+**Required MCPs**:
+- [MCP 1] - [What it's used for]
+- [MCP 2] - [What it's used for]
+
+**Optional MCPs** (for V2+ features):
+- [MCP 3] - [What it enables]
+
+### Setup
+
+1. **Clone/create this project**:
+   ```bash
+   git clone [repo-url]
+   cd [project-name]
+   ```
+
+2. **Install required MCPs**:
+   ```bash
+   # Example for Notion
+   npm install -g @modelcontextprotocol/server-notion
+
+   # See .claude/settings.local.json for full list
+   ```
+
+3. **Configure environment**:
+   ```bash
+   cp .env.example .env
+   # Edit .env and fill in your API keys
+   ```
+
+4. **Configure Claude Code**:
+   - Copy `.claude/settings.local.json.example` to `.claude/settings.local.json`
+   - Update MCP configurations with your tokens
+   - Or add to your global `~/.claude/settings.json`
+
+5. **Verify setup**:
+   ```bash
+   # In Claude Code:
+   /setup
+   ```
+
+## Usage
+
+### Basic Workflow
+
+```
+/[workflow-name] [arguments]
+```
+
+**Example**:
+```
+/[workflow-name] [example-input]
+```
+
+**What it does**:
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
+
+**Output**:
+- [Where output goes]
+- [What gets created]
+
+### Interactive vs One-Shot
+
+**Interactive Mode** (default):
+- Claude asks questions
+- You provide context as you go
+- More control, slower
+
+**One-Shot Mode** (if supported):
+- Provide all context upfront
+- Claude runs autonomously
+- Faster, less control
+
+### Session Management
+
+Sessions are stored in `[sessions-dir]/`:
+- Each session has unique ID
+- Context and research preserved
+- Can resume interrupted workflows
+
+## Architecture
+
+### Components
+
+**Commands**:
+- `/[workflow-name]` - Main workflow entry point
+
+**[Agents|Skills]**:
+- `[component-1]` - [What it does]
+- `[component-2]` - [What it does]
+
+**Knowledge Files**:
+- `[reference-1].md` - [What guidance it provides]
+
+### Workflow Flow
+
+```
+Phase 1: [Phase name] ([timing])
+  ├─ [Step 1]
+  └─ [Step 2]
+
+Phase 2: [Phase name] ([timing])
+  ├─ [Step 1] (parallel)
+  ├─ [Step 2] (parallel)
+  └─ [Step 3]
+
+Phase 3: [Phase name] ([timing])
+  └─ [Step 1]
+```
+
+## Tips
+
+### Best Practices
+- [Tip 1]
+- [Tip 2]
+- [Tip 3]
+
+### Common Issues
+
+**Issue**: [Common problem]
+**Solution**: [How to fix it]
+
+**Issue**: [Another problem]
+**Solution**: [How to fix it]
+
+### Improving the Workflow
+
+This workflow uses the agent-builder plugin's improvement loops:
+
+**After using the workflow**:
+```
+/review
+```
+
+**To save improvements**:
+```
+/save
+```
+
+**To check what's planned**:
+- See `project-plan/IMPROVEMENTS.md`
+
+## Examples
+
+### Example 1: [Use case]
+```
+/[workflow-name] [example-input-1]
+```
+
+Result: [What happened]
+
+### Example 2: [Use case]
+```
+/[workflow-name] [example-input-2]
+```
+
+Result: [What happened]
+
+## Development
+
+### Project Structure
+```
+.
+├── .claude/
+│   ├── commands/          # User-facing commands
+│   ├── [agents|skills]/   # Processing components
+│   └── knowledge/         # Reference materials
+├── project-plan/          # Design and improvements
+├── [sessions-dir]/        # Session data (gitignored)
+├── CLAUDE.md             # Project instructions for Claude
+└── README.md             # This file
+```
+
+### Iteration Roadmap
+
+**V1** (Current):
+- [Feature 1]
+- [Feature 2]
+
+**V2** (Planned):
+- [Improvement 1]
+- [Improvement 2]
+
+See `project-plan/IMPROVEMENTS.md` for details.
+
+## Contributing
+
+[If open to contributions]
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+[License type - typically MIT]
+
+## Support
+
+- **Issues**: [GitHub issues link or contact]
+- **Questions**: [How to get help]
+
+## Acknowledgments
+
+Built using the [agent-builder](https://github.com/your-org/agent-builder) plugin for Claude Code.

@@ -1,0 +1,41 @@
+# Secrets (NEVER commit these)
+.env
+.env.local
+.env.*.local
+**/*.key
+**/*.pem
+**/credentials.json
+**/secrets.json
+**/secrets.yaml
+
+# Local settings
+.claude/config.json
+*.log
+
+# Session data (workflow-specific)
+# [WORKFLOW_SESSIONS_DIR]/
+
+# System files
+.DS_Store
+*.swp
+*.swo
+Thumbs.db
+
+# Python (if applicable)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+env/
+.venv
+
+# Node (if applicable)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Databases (if applicable)
+*.db
+*.sqlite
+*.sqlite3

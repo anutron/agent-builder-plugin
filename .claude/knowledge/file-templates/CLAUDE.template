@@ -1,0 +1,101 @@
+# [WORKFLOW_NAME] - Project Instructions
+
+## Workflow Overview
+[Brief description of what this workflow does]
+
+## Tools from Agent-Builder Plugin
+
+When working in this project, use these tools from the agent-builder plugin:
+
+### `/save` - Commit changes
+Run this after completing work to:
+- Commit changes with context from IMPROVEMENTS.md
+- Clean up completed improvements
+- Update documentation
+
+### `/review` - Analyze workflow
+Run this periodically to:
+- Find improvement opportunities
+- Check for security issues
+- Validate best practices
+- Get actionable recommendations
+
+### `security-checker` skill
+Automatically runs when handling files with potential secrets.
+If it catches issues, fix them before committing.
+
+### `software-best-practices` skill
+[If code project] Runs when creating/modifying code.
+Ensures tests, linting, run scripts are in place.
+
+### Check IMPROVEMENTS.md
+Before making changes, check `project-plan/IMPROVEMENTS.md` for:
+- Known issues with the workflow
+- Planned improvements
+- Context from previous iterations
+
+## Workflow-Specific Instructions
+
+### File Organization
+- `.claude/commands/` - User-facing workflow commands
+- `.claude/[agents|skills]/` - Research and processing components
+- `.claude/knowledge/` - Reference materials and templates
+- `project-plan/` - Design docs, interview notes, improvements backlog
+- `[sessions-dir]/` - Workflow session data (gitignored)
+
+### Session Management
+[How sessions are stored/resumed]
+- Session directory: `[sessions-dir]/[session-id]/`
+- Context file: `[sessions-dir]/[session-id]/context.md`
+- Research outputs: `[sessions-dir]/[session-id]/research-*.md`
+
+### Validation Rules
+[What validation needs to happen]
+
+### Common Patterns
+[Frequently used patterns in this workflow]
+
+## MCPs Used
+[List of MCP servers this workflow depends on]
+- [MCP name]: [Purpose]
+- Required permissions in `.claude/settings.local.json`
+
+## Error Handling
+[Common errors and how to handle them]
+
+## Local Settings Pattern
+
+**CRITICAL**: Local configuration files should NEVER be committed to git.
+
+**Pattern for adding local settings**:
+1. Create the local config file (e.g., `.env`, `.claude/config.json`)
+2. Add it to `.gitignore`
+3. **Update `/setup` command** with instructions to recreate it
+4. Document any required values (paths, keys) that user must provide
+
+**Examples of local settings**:
+- `.claude/config.json` - Local permissions (contains explicit paths)
+- `.env` - API keys, credentials, secrets
+- `credentials.json` - Service account keys
+- Any file with absolute paths specific to a user's machine
+
+**The `/setup` command captures ALL local configuration** so new contributors can recreate the environment.
+
+## Two Improvement Loops
+
+### User-Initiated Improvements
+When user asks "Make X better":
+1. Update IMPROVEMENTS.md with plan
+2. Do the work
+3. Ask user to test
+4. Commit with `/save`
+5. Clean IMPROVEMENTS.md
+
+### LLM-Initiated Improvements
+When you struggle with workflow:
+1. Add to IMPROVEMENTS.md: "Tried X, didn't work"
+2. Try alternatives until success
+3. Update IMPROVEMENTS.md: "Found working pattern: Y"
+4. Complete user's task
+5. Ask: "Want me to update the workflow?"
+6. If yes: Modify files, commit, clean IMPROVEMENTS.md

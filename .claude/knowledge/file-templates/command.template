@@ -1,0 +1,223 @@
+# [WORKFLOW_NAME] - [Brief Description]
+
+[More detailed description of what this command does and when to use it]
+
+**Reference files:**
+- `.claude/knowledge/[reference-1].md` - [What guidance this provides]
+- `.claude/knowledge/[reference-2].md` - [What guidance this provides]
+
+## Usage
+
+```
+/[workflow-name] [optional-args]
+```
+
+**Arguments**:
+- `[arg1]` - [Description, optional/required]
+- `[arg2]` - [Description, optional/required]
+
+**Examples**:
+```
+/[workflow-name] "example input"
+/[workflow-name] --option value
+```
+
+## Workflow Overview
+
+This workflow consists of [N] phases:
+
+1. **[Phase 1 Name]** ([timing estimate])
+2. **[Phase 2 Name]** ([timing estimate])
+3. **[Phase 3 Name]** ([timing estimate])
+
+Total time: [X minutes]
+
+## Implementation
+
+### Setup
+
+Before starting, ensure:
+- [ ] Required MCPs are connected
+- [ ] Session directory exists: `[sessions-dir]/`
+- [ ] User has provided necessary context
+
+### Phase 1: [Phase Name] ([timing])
+
+**Goal**: [What this phase accomplishes]
+
+**Process**:
+1. [Step 1 description]
+   ```[language if code]
+   [Example of what to do]
+   ```
+
+2. [Step 2 description]
+
+**Output**: [What gets created/stored]
+
+### Phase 2: [Phase Name] ([timing])
+
+**Goal**: [What this phase accomplishes]
+
+**Launch agents in parallel** (if applicable):
+
+Use the Task tool to launch these agents simultaneously:
+
+**Agent 1: [Agent Name]**
+```
+You are researching [SOURCE] for [PURPOSE].
+
+Context: Read [session-path]/context.md
+
+Task:
+1. [What to find]
+2. [Where to look]
+3. [What to extract]
+
+Output: Write to [session-path]/research-[source].md
+
+Format:
+[Expected format]
+
+Error handling:
+- Retry MCP operations 3 times
+- If all fail, write error to file
+```
+
+**Agent 2: [Agent Name]**
+```
+[Similar structure]
+```
+
+**After parallel execution completes**:
+- Read all research files
+- Synthesize findings
+- Identify contradictions
+- [Next steps]
+
+### Phase 3: [Phase Name] ([timing])
+
+**Goal**: [What this phase accomplishes]
+
+**Process**:
+[Implementation details]
+
+**Validation**:
+- [ ] [Check 1]
+- [ ] [Check 2]
+
+**Output**: [Final deliverable]
+
+## State Management
+
+### Session Directory Structure
+```
+[sessions-dir]/[session-id]/
+├── context.md              # User's input
+├── research-[source1].md   # Research findings
+├── research-[source2].md
+├── execution-plan.json     # Progress tracking (optional)
+└── [output].md            # Final output
+```
+
+### Resumption
+
+If interrupted, can resume from any phase by:
+1. Reading existing session files
+2. Checking execution-plan.json for progress
+3. Continuing from last completed phase
+
+## Error Handling
+
+### MCP Failures
+If MCP operations fail:
+1. Retry up to 3 times with exponential backoff
+2. Log error details
+3. Continue with other sources if possible
+4. Notify user of missing data
+
+### Validation Failures
+If output doesn't meet quality criteria:
+1. Show specific issues
+2. Offer to fix automatically
+3. Allow manual correction
+4. Re-validate after changes
+
+### Interruptions
+If workflow interrupted:
+1. All progress saved in session directory
+2. User can resume with same command
+3. Workflow picks up where it left off
+
+## Interactive vs Autonomous
+
+### Interactive Mode (Default)
+- Ask questions as needed
+- Show progress after each phase
+- Get user approval before proceeding
+- More control for user
+
+### One-Shot Mode (Optional)
+Activate with: `/[workflow-name] --oneshot [all-context]`
+
+- Runs autonomously start to finish
+- Requires all context upfront
+- Faster but less control
+- Best for repeated use cases
+
+## Validation Gates
+
+### Before Starting
+- [ ] Required MCPs available
+- [ ] User provided necessary context
+- [ ] No conflicting sessions
+
+### After Research
+- [ ] All sources queried
+- [ ] No contradictions found
+- [ ] Sufficient information gathered
+
+### Before Finalizing
+- [ ] Output meets quality criteria
+- [ ] All required sections present
+- [ ] No duplication in content
+
+## Best Practices
+
+**For users**:
+- Provide clear, specific context upfront
+- Review research findings before generation
+- Test with small examples first
+
+**For modifying this workflow**:
+- Keep phases independent when possible
+- Use parallel execution for I/O-bound operations
+- Validate early and often
+- Preserve session state for resumption
+
+## Tips
+
+### Getting Better Results
+- [Tip 1]
+- [Tip 2]
+
+### Common Mistakes
+- [Mistake 1] → [How to avoid]
+- [Mistake 2] → [How to avoid]
+
+### Performance
+- Research phase: Can be parallelized
+- Generation phase: [Parallel or serial?]
+- Expected time: [X minutes for typical use]
+
+## Examples
+
+See `examples/` directory for:
+- [Example 1]: [What it demonstrates]
+- [Example 2]: [What it demonstrates]
+
+## Related Commands
+
+- `/review` - Analyze this workflow for improvements
+- `/save` - Commit changes to workflow
+- `/setup` - Verify environment configuration
