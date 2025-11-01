@@ -57,10 +57,6 @@ Instead of using APIs directly in your workflow, create a local MCP server:
 - ✅ Can be published for others to use
 - ✅ Consistent with other MCP patterns
 
-**Only use raw APIs when**:
-- Very simple one-off operation (single GET request)
-- Performance absolutely critical
-- Custom needs can't fit MCP model
 
 ## Integration Patterns
 
@@ -109,12 +105,13 @@ Generate and validate content locally before writing to external systems in para
    - Validate each draft file independently
    - Check for required fields, format, consistency
    - Fix issues before attempting writes
+   - Eliminate unnecessary duplication across drafted content
 
 3. **Review**: Show user summary (optional)
    - "Generated 5 sections, ready to write to [system]"
    - User can inspect draft-*.md files if desired
 
-4. **Parallel Write**: Launch write agents simultaneously
+4. **Parallel Write**: Launch write agents simultaneously if possible
    - Each agent reads one draft file and writes to MCP
    - All writes happen in parallel (not serial)
    - Example: 5 sections write in 30s instead of 2.5min
@@ -168,25 +165,42 @@ for attempt in range(max_attempts):
 
 ## Configuration Best Practices
 
-### 1. Permissions Configuration
-Use `.claude/settings.local.json` to explicitly allow MCP operations:
+### 1. MCP Configuration: Global vs Local
 
+**Global configuration** (`~/.claude/settings.json`):
+- MCPs available across all projects
+- Good for: Official MCPs you use everywhere (Notion, GitHub, Slack)
+- Survives project deletion
+- Easier for users who work across multiple projects
+
+**Local configuration** (`.claude/settings.local.json`):
+- MCPs only available in this project
+- Good for: Project-specific MCPs, custom local MCPs
+- Gitignored (doesn't affect other team members)
+- Required for local MCP servers (e.g., `mcp-servers/[system]/`)
+
+**Example local configuration**:
 ```json
 {
   "permissions": {
     "allow": [
       "mcp__notion__*:*",
       "mcp__slack__*:*",
-      "mcp__github__*:*"
+      "mcp__custom_system__*:*"
     ]
   },
-  "enabledMcpjsonServers": [
+  "enabledMcpServers": [
     "notion",
     "slack",
-    "github"
+    "custom_system"
   ]
 }
 ```
+
+**Recommendation**:
+- Use **global** for official MCPs you use regularly
+- Use **local** for project-specific or custom MCPs
+- Document required MCPs in `/setup` command (works with both global and local)
 
 **Why**: Explicit permissions prevent accidental writes to production
 
@@ -252,7 +266,31 @@ github.repos.get("owner", "repo")
 Error: MCP server "notion" not found
 ```
 
-**Fix**: Check `enabledMcpjsonServers` in settings
+**Diagnosis**: Use `ListMcpResourcesTool()` to see which MCPs are available
+```
+Call: ListMcpResourcesTool()
+Result: [list of available MCP servers]
+```
+
+**Fix options**:
+
+1. **If MCP is missing entirely**:
+   - Install the MCP server: `npm install -g @modelcontextprotocol/server-notion`
+   - Configure in settings (global OR local):
+     - **Global**: `~/.claude/settings.json` (available in all projects)
+     - **Local**: `.claude/settings.local.json` (project-specific)
+   - Add to `enabledMcpServers` list in whichever settings file you choose
+   - Restart Claude Code for changes to take effect
+
+2. **If MCP is installed but not enabled**:
+   - Check both global (`~/.claude/settings.json`) and local (`.claude/settings.local.json`)
+   - Add server name to `enabledMcpServers` array
+   - Restart Claude Code
+
+3. **For local-only MCPs** (like custom `mcp-servers/[system]/`):
+   - Must be configured in `.claude/settings.local.json` (not global)
+   - Include path to the MCP server directory
+   - Document in `/setup` command for new users
 
 ### Permission Denied
 ```
