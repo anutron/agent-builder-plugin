@@ -168,7 +168,23 @@ Command: /generate-report
 
 **Why:** Skill encapsulates parallel orchestration logic
 
-### Pattern 4: Command → Knowledge Files
+### Pattern 4: Command → Skill (Manual Access)
+**Use case:** Expose reusable skill as user command
+
+```
+Command: /save
+└─ Skill: save-progress (git commit with context)
+
+Command: /review
+└─ Skill: workflow-reviewer (analyze and recommend)
+```
+
+**Why:**
+- Skill is reusable (other commands can invoke it)
+- Command provides manual user access
+- Thin wrapper pattern (command just invokes skill)
+
+### Pattern 5: Command → Knowledge Files
 **Use case:** Data-driven workflow
 
 ```
@@ -180,49 +196,55 @@ Command: /interview
 
 ## Architecture Examples
 
-### Example 1: PRD Writer (prd-sidekick pattern)
+**Note**: These are architectural patterns from real projects, not recommendations for specific workflows to build. Use these patterns as inspiration for your own use cases.
+
+### Example Pattern: Document Writer (Research → Generate → Publish)
 
 ```
-Command: /prd
+Command: /write-document
 ├─ Phase 1: Research (parallel agents)
-│  ├─ Agent: prd-research-notion
-│  └─ Agent: prd-research-slack
+│  ├─ Agent: research-source-1
+│  └─ Agent: research-source-2
 ├─ Phase 2: Interview (command inline logic)
 ├─ Phase 3: Generate (command inline logic)
-│  └─ References: knowledge/prd-content-guidelines.md
-└─ Phase 4: Write (parallel agents)
-   ├─ Agent: prd-section-writer (section 1)
-   ├─ Agent: prd-section-writer (section 2)
-   └─ Agent: prd-section-writer (section 3)
+│  └─ References: knowledge/content-guidelines.md
+└─ Phase 4: Publish (parallel agents)
+   ├─ Agent: write-section-1
+   ├─ Agent: write-section-2
+   └─ Agent: write-section-3
 ```
 
 **Why this architecture:**
 - Command: User entry point, orchestrates phases
-- Agents: Parallel research and writes (speed)
+- Agents: Parallel research and writes (speed optimization)
 - Knowledge: Content guidelines separate from logic
 - Inline: Interview logic specific to this workflow
 
-### Example 2: Query Builder (data-knowledge pattern)
+**Use this pattern for:** Documents, reports, PRDs, proposals, summaries
+
+### Example Pattern: Data Tool (Explore → Validate → Execute)
 
 ```
-Command: /build-query
-└─ Skill: query-builder (orchestrator)
-   ├─ Skill: looker-explorer (parallel)
-   ├─ Skill: dbt-explorer (parallel)
-   ├─ Skill: app-explorer (parallel)
-   ├─ Skill: query-validator
-   └─ Skill: query-executor
+Command: /build-artifact
+└─ Skill: artifact-builder (orchestrator)
+   ├─ Skill: source-1-explorer (parallel)
+   ├─ Skill: source-2-explorer (parallel)
+   ├─ Skill: source-3-explorer (parallel)
+   ├─ Skill: artifact-validator
+   └─ Skill: artifact-executor
 
-Command: /diagnose
-└─ Skill: query-validator (reused)
-└─ Skill: query-executor (reused)
+Command: /quick-check
+└─ Skill: artifact-validator (reused)
+└─ Skill: artifact-executor (reused)
 ```
 
 **Why this architecture:**
 - Commands: Multiple entry points for different use cases
-- Skills: Highly reusable across commands
+- Skills: Highly reusable across commands (validator used by both)
 - Composition: Skills invoke other skills
 - Parallel: Exploration skills run simultaneously
+
+**Use this pattern for:** Queries, scripts, configs, code generation
 
 ## Decision Guidelines
 
