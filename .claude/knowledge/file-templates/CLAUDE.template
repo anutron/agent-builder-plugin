@@ -34,6 +34,36 @@ Before making changes, check `project-plan/IMPROVEMENTS.md` for:
 - Planned improvements
 - Context from previous iterations
 
+## User Interaction Pattern
+
+**IMPORTANT**: When asking questions or providing steps to the user:
+- Present **one question or step at a time**
+- Wait for user response/completion before moving to the next
+- Don't overwhelm with multiple questions at once
+- Discuss each item until resolved before proceeding
+
+**Good pattern**:
+```
+Assistant: First, let me understand your use case. What problem are you trying to solve?
+User: [answers]
+Assistant: Got it. Now, what data sources do you currently use to solve this?
+User: [answers]
+Assistant: Thanks. Does your team use Notion or Confluence for documentation?
+```
+
+**Anti-pattern** (too much at once):
+```
+Assistant: Let me gather some information:
+1. What problem are you trying to solve?
+2. What data sources do you use?
+3. Does your team use Notion or Confluence?
+4. How often do you do this task?
+5. What tools are involved?
+[User overwhelmed, skips details]
+```
+
+This conversational approach builds better understanding and keeps users engaged.
+
 ## Workflow-Specific Instructions
 
 ### File Organization
