@@ -31,7 +31,11 @@ Instead of using APIs directly in your workflow, create a local MCP server:
    - Implement MCP server using the system's APIs
    - Follow MCP protocol specifications
    - Include error handling, retries, and validation
-   - Document required API credentials
+   - **Authentication priority**:
+     1. **Prefer SSO/OAuth** if available (no stored credentials)
+     2. Service account with scoped permissions
+     3. API keys only as last resort (must be in .env, never hardcoded)
+   - Document authentication setup in README
 
 3. **Update setup for local MCP**:
    - Add to `/setup` command: how to install dependencies
@@ -265,11 +269,30 @@ Error: Invalid token
 - Support undo when possible
 
 ### Credentials
+
+**Authentication Method Priority**:
+1. **SSO/OAuth (best)**: User authenticates via browser, no stored credentials
+   - Tokens refresh automatically
+   - Can be revoked centrally
+   - No credentials to leak
+   - Examples: Google OAuth, Microsoft SSO, Okta
+
+2. **Service Accounts**: Dedicated account with limited scope
+   - Not tied to individual user
+   - Can be rotated without user impact
+   - Easier to audit access
+
+3. **API Keys (last resort)**: Only if SSO/service accounts not available
+   - Must be in .env file (never hardcoded)
+   - Add .env to .gitignore
+   - Provide .env.example with no values
+   - Document required permissions/scopes
+   - Include key rotation instructions
+
+**Universal rules**:
 - Never commit tokens to git
-- Use .env files
-- Add .env to .gitignore
-- Provide .env.example with no values
-- Document required permissions
+- Log authentication method in MCP startup
+- Document setup clearly in README and /setup command
 
 ## Performance Tips
 

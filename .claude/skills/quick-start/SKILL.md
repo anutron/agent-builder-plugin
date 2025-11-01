@@ -118,6 +118,10 @@ Guide the user through 5 phases to create a working V1 workflow:
      - Inform user: this takes extra time but provides better maintainability
      - Generate `mcp-servers/[system-name]/` directory
      - Implement MCP using system's APIs
+     - **Check authentication options**: Prefer SSO/OAuth > Service accounts > API keys
+       - Ask user: "Does [system] support SSO or OAuth? That's more secure than API keys."
+       - If SSO available: implement OAuth flow, no stored credentials needed
+       - If not: document API key setup in .env (never hardcode)
      - Update `/setup` to document local MCP installation
      - Run `software-best-practices` and `security-checker` before commit
    - **Alternative**: Use APIs directly only for simple one-off operations
