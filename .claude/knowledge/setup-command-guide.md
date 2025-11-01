@@ -40,7 +40,13 @@ The workflow-specific `/setup` command (in the user's project) will list require
 2. For each required MCP listed in the workflow's setup command:
    - Check if server name appears in the results
    - Verify it's responding (resources returned = working)
-   - Report status
+   - Report status with setup instructions
+
+**IMPORTANT**: If MCPs are missing, provide clear instructions but don't block:
+- Show installation commands (e.g., `npm install -g @modelcontextprotocol/server-notion`)
+- Explain configuration locations (global `~/.claude/settings.json` or local `.claude/settings.local.json`)
+- Document required credentials (API keys, OAuth setup)
+- **Note**: Workflow may support manual data input if MCPs unavailable (check workflow documentation)
 
 This works with both global MCPs (in ~/.claude/settings.json) and local MCPs (in .claude/settings.local.json).
 

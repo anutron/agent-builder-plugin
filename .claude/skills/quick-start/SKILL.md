@@ -157,18 +157,36 @@ Guide the user through 5 phases to create a working V1 workflow:
 [What user needs to do before continuing]
 ```
 
-5. **Verify connections**:
-   For each MCP/API:
-   - Ask user to install/configure
-   - Test basic connectivity
-   - Document any credentials needed (in .env.example)
+5. **Offer manual data option** (IMPORTANT):
+   For each data source, give user choice:
+
+   **Option A: Automated with MCP** (recommended for iteration speed)
+   - Set up MCP now or document in `/setup` for later
+   - Workflow can automatically fetch/write data
+   - Faster iterations, less manual work
+
+   **Option B: Manual data gathering** (simpler V1)
+   - User provides data manually (copy-paste, files, etc.)
+   - Workflow processes data and generates outputs locally
+   - Automation can be added in V2
+   - **Don't block workflow creation on MCP setup**
+
+   Example dialogue:
+   ```
+   "You mentioned gathering data from Notion and Slack. For V1, you have two options:
+
+   1. Set up Notion and Slack MCPs now - the workflow will automatically fetch data
+   2. Start with manual data - you copy-paste context, workflow generates output
+
+   Option 2 lets us build the workflow today and add automation later. Which would you prefer?"
+   ```
 
 6. **Decision point**:
-   - **All sources ready?** → Proceed to Phase 3
-   - **Some sources not ready?** → Decide V1 scope
-     - Option A: Build V1 without those sources (manual steps)
-     - Option B: Wait until sources are connected
-     - Option C: Build mock/test version first
+   Based on user choices:
+   - **MCPs ready?** → Proceed to Phase 3 with automated workflow
+   - **Manual data?** → Proceed to Phase 3 with manual input workflow
+   - **Mix?** → Some automated, some manual (document both in `/setup`)
+   - **Blocked on MCPs?** → Recommend manual V1, automate in V2
 
 **Output**:
 - `project-plan/data-source-setup.md` with checklist
