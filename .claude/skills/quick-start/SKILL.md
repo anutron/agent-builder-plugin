@@ -314,7 +314,13 @@ Create `.claude/commands/setup.md` using template from `.claude/knowledge/file-t
 
 Fill in the placeholders:
 - `[WORKFLOW_NAME]` - The name of the workflow
-- `[MCP_LIST]` - List of required MCPs from Phase 2.5
+- `[MCP_LIST]` - Extract from `project-plan/data-source-setup.md` "Required Data Sources" section. Format as:
+  ```markdown
+  - **notion** - For accessing workspace pages and databases
+  - **slack** - For searching message history
+  - **github** - For repository and PR information
+  ```
+  Only include MCPs (not APIs or manual sources). If no MCPs needed, state: "This workflow doesn't require any MCP servers."
 - `[WORKFLOW_SESSIONS_DIR]` - Session directory name (e.g., prd-sessions)
 - `[ENV_VARS_SECTION]` - If using .env, document required variables
 - `[ADDITIONAL_LOCAL_SETTINGS]` - Any other local config beyond permissions
