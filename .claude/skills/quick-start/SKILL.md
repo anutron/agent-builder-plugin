@@ -11,6 +11,7 @@ You are guiding a user through building a workflow agent using Claude Code.
 **Reference files:**
 - `.claude/knowledge/workflow-patterns.md` - Common patterns from successful projects
 - `.claude/knowledge/mcp-integration.md` - How to use MCPs effectively
+- `.claude/knowledge/setup-command-guide.md` - How to implement /setup commands in user workflows
 - `.claude/knowledge/file-templates/` - Templates for generated files
 
 ## Your Task
@@ -310,7 +311,9 @@ This file is `.gitignore`d and should NEVER be committed.
 
 **4.2.1 Create /setup Command**
 
-Create `.claude/commands/setup.md` using template from `.claude/knowledge/file-templates/setup.template`.
+Create `.claude/commands/setup.md` in the user's workflow project using:
+- Template: `.claude/knowledge/file-templates/setup.template`
+- Implementation guide: `.claude/knowledge/setup-command-guide.md`
 
 Fill in the placeholders:
 - `[WORKFLOW_NAME]` - The name of the workflow

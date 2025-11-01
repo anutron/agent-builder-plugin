@@ -31,19 +31,21 @@ If git not available:
 Required MCPs for this workflow:
 [MCP_LIST]
 
-For each MCP:
-- Check if installed and configured
-- Try a simple test call
-- Report status
+Use `ListMcpResourcesTool()` to check availability:
+- Call without parameters to list all available servers
+- For each required MCP above:
+  - Check if server name appears in results
+  - Verify it's responding (resources returned = working)
+  - Report status
 
 **Example output**:
 ```
 Checking MCP servers...
-✅ notion - Connected
-✅ slack - Connected
-❌ jira - Not configured
+✅ notion - Connected (12 resources available)
+✅ slack - Connected (8 resources available)
+❌ jira - Not found
    Install: npm install -g @atlassian/mcp-jira
-   Configure in .claude/settings.local.json
+   Configure in ~/.claude/settings.json or .claude/settings.local.json
 ```
 
 ### 3. File Structure
