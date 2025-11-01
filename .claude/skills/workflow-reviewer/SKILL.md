@@ -125,6 +125,28 @@ Check for:
 - **Impact**: Easier to understand and maintain
 ```
 
+#### 2.7 Setup Command Drift
+- Does `/setup` document all required MCPs?
+- Are new environment variables documented in `/setup`?
+- Are new local config files explained in `/setup`?
+- Does `/setup` match current workflow requirements?
+
+**When to check**:
+- Workflow uses MCP tools not listed in `/setup` MCP list
+- .env files exist but not documented in `/setup`
+- New local config files created but not in `/setup`
+- Directory structure changed but `/setup` still checks old dirs
+
+**Example finding**:
+```markdown
+### Setup Drift: New Jira MCP not documented
+- Workflow now calls Jira MCP tools (added in v2)
+- `/setup` command doesn't check for Jira availability
+- New users will get runtime errors instead of setup validation
+- **Recommendation**: Add jira to [MCP_LIST] in `.claude/commands/setup.md`
+- **Impact**: Better onboarding experience, catches missing MCPs early
+```
+
 ### Step 3: Prioritize Findings
 
 Organize findings by priority:

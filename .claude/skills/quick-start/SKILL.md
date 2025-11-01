@@ -405,6 +405,12 @@ Create `CLAUDE.md` using template from `.claude/knowledge/file-templates/CLAUDE.
 - Add progress visibility
 - Optimize parallel execution
 
+**IMPORTANT: Update /setup when requirements change**:
+- Added new MCP? → Update [MCP_LIST] in `.claude/commands/setup.md`
+- Added .env variables? → Update [ENV_VARS_SECTION] in `/setup`
+- Added new local config? → Update [ADDITIONAL_LOCAL_SETTINGS] in `/setup`
+- Changed directory structure? → Update file structure checks in `/setup`
+
 **Output**: Write to `project-plan/IMPROVEMENTS.md`
 
 ### Phase 6: Git Initialization
