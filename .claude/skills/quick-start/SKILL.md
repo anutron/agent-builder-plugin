@@ -10,6 +10,7 @@ You are guiding a user through building a workflow agent using Claude Code.
 
 **Reference files:**
 - `.claude/knowledge/workflow-patterns.md` - Common patterns from successful projects
+- `.claude/knowledge/component-decision-guide.md` - When to use Commands, Skills, Agents, Knowledge
 - `.claude/knowledge/mcp-integration.md` - How to use MCPs effectively
 - `.claude/knowledge/setup-command-guide.md` - How to implement /setup commands in user workflows
 - `.claude/knowledge/file-templates/` - Templates for generated files
@@ -237,17 +238,23 @@ Read `.claude/knowledge/workflow-patterns.md` and `.claude/knowledge/mcp-integra
 
 **Choose Claude Code Features**:
 
+Read `.claude/knowledge/component-decision-guide.md` for detailed guidance. Quick summary:
+
 Use **Commands** for user-facing entry points:
 - Example: `/write-prd`, `/analyze-tickets`
+- User types this to start the workflow
 
 Use **Skills** when logic is reusable or composable:
 - Example: validator, researcher, executor
+- Multiple commands can use the same skill
 
 Use **Agents** (via Task tool) for parallel workers:
 - Example: Research Notion, Slack, Jira simultaneously
+- Minimize blocking time with parallel execution
 
 Use **Knowledge files** for reference materials:
 - Example: Interview guides, templates, validation rules
+- Data that changes independently of logic
 
 **Define V1 Scope** (start minimal):
 - V1: Research + manual generation (prove research works)
@@ -278,7 +285,7 @@ Use **Knowledge files** for reference materials:
 Create directories:
 ```bash
 mkdir -p .claude/commands
-mkdir -p .claude/agents  # OR .claude/skills (based on design)
+mkdir -p .claude/agents  # AND/OR .claude/skills (based on design)
 mkdir -p .claude/knowledge
 mkdir -p [work-sessions]  # e.g., prd-sessions, query-sessions
 ```
