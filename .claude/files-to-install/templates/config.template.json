@@ -13,7 +13,11 @@
       "Bash(ls:*)",
       "Bash(cat:*)",
       "Bash(echo:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Skill(workflow-reviewer)",
+      "Skill(save-progress)",
+      "Skill(security-checker)",
+      "Skill(software-best-practices)"
     ],
     "deny": [],
     "ask": []
