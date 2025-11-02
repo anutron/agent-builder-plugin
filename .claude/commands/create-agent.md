@@ -570,19 +570,39 @@ Next steps:
 
 ## Final Summary
 
-Show the user:
-1. **How to run their workflow**: `/[workflow-name]`
-2. **How to iterate**:
+Show the user a clean summary with proper formatting:
+
+**IMPORTANT**: When listing items with emojis or bullet points, ensure each item is on its own line with a blank line between groups for readability.
+
+Example format:
+```
+✅ Workflow created successfully!
+
+**Next steps:**
+
+✅ Run your workflow: `/[workflow-name]`
+
+✅ Iterate and improve:
    - `/save-workflow` - Commit changes with context
    - `/review-workflow` - Get comprehensive recommendations
-3. **Where to find documentation**:
+
+✅ Check documentation:
    - `README.md` - Usage guide
    - `CLAUDE.md` - Project instructions
    - `project-plan/` - Design decisions and backlog
-4. **V2+ roadmap**: What's in `IMPROVEMENTS.md`
 
-**Offer to help**:
-"Want to try running the workflow now? I can help debug if anything doesn't work as expected."
+✅ Plan future enhancements:
+   - See `project-plan/IMPROVEMENTS.md` for V2+ ideas
+
+Want to try running the workflow now? I can help debug if anything doesn't work as expected.
+```
+
+The summary should include:
+1. **How to run their workflow**: `/[workflow-name]`
+2. **How to iterate**: `/save-workflow` and `/review-workflow` commands
+3. **Where to find documentation**: README.md, CLAUDE.md, project-plan/
+4. **V2+ roadmap**: What's in `IMPROVEMENTS.md`
+5. **Offer to help**: Invite them to test the workflow
 
 ## Error Handling
 
