@@ -24,13 +24,40 @@ Your workflow and settings are safe:
 
 ## Instructions
 
-1. **Check if update is needed**:
-   - Read `.agent-builder-version` file to get current version
+1. **Check plugin version first** (only if GitHub MCP available):
+   - Try to check if GitHub MCP is available by attempting to use it
+   - If available:
+     - Get latest release from GitHub: `mcp__plugin_github_github__get_file_contents` with:
+       - owner: "thanx-ai"
+       - repo: "agent-builder-plugin"
+       - path: ".claude-plugin/plugin.json"
+     - Extract version from the JSON response
+     - Get installed plugin version from `~/.claude/plugins/marketplaces/thanx-agent-builder/.claude-plugin/plugin.json`
+     - If installed plugin is outdated:
+       ```
+       ⚠️  Your plugin is outdated!
+
+       Installed: v{old}
+       Latest: v{new}
+
+       Please update the plugin first:
+       1. Run: /plugin update agent-builder@thanx-agent-builder
+       2. Restart Claude Code
+       3. Run /agent-builder:update-agent-builder again
+
+       (This command only updates project files, not the plugin itself)
+       ```
+       - STOP here, do not continue with project updates
+   - If GitHub MCP not available:
+     - Skip plugin version check (proceed to step 2)
+
+2. **Check if project update is needed**:
+   - Read `.agent-builder-version` file to get current project version
    - Get plugin version from `~/.claude/plugins/marketplaces/thanx-agent-builder/.claude-plugin/plugin.json`
    - If versions match: "✅ You're already on the latest version (v{version})"
-   - If current version is newer: Continue with update
+   - If project version is older: Continue with update
 
-2. **Show what's new**:
+3. **Show what's new**:
    - Read `~/.claude/plugins/marketplaces/thanx-agent-builder/CHANGELOG.md`
    - Extract changelog entries between current version and new version
    - Present to user:
@@ -46,23 +73,23 @@ Your workflow and settings are safe:
      A backup will be created at .claude/backups/agent-builder-{old}-{timestamp}/
      ```
 
-3. **Confirm with user**:
+4. **Confirm with user**:
    - Ask: "Would you like to update to v{new}?"
    - If no: Exit gracefully
    - If yes: Proceed
 
-4. **Run update**:
+5. **Run update**:
    ```bash
    bash ~/.claude/plugins/marketplaces/thanx-agent-builder/.claude/files-to-install/install.sh --backup
    ```
 
-5. **Update version file**:
+6. **Update version file**:
    - Write new version to `.agent-builder-version`
    ```bash
    echo "{new_version}" > .agent-builder-version
    ```
 
-6. **Show summary**:
+7. **Show summary**:
    ```
    ✅ Updated to v{new}!
 

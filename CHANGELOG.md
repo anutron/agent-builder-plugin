@@ -5,6 +5,16 @@ All notable changes to the agent-builder plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.12] - 2025-11-02
+
+### Changed
+- `/agent-builder:update-agent-builder` now checks if plugin itself is outdated
+  - Uses GitHub MCP (if available) to check latest version on GitHub
+  - If plugin outdated: Tells user to run `/plugin update` first, then stops
+  - If plugin current: Proceeds with project file updates as before
+  - If GitHub MCP not available: Skips plugin check, updates project files only
+- Prevents confusion from updating project files with outdated plugin
+
 ## [0.1.11] - 2025-11-02
 
 ### Changed
