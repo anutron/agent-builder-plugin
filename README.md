@@ -10,284 +10,189 @@ This plugin helps you create Claude Code workflow agents that:
 - ✅ Self-improve through testing and iteration
 - ✅ Include security and best practices by default
 
-## Features
-
-### `/quick-start` - Build a Workflow from Scratch
-Guided 5-phase process:
-1. **Use Case Discovery** - Identify automation opportunities
-2. **Process Interview** - Understand current workflow
-3. **Data Source Setup** - Connect to your data before building
-4. **Improvement Plan** - Design with best practices
-5. **Implementation** - Generate working V1
-6. **Iteration Planning** - Define V2+ roadmap
-
-### `/save` - Commit with Context
-- Reads improvements from IMPROVEMENTS.md
-- Generates detailed git commit messages
-- Cleans completed items
-- Updates documentation automatically
-
-### `/review` - Comprehensive Analysis
-- Finds duplication opportunities
-- Identifies security issues
-- Validates best practices
-- Suggests performance improvements
-- Writes actionable recommendations
-
-### Self-Improving Workflows
-Two improvement loops:
-1. **User-initiated**: "Make X better" → Plan → Implement → Save
-2. **LLM-initiated**: Struggle → Fix → Offer to improve workflow
-
-## Based on Real Projects
-
-Analysis of two successful Claude Code workflow agents:
-
-### 1. PRD Sidekick (`../prd_sidekick`)
-**Purpose**: AI-powered collaborative PRD authoring
-
-**Key Features**:
-- Parallel research across Notion and Slack
-- Interactive OR one-shot modes
-- Specialized sub-agents for research and writing
-- ~1 minute total blocking time
-- Session resumption capability
-
-**Architecture Patterns**:
-- Phase-based workflow (5 phases)
-- Parallel agent execution via Task tool
-- Knowledge files for templates and guidelines
-- State management in execution-plan.json
-- Anti-duplication rules for content generation
-
-### 2. Data-Knowledge (`../data-knowledge`)
-**Purpose**: AI-assisted Snowflake query development with knowledge base
-
-**Key Features**:
-- 9 specialized slash commands
-- 8 reusable skills
-- Research-first query generation
-- SQL validation against documentation
-- Multi-repository code exploration
-- Optional web dashboard
-
-**Architecture Patterns**:
-- Command/Skill separation (UX vs Logic)
-- Mandatory knowledge base research before generation
-- Parallel skill composition
-- Validation as first-class concern
-- Skills invoking other skills
-
-## Key Learnings Extracted
-
-I documented 10 common patterns across both projects:
-
-1. **Phase-Based Workflows** - Clear stages with progress tracking
-2. **Parallel Execution** - Minimize user blocking time
-3. **Specialized Components** - Single responsibility agents/skills
-4. **Knowledge Files** - Executable documentation
-5. **State Management** - Resumable workflows
-6. **Two-Mode Operation** - Interactive and autonomous
-7. **Validation First** - Catch errors early
-8. **MCP Integration** - Abstract external systems
-9. **Research Before Action** - Context gathering prevents errors
-10. **Permission Configuration** - Security through explicit allow-lists
-
-See `SYNTHESIS-workflow-patterns.md` for complete analysis.
-
-## What I Designed
-
-### Agent Builder Skill
-
-A guided workflow that helps users build MCP-powered agents through:
-
-**Phase 1: Use Case Discovery**
-- Identify repetitive tasks
-- Evaluate automation potential
-- Select starting point
-
-**Phase 2: Process Interview**
-- Map current workflow
-- Identify pain points and data sources
-- Define quality criteria
-
-**Phase 3: Improvement Plan**
-- Identify available MCPs
-- Design research phase (parallel)
-- Choose Claude Code features (commands/skills/agents)
-- Plan validation gates
-- Define V1 scope
-
-**Phase 4: Implementation**
-- Set up file structure
-- Configure permissions
-- Implement main command
-- Implement research agents/skills
-- Test workflow
-- Document usage
-
-**Phase 5: Iteration Planning**
-- Review limitations
-- Define V2+ roadmap
-
-
-See `SKILL-DESIGN.md` for complete specification.
-
-## Plugin vs Skill Question
-
-**Answer: Yes, a plugin CAN be a skill!**
-
-**Recommended Approach**: Distribute as plugin containing skills
-
-```
-@claude-code/agent-builder/
-├── package.json              # Plugin metadata
-├── .claude/
-│   ├── commands/
-│   │   └── build-agent.md    # User-facing entry point
-│   ├── skills/
-│   │   ├── agent-builder/    # Core orchestrator
-│   │   ├── use-case-advisor/ # Helps identify use cases
-│   │   └── architecture-designer/ # Designs workflow
-│   └── knowledge/
-│       ├── workflow-patterns.md
-│       ├── mcp-integration.md
-│       └── file-templates.md
-└── examples/
-```
-
-**Usage Modes**:
-1. User runs `/quick-start` command
-2. Claude autonomously suggests agent-builder skill
-3. Other tools invoke skill programmatically
-
-See `PLUGIN-VS-SKILL.md` for detailed analysis.
-
-## What Belongs in This Skill
-
-### Core Functionality
-
-1. **Use Case Identification**
-   - Interview questions
-   - Good/bad characteristic checks
-   - Frequency and time cost analysis
-
-2. **Process Understanding**
-   - Current workflow mapping
-   - Data source identification
-   - Pain point discovery
-   - Quality criteria definition
-
-3. **Architecture Design**
-   - MCP availability checking
-   - Parallel research design
-   - Command vs Skill decision logic
-   - Validation gate planning
-   - Iteration strategy
-
-4. **Code Generation**
-   - File structure creation
-   - Permission configuration
-   - Command/skill templates
-   - Knowledge file templates
-   - Documentation generation
-
-5. **Testing & Validation**
-   - Workflow execution testing
-   - Error handling verification
-   - Resume capability check
-
-### Knowledge Files to Include
-
-From your projects, these patterns should be packaged:
-
-- **workflow-patterns.md** - 10 common patterns
-- **prd-sidekick-patterns.md** - Phase-based workflow example
-- **data-knowledge-patterns.md** - Command/skill architecture example
-- **mcp-integration.md** - How to use MCPs effectively
-- **best-practices.md** - Do's and don'ts
-- **file-templates.md** - Templates for generated files
-
-### Example Workflows to Include
-
-Show users complete examples:
-
-1. **PRD Assistant** - Document authoring pattern
-2. **Bug Triager** - Research and classification pattern
-3. **Query Builder** - Validation-first pattern
-4. **Doc Updater** - Code-to-docs synchronization pattern
-
-## Installation
-
-### From Claude Code Marketplace
-
-1. **Add the marketplace** (first time only):
-```bash
-/plugin marketplace add your-org/claude-plugins
-```
-
-2. **Install the plugin**:
-```bash
-/plugin install agent-builder@your-org
-```
-
-Or use the interactive installer:
-```bash
-/plugin
-```
-Then select "Browse Plugins" and choose "agent-builder".
-
 ## Quick Start
 
 ```bash
-# In Claude Code
-/quick-start
+# In your project directory
+/create-agent
 ```
 
-Claude will guide you through:
-1. Identifying a good use case
-2. Understanding your current process
-3. Connecting to data sources
-4. Designing the workflow
-5. Building V1
-6. Planning V2+
+This will:
+1. **Install agent-builder tools** into your project
+   - `/review` command (5 parallel analysis agents)
+   - `/save` command (smart git commits)
+   - Skills for reviewing, security checking, best practices
+2. **Guide you through workflow creation**
+   - Use case discovery
+   - Process interview
+   - Data source setup
+   - Architecture design
+   - V1 implementation
 
-## Commands
+## How It Works
 
-### `/quick-start`
-Start building a new workflow agent. Interactive guided process.
+### Single Command: `/create-agent`
 
-### `/save`
-Commit your changes with detailed context from IMPROVEMENTS.md.
+When you run `/create-agent`, it:
 
-**Use after**: Making improvements to your workflow
+**Phase 0: Install Tools**
+- Copies review/save commands into your project
+- Adds workflow-reviewer, save-progress, security-checker, software-best-practices skills
+- Includes 5 review agents for parallel analysis
+- All tools become part of YOUR project (customize as needed)
 
-### `/review`
-Comprehensive workflow analysis with actionable recommendations.
+**Phase 1-6: Guided Creation**
+1. **Use Case Discovery** - Identify automation opportunities
+2. **Process Interview** - Understand current workflow
+3. **Data Source Setup** - Connect to your data before building
+4. **Architecture Design** - Design with best practices
+5. **Implementation** - Generate working V1
+6. **Iteration Planning** - Define V2+ roadmap
 
-**Use when**: Want to improve existing workflow
+## Features
 
-### `/setup`
-Validate environment configuration (auto-generated by quick-start).
+### `/create-agent` - One Command Does It All
+Installs tools + guided workflow creation in one step.
 
-**Use when**: Troubleshooting setup issues
+### Tools Installed in Your Project
 
-## Skills Included
+After running `/create-agent`, your project will have:
 
-### `quick-start`
-Orchestrates the full workflow creation process. Conducts interviews, designs architecture, generates files, creates git commits.
+#### `/review` - Parallel Workflow Analysis
+- Launches 5 agents simultaneously
+- Duplication & simplification analysis
+- Conflicts & setup drift detection
+- Security scanning
+- Best practices checking
+- Goal drift detection
+- Shows findings, you choose what to track
 
-### `save-progress`
-Intelligent git commit with context preservation. Reads IMPROVEMENTS.md, generates detailed messages, cleans backlog.
+#### `/save` - Smart Git Commits
+- Reads improvements from IMPROVEMENTS.md
+- Generates detailed commit messages
+- Cleans completed items
+- Simplified format (no type prefixes)
 
-### `workflow-reviewer`
-Analyzes workflows for improvements, security issues, conflicts, best practices. Writes findings to IMPROVEMENTS.md.
+#### Skills (Self-Contained)
+- `workflow-reviewer` - Orchestrates 5 parallel review agents
+- `save-progress` - Intelligent git commits with context
+- `security-checker` - Scans for secrets and credentials
+- `software-best-practices` - Validates tests, linting, prevents goal drift
 
-### `security-checker`
-Scans for hardcoded secrets, validates .gitignore, checks environment variables. Runs automatically when sensitive files created.
+## Key Features
 
-### `software-best-practices`
-Ensures tests exist, validates linting, creates run scripts, executes code and iterates until success.
+### Goal-Drift Prevention
+Added to prevent Claude from losing track of objectives:
+- STOP and re-evaluate every 20min or after 3 obstacles
+- GOAL.md template for complex tasks
+- Recovery questions when stuck
+- Pivot strategies when approach isn't working
+
+### Parallel Review Analysis
+- 5 agents run simultaneously (~30-40s vs 2-3min serial)
+- User chooses which findings to track
+- No auto-writing to IMPROVEMENTS.md
+
+### Self-Contained Workflows
+- Tools copied into your project
+- Customize per-project without affecting plugin
+- No pollution of other projects
+
+## Architecture
+
+### Plugin Structure
+```
+agent-builder-skill/           # The plugin
+├── .claude/commands/
+│   └── create-agent.md        # Single entry point
+├── .claude/skills/
+│   └── create-agent/SKILL.md  # Orchestrates install + creation
+├── .claude/knowledge/         # Guides (stay in plugin)
+│   ├── workflow-patterns.md
+│   ├── mcp-integration.md
+│   ├── component-decision-guide.md
+│   └── setup-command-guide.md
+└── .claude/files-to-install/  # Tools copied to user projects
+    ├── commands/
+    │   ├── review.md
+    │   └── save.md
+    ├── skills/
+    │   ├── workflow-reviewer/
+    │   ├── save-progress/
+    │   ├── security-checker/
+    │   └── software-best-practices/
+    ├── agents/
+    │   ├── review-duplication-simplification.md
+    │   ├── review-conflicts-setup.md
+    │   ├── review-security.md
+    │   ├── review-best-practices.md
+    │   └── review-goal-drift.md
+    └── knowledge/file-templates/
+        ├── CLAUDE.template
+        ├── GOAL.template
+        ├── setup.template
+        └── gitignore.template
+```
+
+### Generated Project Structure
+```
+your-workflow/                  # Your new project
+├── project-plan/
+│   ├── interview-notes.md
+│   ├── project-design.md
+│   ├── data-source-setup.md
+│   └── IMPROVEMENTS.md
+├── .claude/
+│   ├── commands/
+│   │   ├── review.md          # Installed from plugin
+│   │   ├── save.md            # Installed from plugin
+│   │   ├── setup.md           # Generated by create-agent
+│   │   └── [your-workflow].md # Your workflow command
+│   ├── skills/ or agents/
+│   │   ├── workflow-reviewer/ # Installed from plugin
+│   │   ├── save-progress/     # Installed from plugin
+│   │   ├── security-checker/  # Installed from plugin
+│   │   ├── software-best-practices/ # Installed from plugin
+│   │   └── [your-components]  # Your workflow components
+│   └── knowledge/
+│       └── [your-references].md
+├── CLAUDE.md
+├── README.md
+├── .gitignore
+└── .env.example
+```
+
+## Based on Real Projects
+
+Analysis of successful Claude Code workflow agents:
+
+### PRD Sidekick
+- AI-powered collaborative PRD authoring
+- Parallel research across Notion and Slack
+- ~1 minute total blocking time
+- Phase-based workflow with session resumption
+
+### Data-Knowledge
+- AI-assisted Snowflake query development
+- 9 specialized slash commands, 8 reusable skills
+- Research-first query generation
+- SQL validation against documentation
+
+## Key Patterns Extracted
+
+10 common patterns across successful projects:
+1. Phase-Based Workflows
+2. Parallel Execution
+3. Specialized Components
+4. Knowledge Files
+5. State Management
+6. Two-Mode Operation
+7. Validation First
+8. MCP Integration
+9. Research Before Action
+10. Permission Configuration
+
+See `.claude/knowledge/workflow-patterns.md` in the plugin for details.
 
 ## Example Use Cases
 
@@ -307,119 +212,64 @@ Ensures tests exist, validates linting, creates run scripts, executes code and i
 - **Input**: Business question
 - **Research**: Schema docs, existing queries, business logic
 - **Output**: Validated SQL query
-- **MCPs**: GitHub (for code), custom schema MCP
+- **MCPs**: GitHub, custom schema MCP
 
-## Architecture Patterns Included
+## Installation
 
-From analysis of successful projects:
-
-1. **Phase-Based Workflows** - Clear stages with progress tracking
-2. **Parallel Execution** - Minimize user wait time
-3. **Specialized Components** - Single responsibility agents/skills
-4. **Knowledge Files** - Executable documentation
-5. **State Management** - Resumable workflows
-6. **Two-Mode Operation** - Interactive and autonomous
-7. **Validation First** - Catch errors early
-8. **MCP Integration** - Abstract external systems
-9. **Research Before Action** - Context gathering prevents errors
-10. **Permission Configuration** - Security through explicit allow-lists
-
-See `.claude/knowledge/workflow-patterns.md` for details.
-
-## What Gets Generated
-
-When you run `/quick-start`, it creates:
-
-```
-your-workflow-project/
-├── project-plan/
-│   ├── interview-notes.md
-│   ├── project-design.md
-│   ├── data-source-setup.md
-│   └── IMPROVEMENTS.md
-├── .claude/
-│   ├── commands/
-│   │   └── [your-workflow].md
-│   ├── [agents|skills]/
-│   │   └── [components].md
-│   └── knowledge/
-│       └── [references].md
-├── CLAUDE.md
-├── README.md
-├── .gitignore
-├── .env.example
-└── (initial git commit)
+### From Source
+```bash
+cd ~/.claude/plugins
+git clone <this-repo> agent-builder-skill
 ```
 
-## Knowledge Base Included
+Then in Claude Code:
+```bash
+cd your-project-directory
+/create-agent
+```
 
-### workflow-patterns.md
-Common patterns from successful projects. Best practices for phase-based workflows, parallel execution, state management.
-
-### mcp-integration.md
-How to use MCPs effectively. Integration patterns, error handling, security, troubleshooting.
-
-### security-guidelines.md
-Never commit secrets to git. Environment variables, .gitignore patterns, detecting secrets, cleanup procedures.
-
-### File Templates
-- `.gitignore.template` - Security patterns
-- `CLAUDE.template` - Project instructions
-- `README.template` - Usage documentation
-- `command.template` - Workflow command structure
+### From Claude Code Marketplace (Coming Soon)
+```bash
+/plugin install agent-builder
+```
 
 ## Development Status
 
-### ✅ Completed (Phase 1-2)
+### ✅ Completed
 - [x] Core plugin structure
-- [x] `/quick-start` command and skill
-- [x] `/save` command and skill
-- [x] `/review` command and skill
-- [x] `security-checker` skill
-- [x] `software-best-practices` skill
-- [x] `/setup` command
+- [x] `/create-agent` command (install + guided creation)
+- [x] Parallel review agents (5 agents)
+- [x] Goal-drift prevention
+- [x] Skills: workflow-reviewer, save-progress, security-checker, software-best-practices
 - [x] Knowledge base files
 - [x] File templates
 
-### 🚧 In Progress (Phase 3)
+### 🚧 In Progress
 - [ ] Testing with real use cases
 - [ ] Example workflow projects
-- [ ] Documentation refinement
 
-### 📋 Planned (Phase 4)
+### 📋 Planned
 - [ ] npm package distribution
 - [ ] GitHub repository
 - [ ] Demo video
 - [ ] Community examples
 
-## Implementation Next Steps
-
-1. **Test the plugin** with a real workflow
-2. **Create example projects** (PRD assistant, bug triager, query builder)
-3. **Refine based on feedback**
-4. **Package for distribution**
-5. **Publish to npm and GitHub**
-
 ## Documentation
 
-All planning, research, and design documents are in the [`docs/`](docs/) directory:
+See `docs/` directory for:
 - Research & analysis from successful projects
 - Design specifications
-- Implementation planning
 - Architecture decisions
-
-See [`docs/README.md`](docs/README.md) for a guide to the documentation.
 
 ## Contributing
 
-Contributions welcome! Please see:
-1. Design patterns in `docs/SYNTHESIS-workflow-patterns.md`
-2. Architecture in `docs/PROJECT-PLAN.md`
-3. Examples in `examples/` (coming soon)
+Contributions welcome! See:
+1. Design patterns in `.claude/knowledge/workflow-patterns.md`
+2. Component decisions in `.claude/knowledge/component-decision-guide.md`
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file
+MIT License
 
 ## Acknowledgments
 

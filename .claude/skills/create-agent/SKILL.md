@@ -1,10 +1,10 @@
 ---
-name: quick-start
-description: Guide users through creating MCP-powered workflow agents. Conducts use case interview, designs architecture, generates initial files, and creates project plan documentation.
+name: create-agent
+description: Install agent-builder tools and guide users through creating MCP-powered workflow agents. Conducts use case interview, designs architecture, generates initial files, and creates project plan documentation.
 allowed-tools: Read, Write, Edit, Glob, Bash, AskUserQuestion, TodoWrite
 ---
 
-# Quick Start Skill
+# Create Agent Skill
 
 You are guiding a user through building a workflow agent using Claude Code.
 
@@ -13,11 +13,56 @@ You are guiding a user through building a workflow agent using Claude Code.
 - `.claude/knowledge/component-decision-guide.md` - When to use Commands, Skills, Agents, Knowledge
 - `.claude/knowledge/mcp-integration.md` - How to use MCPs effectively
 - `.claude/knowledge/setup-command-guide.md` - How to implement /setup commands in user workflows
-- `.claude/knowledge/file-templates/` - Templates for generated files
+- `.claude/files-to-install/` - Tools to copy into user's project
 
 ## Your Task
 
-Guide the user through 5 phases to create a working V1 workflow:
+Guide the user through 6 phases to create a working V1 workflow:
+
+### Phase 0: Install Agent-Builder Tools
+
+**Goal**: Copy all agent-builder tools into the user's current directory
+
+**Process**:
+
+1. **Verify we're in a good location**:
+   - Check if current directory looks like a project root
+   - If empty directory: perfect
+   - If has files: ask user if they want to install here
+
+2. **Copy all tools from `.claude/files-to-install/` to current directory**:
+
+   **Commands to copy**:
+   - `.claude/files-to-install/commands/review.md` → `.claude/commands/review.md`
+   - `.claude/files-to-install/commands/save.md` → `.claude/commands/save.md`
+
+   **Skills to copy**:
+   - `.claude/files-to-install/skills/workflow-reviewer/SKILL.md` → `.claude/skills/workflow-reviewer/SKILL.md`
+   - `.claude/files-to-install/skills/save-progress/SKILL.md` → `.claude/skills/save-progress/SKILL.md`
+   - `.claude/files-to-install/skills/security-checker/SKILL.md` → `.claude/skills/security-checker/SKILL.md`
+   - `.claude/files-to-install/skills/software-best-practices/SKILL.md` → `.claude/skills/software-best-practices/SKILL.md`
+
+   **Agents to copy**:
+   - All `.claude/files-to-install/agents/*.md` → `.claude/agents/*.md`
+
+   **Knowledge templates to copy**:
+   - All `.claude/files-to-install/knowledge/file-templates/*` → `.claude/knowledge/file-templates/*`
+
+3. **Confirm installation**:
+   - List what was installed
+   - Explain that these tools are now part of their project
+   - They can customize them as needed
+
+**Output**:
+```
+Installed agent-builder tools:
+✅ /review command (5 parallel analysis agents)
+✅ /save command (smart git commits)
+✅ workflow-reviewer, save-progress, security-checker, software-best-practices skills
+✅ File templates for workflow generation
+
+These tools are now part of your project. Let's build your workflow!
+```
 
 ### Phase 1: Use Case Discovery
 
@@ -498,7 +543,7 @@ Create `CLAUDE.md` using template from `.claude/knowledge/file-templates/CLAUDE.
 ```bash
 git commit -m "Initial workflow setup via agent-builder
 
-Created by: agent-builder quick-start skill
+Created by: agent-builder create-agent skill
 Workflow: [workflow-name]
 Use case: [brief description]
 
