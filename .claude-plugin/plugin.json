@@ -6,13 +6,7 @@
     "name": "Thanx AI"
   },
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:thanx-ai/agent-builder-plugin.git"
-  },
-  "bugs": {
-    "url": "https://github.com/thanx-ai/agent-builder-plugin/issues"
-  },
+  "repository": "https://github.com/thanx-ai/agent-builder-plugin",
   "homepage": "https://github.com/thanx-ai/agent-builder-plugin#readme",
   "keywords": [
     "claude-code",
@@ -22,6 +16,6 @@
     "mcp",
     "agent"
   ],
-  "commands": [".claude/commands"],
-  "agents": [".claude/skills"]
+  "commands": "./.claude/commands/",
+  "agents": "./.claude/skills/"
 }
