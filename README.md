@@ -127,7 +127,7 @@ agent-builder-skill/           # The plugin
     │   ├── review-security.md
     │   ├── review-best-practices.md
     │   └── review-goal-drift.md
-    └── knowledge/file-templates/
+    └── templates/
         ├── CLAUDE.template
         ├── GOAL.template
         ├── setup.template
@@ -216,43 +216,28 @@ See `.claude/knowledge/workflow-patterns.md` in the plugin for details.
 
 ## Installation
 
-### From Source
+### Add Plugin Marketplace
+
+First, add the thanx-ai plugin marketplace to Claude Code:
+
 ```bash
-cd ~/.claude/plugins
-git clone <this-repo> agent-builder-skill
+# Add the marketplace
+/plugin marketplace add thanx-ai git@github.com:thanx-ai/agent-builder-plugin.git
+
+# Install the plugin
+/plugin install thanx-ai/agent-builder
 ```
 
-Then in Claude Code:
+### Usage
+
+Once installed, navigate to your project directory and run:
+
 ```bash
 cd your-project-directory
 /create-agent
 ```
 
-### From Claude Code Marketplace (Coming Soon)
-```bash
-/plugin install agent-builder
-```
-
-## Development Status
-
-### ✅ Completed
-- [x] Core plugin structure
-- [x] `/create-agent` command (install + guided creation)
-- [x] Parallel review agents (5 agents)
-- [x] Goal-drift prevention
-- [x] Skills: workflow-reviewer, save-progress, security-checker, software-best-practices
-- [x] Knowledge base files
-- [x] File templates
-
-### 🚧 In Progress
-- [ ] Testing with real use cases
-- [ ] Example workflow projects
-
-### 📋 Planned
-- [ ] npm package distribution
-- [ ] GitHub repository
-- [ ] Demo video
-- [ ] Community examples
+This will guide you through creating a workflow agent with all the tools and best practices built in.
 
 ## Documentation
 

@@ -22,11 +22,16 @@ Model Context Protocol (MCP) servers provide Claude Code with access to external
 - Want automatic retries and error handling
 
 **When no MCP exists**:
-Instead of using APIs directly in your workflow, create a local MCP server:
+Offer the user two options:
 
-1. **Inform user of effort**: "No MCP exists for [system]. We'll create a custom MCP server for you. This takes extra time upfront but makes your workflow cleaner and more maintainable."
+**Option A: Create local MCP server** (cleaner but more work upfront)
+**Option B: Manual data handling for V1** (faster to start, automate later)
 
-2. **Create local MCP server**:
+### Option A: Local MCP Server
+
+1. **Inform user of effort**: "No MCP exists for [system]. Building a custom MCP server is tedious but makes your workflow cleaner and more maintainable. Alternatively, we can handle this manually for V1 and build the MCP in V2 once the pattern is proven."
+
+2. **If user chooses local MCP, create it**:
    - Generate `mcp-servers/[system-name]/` directory in the workflow project
    - Implement MCP server using the system's APIs
    - Follow MCP protocol specifications
@@ -56,6 +61,44 @@ Instead of using APIs directly in your workflow, create a local MCP server:
 - ✅ Easier testing and maintenance
 - ✅ Can be published for others to use
 - ✅ Consistent with other MCP patterns
+
+### Option B: Manual Data Handling (V1)
+
+1. **Add to IMPROVEMENTS.md**: "V2: Create custom MCP for [system]"
+
+2. **Document manual steps in workflow**:
+   - Where to get the data (export, API console, etc.)
+   - What format to provide it in (CSV, JSON, copy-paste)
+   - Where the workflow expects it (file path, input prompt)
+
+3. **Update workflow to accept manual input**:
+   - Prompt user for data at runtime
+   - OR expect data file in specific location
+   - OR accept data as command argument
+
+4. **Document in README**:
+   ```markdown
+   ### Manual Data Step
+   Before running the workflow:
+   1. Export data from [system]
+   2. Save to `input/[system]-data.json`
+   3. Run workflow: `/my-workflow`
+   ```
+
+**Benefits of manual approach**:
+- ✅ Faster to implement (minutes vs hours)
+- ✅ Proves workflow value before investing in automation
+- ✅ Can automate later once pattern is proven
+- ✅ Good for infrequent operations
+
+**Trade-offs**:
+- ❌ Less automated
+- ❌ Manual step each time
+- ❌ Potential for copy-paste errors
+
+**When to use manual vs MCP**:
+- **Manual for V1**: Quick start, prove concept, infrequent use
+- **MCP for V2**: Pattern proven, frequent use, share with team
 
 
 ## Integration Patterns

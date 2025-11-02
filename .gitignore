@@ -1,5 +1,30 @@
+# Secrets (NEVER commit)
+.env
+.env.local
+.env.*.local
+**/*.key
+**/*.pem
+**/credentials.json
+**/secrets.json
+**/secrets.yaml
+
 # Local settings with explicit paths - don't commit
 .claude/settings.local.json
+.claude/config.json
+
+# Test/session data
+project-plan/
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.py[cod]
+.venv/
+venv/
 
 # System files
 .DS_Store
+*.swp
+*.swo
+Thumbs.db

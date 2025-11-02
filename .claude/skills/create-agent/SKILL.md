@@ -46,7 +46,7 @@ Guide the user through 6 phases to create a working V1 workflow:
    - All `.claude/files-to-install/agents/*.md` → `.claude/agents/*.md`
 
    **Knowledge templates to copy**:
-   - All `.claude/files-to-install/knowledge/file-templates/*` → `.claude/knowledge/file-templates/*`
+   - All `.claude/files-to-install/templates/*` → `.claude/knowledge/templates/*`
 
 3. **Confirm installation**:
    - List what was installed
@@ -335,7 +335,7 @@ mkdir -p .claude/knowledge
 mkdir -p [work-sessions]  # e.g., prd-sessions, query-sessions
 ```
 
-Add to `.gitignore` (use template from `.claude/knowledge/file-templates/gitignore.template`):
+Add to `.gitignore` (use template from `.claude/files-to-install/templates/gitignore.template`):
 ```
 [work-sessions]/
 .claude/config.json
@@ -345,60 +345,26 @@ Add to `.gitignore` (use template from `.claude/knowledge/file-templates/gitigno
 
 **4.2 Permissions Configuration**
 
-Create `.claude/config.json` using the template from `.claude/knowledge/file-templates/config.template.json`.
-Replace `[PROJECT_PATH]` with the actual absolute path to the project directory.
+Create `.claude/config.json` automatically using the template from `.claude/files-to-install/templates/config.template.json`.
+
+**Process**:
+1. Read the template file
+2. Replace `[PROJECT_PATH]` with the actual absolute path to the project directory (use `pwd` to get it)
+3. Write to `.claude/config.json` in the user's new workflow project
 
 This configuration reduces permission prompts within the project directory by allowing:
 - Read, write, and edit operations on any files in the project (`**` pattern)
 - Common safe bash commands (mkdir, mv, cp, ls, cat, tree, echo, find)
 - Claude still requires permission for potentially dangerous operations (rm, git push --force, etc.)
 
-**CRITICAL: Update `/setup` command** to capture how to recreate this local configuration:
-
-Add to the `/setup` command instructions:
-```markdown
-### 6. Local Permissions Configuration
-
-**Required**: Create `.claude/config.json` with project-specific permissions.
-
-Run this command to create the file:
-```bash
-cat > .claude/config.json << 'EOF'
-{
-  "permissions": {
-    "allow": [
-      "Read(/full/path/to/project/**)",
-      "Write(/full/path/to/project/**)",
-      "Edit(/full/path/to/project/**)",
-      "Glob(/full/path/to/project/**)",
-      "Grep(/full/path/to/project/**)",
-      "Bash(tree:*)",
-      "Bash(mkdir:*)",
-      "Bash(mv:*)",
-      "Bash(cp:*)",
-      "Bash(ls:*)",
-      "Bash(cat:*)",
-      "Bash(echo:*)",
-      "Bash(find:*)"
-    ]
-  }
-}
-EOF
-```
-
-**Replace `/full/path/to/project` with your actual project path** (e.g., `/Users/yourname/projects/my-workflow`).
-
-This file is `.gitignore`d and should NEVER be committed.
-```
-
 **Important**: The `.gitignore` template already includes `.claude/config.json` since it's a local configuration file that shouldn't be committed.
 
-**Pattern for future iterations**: Whenever the user creates additional local settings (`.env` files, credentials, etc.), update the `/setup` command to document how to recreate them. Never commit explicit paths or secrets - always document in `/setup` instead.
+**Note**: This file is local to each user's machine. The `/setup` command will verify it exists but won't try to recreate it (since paths are machine-specific).
 
 **4.2.1 Create /setup Command**
 
 Create `.claude/commands/setup.md` in the user's workflow project using:
-- Template: `.claude/knowledge/file-templates/setup.template`
+- Template: `.claude/files-to-install/templates/setup.template`
 - Implementation guide: `.claude/knowledge/setup-command-guide.md`
 
 Fill in the placeholders:
@@ -419,7 +385,7 @@ The `/setup` command must capture ALL local configuration that isn't committed t
 
 **4.3 Main Command**
 
-Create `.claude/commands/[workflow-name].md` using template from `.claude/knowledge/file-templates/command.template`.
+Create `.claude/commands/[workflow-name].md` using template from `.claude/files-to-install/templates/command.template`.
 
 Include:
 - Brief description
@@ -488,14 +454,14 @@ Test the workflow:
 
 **4.8 Documentation**
 
-Create `README.md` using template from `.claude/knowledge/file-templates/README.template`:
+Create `README.md` using template from `.claude/files-to-install/templates/README.template`:
 - Features
 - Prerequisites (MCPs needed)
 - Installation steps
 - Usage instructions
 - Architecture overview
 
-Create `CLAUDE.md` using template from `.claude/knowledge/file-templates/CLAUDE.template`:
+Create `CLAUDE.md` using template from `.claude/files-to-install/templates/CLAUDE.template`:
 - Project-specific instructions for Claude
 - File organization rules
 - Common patterns

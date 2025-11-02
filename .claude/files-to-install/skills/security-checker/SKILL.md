@@ -231,7 +231,7 @@ This skill can be invoked autonomously when:
 
 **Called by**:
 - `workflow-reviewer` skill during comprehensive review
-- `quick-start` skill during initial setup
+- `create-agent` skill during initial setup
 - Autonomously when security-sensitive files touched
 
 **Works with**:

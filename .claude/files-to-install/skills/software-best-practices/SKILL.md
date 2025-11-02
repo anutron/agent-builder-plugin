@@ -301,7 +301,7 @@ Write to `project-plan/IMPROVEMENTS.md`:
 
 This skill is invoked:
 
-1. **During quick-start** when code is generated
+1. **During create-agent** when code is generated
 2. **During review** if code files exist
 3. **Autonomously** when code files created/modified
 4. **After fixes** to verify they work
@@ -336,7 +336,7 @@ This is "personal project good", not "ship to customers good".
 ### Integration with Other Skills
 
 **Called by**:
-- `quick-start` when generating code
+- `create-agent` when generating code
 - `workflow-reviewer` during comprehensive review
 - Autonomously when code files modified
 
