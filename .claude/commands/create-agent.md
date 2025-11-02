@@ -105,7 +105,27 @@ Guide the user through 6 phases to create a working V1 workflow:
 
 **Goal**: Identify a repetitive workflow that could benefit from automation
 
-**Process**:
+**Step 1: Determine user's starting point**
+
+Ask this question FIRST:
+
+```
+Do you already know what workflow you want to automate?
+
+1. Yes - I have a specific use case in mind
+2. No - Help me discover automation opportunities
+```
+
+**If user selects Option 1 (knows what they want)**:
+- Skip the discovery questions below
+- Jump directly to: "Describe the workflow you want to automate"
+- Continue to Phase 2 (Process Interview) with targeted questions about their specific use case
+
+**If user selects Option 2 (needs help discovering)**:
+- Continue with the discovery process below
+
+**Step 2: Discovery Process** (only if user selected Option 2)
+
 1. Ask about their work context (ONE QUESTION AT A TIME)
 2. Identify repetitive tasks
 3. Evaluate automation potential

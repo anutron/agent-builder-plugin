@@ -5,6 +5,14 @@ All notable changes to the agent-builder plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.8] - 2025-11-02
+
+### Changed
+- Phase 1 now asks if user knows what they want to automate
+  - Option 1: Skip discovery, go straight to describing their specific workflow
+  - Option 2: Guided discovery for users who need help identifying opportunities
+  - Faster path for experienced users who know what they want
+
 ## [0.1.7] - 2025-11-02
 
 ### Changed
