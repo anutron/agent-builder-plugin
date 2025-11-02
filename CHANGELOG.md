@@ -5,6 +5,17 @@ All notable changes to the agent-builder plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.11] - 2025-11-02
+
+### Changed
+- Updated README.md to reflect recent changes:
+  - Command is `/agent-builder:create-agent` (namespaced by plugin)
+  - Commands are `/review-workflow` and `/save-workflow` (renamed in v0.1.4)
+  - Phase 1 has two paths (fast/guided, added in v0.1.8)
+  - Phase 0 creates config.json (added in v0.1.7)
+  - Removed reference to non-existent skill file (inlined in v0.1.2)
+  - Updated installation instructions with restart flow
+
 ## [0.1.10] - 2025-11-02
 
 ### Changed
