@@ -216,16 +216,24 @@ See `.claude/knowledge/workflow-patterns.md` in the plugin for details.
 
 ## Installation
 
-### Add Plugin Marketplace
-
-First, add the thanx-ai plugin marketplace to Claude Code:
+### From GitHub
 
 ```bash
-# Add the marketplace
-/plugin marketplace add thanx-ai git@github.com:thanx-ai/agent-builder-plugin.git
+# Add the Thanx AI marketplace
+/plugin marketplace add thanx-ai/agent-builder-plugin
+
+# Install the agent-builder plugin
+/plugin install agent-builder@thanx-ai
+```
+
+### Local Development
+
+```bash
+# Add the plugin directory as a marketplace
+/plugin marketplace add /path/to/agent-builder-skill
 
 # Install the plugin
-/plugin install thanx-ai/agent-builder
+/plugin install agent-builder@agent-builder-skill
 ```
 
 ### Usage
