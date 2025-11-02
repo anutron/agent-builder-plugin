@@ -45,8 +45,10 @@ Checking MCP servers...
 ✅ slack - Connected (8 resources available)
 ❌ jira - Not found
    Install: npm install -g @atlassian/mcp-jira
-   Configure in ~/.claude/settings.json or .claude/settings.local.json
+   Configure MCP in: ~/.claude/settings.json (global) or .claude/settings.local.json (local)
 ```
+
+**Note**: Permissions are already configured in `.claude/config.json` (created during installation).
 
 ### 3. File Structure
 
