@@ -54,7 +54,16 @@ Your workflow and settings are safe:
 2. **Check if project update is needed**:
    - Read `.agent-builder-version` file to get current project version
    - Get plugin version from `~/.claude/plugins/marketplaces/thanx-agent-builder/.claude-plugin/plugin.json`
-   - If versions match: "✅ You're already on the latest version (v{version})"
+   - If versions match:
+     ```
+     ✅ Your project is already up to date!
+
+     Current version: v{version}
+     Plugin version: v{version}
+
+     No update needed.
+     ```
+     - STOP here, exit command
    - If project version is older: Continue with update
 
 3. **Show what's new**:
@@ -91,7 +100,10 @@ Your workflow and settings are safe:
 
 7. **Show summary**:
    ```
-   ✅ Updated to v{new}!
+   ✅ Update complete!
+
+   Updated from: v{old}
+   Current version: v{new}
 
    Updated:
    - {count} commands
