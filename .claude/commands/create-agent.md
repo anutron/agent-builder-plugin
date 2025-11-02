@@ -32,23 +32,18 @@ Guide the user through 6 phases to create a working V1 workflow:
    - If empty directory: perfect
    - If has files: ask user if they want to install here
 
-3. **Copy all tools from `.claude/files-to-install/` to current directory**:
+3. **Run the installation script**:
 
-   **Commands to copy**:
-   - `.claude/files-to-install/commands/review.md` → `.claude/commands/review.md`
-   - `.claude/files-to-install/commands/save.md` → `.claude/commands/save.md`
+   Execute the installation script from the plugin directory:
+   ```bash
+   bash ~/.claude/plugins/marketplaces/thanx-agent-builder/.claude/files-to-install/install.sh
+   ```
 
-   **Skills to copy**:
-   - `.claude/files-to-install/skills/workflow-reviewer/SKILL.md` → `.claude/skills/workflow-reviewer/SKILL.md`
-   - `.claude/files-to-install/skills/save-progress/SKILL.md` → `.claude/skills/save-progress/SKILL.md`
-   - `.claude/files-to-install/skills/security-checker/SKILL.md` → `.claude/skills/security-checker/SKILL.md`
-   - `.claude/files-to-install/skills/software-best-practices/SKILL.md` → `.claude/skills/software-best-practices/SKILL.md`
-
-   **Agents to copy**:
-   - All `.claude/files-to-install/agents/*.md` → `.claude/agents/*.md`
-
-   **Knowledge templates to copy**:
-   - All `.claude/files-to-install/templates/*` → `.claude/knowledge/templates/*`
+   This efficiently copies:
+   - **Commands**: review.md, save.md → `.claude/commands/`
+   - **Skills**: workflow-reviewer, save-progress, security-checker, software-best-practices → `.claude/skills/`
+   - **Agents**: All review agents → `.claude/agents/`
+   - **Templates**: All file templates → `.claude/knowledge/templates/`
 
 4. **Confirm installation**:
    - List what was installed
