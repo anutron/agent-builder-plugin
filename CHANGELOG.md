@@ -5,6 +5,27 @@ All notable changes to the agent-builder plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.15] - 2025-11-02
+
+### Added
+- Interactive review workflow with won't-fix tracking
+  - New option to review each finding one-by-one
+  - Ask "yes/no/skip" for each finding
+  - "no" marks items as won't-fix in `project-plan/REVIEW-IGNORED.md`
+  - Future reviews automatically filter out ignored items
+  - Prevents review fatigue from seeing same findings repeatedly
+- REVIEW-IGNORED.md file format with metadata
+  - Category, location, issue description, ignored date
+  - Users can remove items to reconsider them
+  - Appends to existing file to preserve history
+
+### Changed
+- workflow-reviewer now checks REVIEW-IGNORED.md before showing findings
+- Added Step 0 to check for previously ignored items
+- Step 2 filters out ignored findings from results
+- Step 3 offers 4 options including interactive review
+- Step 4 writes to both IMPROVEMENTS.md and REVIEW-IGNORED.md as needed
+
 ## [0.1.14] - 2025-11-02
 
 ### Fixed

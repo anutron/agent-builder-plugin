@@ -19,6 +19,16 @@ Analyze the workflow comprehensively using parallel agents, show findings to use
 
 ## Process
 
+### Step 0: Check for Previously Ignored Findings
+
+Before launching agents, check if there's a list of ignored findings:
+
+1. **Try to read** `project-plan/REVIEW-IGNORED.md`
+2. **If file exists**: Parse the ignored items and remember them
+   - Each ignored item has: description snippet, location, category
+   - Create a list of identifiers to filter out later
+3. **If file doesn't exist**: No ignored items yet, proceed normally
+
 ### Step 1: Launch Parallel Review Agents
 
 Launch these 5 agents simultaneously using the Task tool:
@@ -47,20 +57,25 @@ Launch these 5 agents simultaneously using the Task tool:
 
 **IMPORTANT**: Launch all 5 agents in a single message using multiple Task tool calls.
 
-### Step 2: Aggregate Findings
+### Step 2: Aggregate and Filter Findings
 
 Once all agents complete:
 
 1. **Collect all findings** from agent reports
-2. **Organize by priority**:
+2. **Filter out ignored items**: Remove any findings that match items in REVIEW-IGNORED.md
+   - Match by location (file:line) OR description similarity
+   - If unsure, keep the finding (better to show than hide)
+3. **Organize by priority**:
    - **Critical**: Security issues, blocking bugs
    - **High**: Significant time savings, setup drift, major improvements
    - **Medium**: Nice-to-haves, polish, minor simplifications
    - **Low**: Future considerations
 
-3. **Deduplicate**: If multiple agents found same issue, merge into one finding
+4. **Deduplicate**: If multiple agents found same issue, merge into one finding
 
-4. **Format for user review**:
+5. **Number the findings**: Assign each finding a unique number for easy reference
+
+6. **Format for user review**:
 ```markdown
 # Workflow Review Findings - [Date]
 
@@ -91,7 +106,7 @@ Once all agents complete:
 - Low: [count]
 ```
 
-### Step 3: Show Findings to User
+### Step 3: Show Findings and Offer Interactive Review
 
 **Present the organized findings to the user** with this message:
 
@@ -102,20 +117,31 @@ I've completed the workflow review using 5 parallel analysis agents. Here are th
 
 ---
 
-Which of these recommendations would you like to track in IMPROVEMENTS.md?
+Would you like to:
+1. Review each finding interactively (I'll ask about each one)
+2. Select specific items by number to add to IMPROVEMENTS.md
+3. Add all critical/high priority items
+4. Skip (no changes)
 
-You can select:
-- All critical and high priority items
-- Specific items by number
-- All items
-- None (just wanted to see the analysis)
-
-Let me know which findings to save.
+What would you prefer?
 ```
 
-### Step 4: Write Selected Findings
+**If user chooses option 1 (interactive review)**:
+- Go through each finding one by one
+- For each finding, ask: "Add to IMPROVEMENTS.md? (yes/no/skip)"
+  - **yes**: Mark for addition to IMPROVEMENTS.md
+  - **no**: Mark for addition to REVIEW-IGNORED.md (won't show in future reviews)
+  - **skip**: Don't add anywhere (will show again in future reviews)
+- Keep track of user decisions for all findings
 
-Based on user's selection:
+**If user chooses option 2, 3, or 4**:
+- Process their selection as before (current behavior)
+
+### Step 4: Write Selected and Ignored Findings
+
+Based on user's decisions:
+
+**For findings marked "yes" (add to IMPROVEMENTS.md)**:
 
 1. **Read existing** `project-plan/IMPROVEMENTS.md`
 2. **Append selected findings** with timestamp
@@ -136,7 +162,44 @@ Based on user's selection:
 [Existing IMPROVEMENTS.md content below]
 ```
 
-**If user selects none**: Just thank them and exit. No file write needed.
+**For findings marked "no" (ignore in future reviews)**:
+
+1. **Read or create** `project-plan/REVIEW-IGNORED.md`
+2. **Append ignored findings** with timestamp
+3. **Format**:
+```markdown
+# Review Findings - Marked as Won't Fix
+
+These items were reviewed and explicitly marked as "won't fix". They won't appear in future reviews.
+To reconsider an item, remove it from this list.
+
+## [Date] - Review Session
+
+### Finding: [Short description]
+- **Category**: [Duplication/Security/Best Practices/etc.]
+- **Location**: [file:line]
+- **Issue**: [Full description]
+- **Ignored on**: [Date]
+
+[Repeat for each ignored finding]
+
+---
+
+[Existing ignored findings below]
+```
+
+**Summary message**:
+```
+✅ Review complete!
+
+Added to IMPROVEMENTS.md: [count] findings
+Marked as won't-fix: [count] findings
+Skipped for later: [count] findings
+
+IMPROVEMENTS.md and REVIEW-IGNORED.md updated.
+```
+
+**If user selects none**: Just thank them and exit. No file writes needed.
 
 ## Important Notes
 
