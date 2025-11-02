@@ -19,20 +19,21 @@ Guide the user through 6 phases to create a working V1 workflow:
 
 **Process**:
 
-1. **Check if tools are already installed AND loaded** (idempotent check):
-   - Check if `.agent-builder-version` file exists
-   - Try to invoke `Skill: workflow-reviewer` (this will fail with error if skill not loaded)
-   - Three states:
-     - **No files + no skills loaded**: Install files, tell user to restart
-     - **Files exist + skills not loaded**: Tell user to restart Claude to load the new tools
-     - **Files exist + skills loaded**: "✅ Agent-builder tools installed and loaded. Proceeding to workflow creation..."
+1. **Check if tools are already installed AND loaded**:
+   - Check if `.agent-builder-version` file exists in current directory
+   - If file does NOT exist: Files are not installed, proceed to step 2
+   - If file DOES exist: Files are installed, proceed to step 4
 
-2. **Verify we're in a good location**:
+2. **If `.agent-builder-version` does NOT exist (first time setup)**:
+
+   Verify we're in a good location:
    - Check if current directory looks like a project root
    - If empty directory: perfect
    - If has files: ask user if they want to install here
 
-3. **If files not installed, run installation**:
+   Then proceed to step 3.
+
+3. **Run installation** (only when `.agent-builder-version` does NOT exist):
 
    Execute the installation script:
    ```bash
@@ -45,35 +46,54 @@ Guide the user through 6 phases to create a working V1 workflow:
    ```
    (Get actual version from `~/.claude/plugins/marketplaces/thanx-agent-builder/.claude-plugin/plugin.json`)
 
-   Then show:
+   **IMMEDIATELY STOP** and show this message (do NOT proceed to Phase 1):
+
    ```
    ✅ Installed agent-builder tools!
 
-   Commands: /review-workflow, /save-workflow
-   Skills: workflow-reviewer, save-progress, security-checker, software-best-practices
-   Agents: 5 parallel review agents
-   Templates: File templates for workflow generation
+   📋 Commands: /review-workflow, /save-workflow
+   🧠 Skills: workflow-reviewer, save-progress, security-checker, software-best-practices
+   🤖 Agents: 5 parallel review agents
+   📝 Templates: File templates for workflow generation
 
-   ⚠️  IMPORTANT: Restart Claude to load these new tools.
+   ⚠️  IMPORTANT: You must restart Claude Code to load these new tools.
 
-   After restarting, run /create-agent again to begin the workflow interview.
+   Steps:
+   1. Quit and restart Claude Code
+   2. Navigate back to this directory
+   3. Run /create-agent again to begin the workflow interview
+
+   The files are installed, but Claude needs to restart to see them.
    ```
 
-   **STOP HERE** - Do not proceed to Phase 1. User must restart first.
+   **DO NOT CONTINUE TO PHASE 1**. End the command here. The user must restart Claude first.
 
-4. **If files exist but skills not loaded, remind user**:
+4. **If `.agent-builder-version` DOES exist (files already installed)**:
 
+   Try to use one of the installed skills to check if they're loaded:
+   ```
+   Skill: workflow-reviewer
+   Task: Just return "loaded"
+   ```
+
+   - If skill works: Skills are loaded, proceed to step 5
+   - If skill fails with error: Skills not loaded yet, show message below and STOP
+
+   **If skill fails**, show this message and **STOP**:
    ```
    ⚠️  Agent-builder tools are installed but not loaded yet.
 
-   Please restart Claude to load the new commands and skills.
+   You need to restart Claude Code to load the new commands and skills.
 
-   After restarting, run /create-agent again to begin the workflow interview.
+   Steps:
+   1. Quit and restart Claude Code
+   2. Navigate back to this directory
+   3. Run /create-agent again to begin the workflow interview
    ```
 
-   **STOP HERE** - Do not proceed to Phase 1. User must restart first.
+   **DO NOT CONTINUE TO PHASE 1**. End the command here.
 
-5. **If everything is loaded, proceed**:
+5. **If skills are loaded (skill invocation succeeded in step 4)**:
 
    ```
    ✅ Agent-builder tools installed and loaded. Let's build your workflow!
