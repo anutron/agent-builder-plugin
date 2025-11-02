@@ -380,25 +380,7 @@ Add to `.gitignore` (use template from `.claude/files-to-install/templates/gitig
 *.log
 ```
 
-**4.2 Permissions Configuration**
-
-Create `.claude/config.json` automatically using the template from `.claude/files-to-install/templates/config.template.json`.
-
-**Process**:
-1. Read the template file
-2. Replace `[PROJECT_PATH]` with the actual absolute path to the project directory (use `pwd` to get it)
-3. Write to `.claude/config.json` in the user's new workflow project
-
-This configuration reduces permission prompts within the project directory by allowing:
-- Read, write, and edit operations on any files in the project (`**` pattern)
-- Common safe bash commands (mkdir, mv, cp, ls, cat, tree, echo, find)
-- Claude still requires permission for potentially dangerous operations (rm, git push --force, etc.)
-
-**Important**: The `.gitignore` template already includes `.claude/config.json` since it's a local configuration file that shouldn't be committed.
-
-**Note**: This file is local to each user's machine. The `/setup` command will verify it exists but won't try to recreate it (since paths are machine-specific).
-
-**4.2.1 Create /setup Command**
+**4.2 Create /setup Command**
 
 Create `.claude/commands/setup.md` in the user's workflow project using:
 - Template: `.claude/files-to-install/templates/setup.template`

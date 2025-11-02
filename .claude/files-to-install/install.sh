@@ -66,6 +66,15 @@ cp -r "$SCRIPT_DIR/agents/"* "$TARGET_DIR/.claude/agents/" 2>/dev/null || true
 echo "📝 Copying templates..."
 cp -r "$SCRIPT_DIR/templates/"* "$TARGET_DIR/.claude/knowledge/templates/" 2>/dev/null || true
 
+# Create config.json from template
+echo "⚙️  Creating config.json..."
+if [ -f "$SCRIPT_DIR/templates/config.template.json" ]; then
+    sed "s|\[PROJECT_PATH\]|$TARGET_DIR|g" "$SCRIPT_DIR/templates/config.template.json" > "$TARGET_DIR/.claude/config.json"
+    echo "   Config created with project-specific permissions"
+else
+    echo "   Warning: config.template.json not found, skipping"
+fi
+
 echo ""
 echo "✅ Installation complete!"
 echo ""
@@ -74,3 +83,4 @@ echo "  - $(ls "$TARGET_DIR/.claude/commands" | wc -l | xargs) commands"
 echo "  - $(find "$TARGET_DIR/.claude/skills" -name "SKILL.md" | wc -l | xargs) skills"
 echo "  - $(ls "$TARGET_DIR/.claude/agents" 2>/dev/null | wc -l | xargs) agents"
 echo "  - $(ls "$TARGET_DIR/.claude/knowledge/templates" 2>/dev/null | wc -l | xargs) templates"
+echo "  - config.json (permissions configured)"

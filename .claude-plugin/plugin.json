@@ -1,7 +1,7 @@
 {
   "name": "agent-builder",
   "description": "Build MCP-powered workflow agents through guided planning, iterative development, and continuous improvement loops",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "author": {
     "name": "Thanx AI"
   },
