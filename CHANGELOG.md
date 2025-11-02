@@ -5,6 +5,20 @@ All notable changes to the agent-builder plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2025-11-02
+
+### Changed
+- **BREAKING**: Renamed commands to avoid conflicts
+  - `/review` → `/review-workflow`
+  - `/save` → `/save-workflow`
+- `/create-agent` now stops after installation and requires Claude restart
+  - Checks if skills are loaded before proceeding with interview
+  - User runs `/create-agent` twice: once to install, once to create workflow
+  - Prevents Phase 1 from running without access to installed skills
+
+### Fixed
+- Commands and skills now available during workflow creation (after restart)
+
 ## [0.1.3] - 2025-11-02
 
 ### Added

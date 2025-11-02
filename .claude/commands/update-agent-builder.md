@@ -5,7 +5,7 @@ Update the agent-builder tools (commands, skills, agents, templates) to the late
 ## What Gets Updated
 
 This command updates **only** the agent-builder tools:
-- Commands: `/review`, `/save`
+- Commands: `/review-workflow`, `/save-workflow`
 - Skills: `workflow-reviewer`, `save-progress`, `security-checker`, `software-best-practices`
 - Agents: All 5 review agents
 - Templates: File templates in `.claude/knowledge/templates/`

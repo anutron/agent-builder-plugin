@@ -1,4 +1,4 @@
-# Save - Commit Progress with Context
+# Save Workflow - Commit Progress with Context
 
 Commit changes to git with detailed context from IMPROVEMENTS.md
 
@@ -24,9 +24,9 @@ Skill: save-progress
 
 ## After Save
 
-Offer to run `/review` for comprehensive recommendations:
+Offer to run `/review-workflow` for comprehensive recommendations:
 
-"Changes committed successfully. Would you like me to run `/review` to analyze the workflow and suggest improvements?"
+"Changes committed successfully. Would you like me to run `/review-workflow` to analyze the workflow and suggest improvements?"
 
 ## User Experience
 

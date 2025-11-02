@@ -34,8 +34,8 @@ if [ "$BACKUP_MODE" = true ]; then
     mkdir -p "$BACKUP_DIR/knowledge/templates"
 
     # Backup existing files
-    cp -r "$TARGET_DIR/.claude/commands/review.md" "$BACKUP_DIR/commands/" 2>/dev/null || true
-    cp -r "$TARGET_DIR/.claude/commands/save.md" "$BACKUP_DIR/commands/" 2>/dev/null || true
+    cp -r "$TARGET_DIR/.claude/commands/review-workflow.md" "$BACKUP_DIR/commands/" 2>/dev/null || true
+    cp -r "$TARGET_DIR/.claude/commands/save-workflow.md" "$BACKUP_DIR/commands/" 2>/dev/null || true
     cp -r "$TARGET_DIR/.claude/skills/"* "$BACKUP_DIR/skills/" 2>/dev/null || true
     cp -r "$TARGET_DIR/.claude/agents/"* "$BACKUP_DIR/agents/" 2>/dev/null || true
     cp -r "$TARGET_DIR/.claude/knowledge/templates/"* "$BACKUP_DIR/knowledge/templates/" 2>/dev/null || true

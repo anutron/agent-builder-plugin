@@ -19,56 +19,67 @@ Guide the user through 6 phases to create a working V1 workflow:
 
 **Process**:
 
-1. **Check if tools are already installed** (idempotent check):
-   - Check if `.claude/commands/review.md` exists
-   - Check if `.claude/commands/save.md` exists
-   - Check if `.claude/skills/workflow-reviewer/SKILL.md` exists
-   - If ALL key files exist: "✅ Agent-builder tools already installed. Proceeding to workflow creation..."
-   - If SOME exist but not all: Ask user if they want to reinstall/update
-   - If NONE exist: Proceed with installation
+1. **Check if tools are already installed AND loaded** (idempotent check):
+   - Check if `.agent-builder-version` file exists
+   - Try to invoke `Skill: workflow-reviewer` (this will fail with error if skill not loaded)
+   - Three states:
+     - **No files + no skills loaded**: Install files, tell user to restart
+     - **Files exist + skills not loaded**: Tell user to restart Claude to load the new tools
+     - **Files exist + skills loaded**: "✅ Agent-builder tools installed and loaded. Proceeding to workflow creation..."
 
 2. **Verify we're in a good location**:
    - Check if current directory looks like a project root
    - If empty directory: perfect
    - If has files: ask user if they want to install here
 
-3. **Run the installation script**:
+3. **If files not installed, run installation**:
 
-   Execute the installation script from the plugin directory:
+   Execute the installation script:
    ```bash
    bash ~/.claude/plugins/marketplaces/thanx-agent-builder/.claude/files-to-install/install.sh
    ```
 
-   This efficiently copies:
-   - **Commands**: review.md, save.md → `.claude/commands/`
-   - **Skills**: workflow-reviewer, save-progress, security-checker, software-best-practices → `.claude/skills/`
-   - **Agents**: All review agents → `.claude/agents/`
-   - **Templates**: All file templates → `.claude/knowledge/templates/`
-
-4. **Write version file**:
-
-   Create `.agent-builder-version` file to track installed version:
+   Write version file:
    ```bash
-   echo "0.1.2" > .agent-builder-version
+   echo "0.1.3" > .agent-builder-version
+   ```
+   (Get actual version from `~/.claude/plugins/marketplaces/thanx-agent-builder/.claude-plugin/plugin.json`)
+
+   Then show:
+   ```
+   ✅ Installed agent-builder tools!
+
+   Commands: /review-workflow, /save-workflow
+   Skills: workflow-reviewer, save-progress, security-checker, software-best-practices
+   Agents: 5 parallel review agents
+   Templates: File templates for workflow generation
+
+   ⚠️  IMPORTANT: Restart Claude to load these new tools.
+
+   After restarting, run /create-agent again to begin the workflow interview.
    ```
 
-   (Replace "0.1.2" with the actual current plugin version from `.claude-plugin/plugin.json`)
+   **STOP HERE** - Do not proceed to Phase 1. User must restart first.
 
-5. **Confirm installation**:
-   - List what was installed
-   - Explain that these tools are now part of their project
-   - They can customize them as needed
+4. **If files exist but skills not loaded, remind user**:
 
-**Output**:
-```
-Installed agent-builder tools:
-✅ /review command (5 parallel analysis agents)
-✅ /save command (smart git commits)
-✅ workflow-reviewer, save-progress, security-checker, software-best-practices skills
-✅ File templates for workflow generation
+   ```
+   ⚠️  Agent-builder tools are installed but not loaded yet.
 
-These tools are now part of your project. Let's build your workflow!
-```
+   Please restart Claude to load the new commands and skills.
+
+   After restarting, run /create-agent again to begin the workflow interview.
+   ```
+
+   **STOP HERE** - Do not proceed to Phase 1. User must restart first.
+
+5. **If everything is loaded, proceed**:
+
+   ```
+   ✅ Agent-builder tools installed and loaded. Let's build your workflow!
+   ```
+
+   Continue to Phase 1.
 
 ### Phase 1: Use Case Discovery
 
@@ -530,8 +541,8 @@ Files created:
 
 Next steps:
 - Run workflow: /[workflow-name]
-- Review findings: /review
-- Save improvements: /save
+- Review findings: /review-workflow
+- Save improvements: /save-workflow
 "
 ```
 
@@ -540,8 +551,8 @@ Next steps:
 Show the user:
 1. **How to run their workflow**: `/[workflow-name]`
 2. **How to iterate**:
-   - `/save` - Commit changes with context
-   - `/review` - Get comprehensive recommendations
+   - `/save-workflow` - Commit changes with context
+   - `/review-workflow` - Get comprehensive recommendations
 3. **Where to find documentation**:
    - `README.md` - Usage guide
    - `CLAUDE.md` - Project instructions
