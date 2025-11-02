@@ -13,12 +13,7 @@
       "Bash(ls:*)",
       "Bash(cat:*)",
       "Bash(echo:*)",
-      "Bash(find:*)",
-      "Read([PROJECT_PATH]/.claude/skills/**)",
-      "Skill([PROJECT_PATH]/.claude/skills/workflow-reviewer)",
-      "Skill([PROJECT_PATH]/.claude/skills/save-progress)",
-      "Skill([PROJECT_PATH]/.claude/skills/security-checker)",
-      "Skill([PROJECT_PATH]/.claude/skills/software-best-practices)"
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

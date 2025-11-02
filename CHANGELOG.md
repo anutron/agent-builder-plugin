@@ -10,8 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Install script now creates `.claude/config.json` immediately during installation
   - Replaces `[PROJECT_PATH]` placeholder with actual project path
-  - Skills work without permission prompts right after restart
-  - Phase 4 no longer needs to create this file
+  - Sets up file operation and bash command permissions
+  - Phase 4 permissions section removed (handled in Phase 0)
+
+### Fixed
+- Removed non-functional skill permissions from config template
+  - Skills don't use the permission system (they use `allowed-tools` in SKILL.md)
+  - Users will still see permission prompt on first skill invocation
+  - This is expected Claude Code behavior
 
 ## [0.1.6] - 2025-11-02
 
