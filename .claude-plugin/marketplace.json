@@ -1,11 +1,11 @@
 {
-  "name": "thanx-ai",
+  "name": "thanx-agent-builder",
   "owner": {
     "name": "Thanx AI",
     "email": "support@thanx.com"
   },
   "metadata": {
-    "description": "Thanx AI Claude Code plugin marketplace",
+    "description": "Agent Builder plugin for Claude Code - build MCP-powered workflow agents",
     "version": "0.1.0"
   },
   "plugins": [

@@ -219,11 +219,11 @@ See `.claude/knowledge/workflow-patterns.md` in the plugin for details.
 ### From GitHub
 
 ```bash
-# Add the Thanx AI marketplace
+# Add the agent-builder marketplace
 /plugin marketplace add thanx-ai/agent-builder-plugin
 
 # Install the agent-builder plugin
-/plugin install agent-builder@thanx-ai
+/plugin install agent-builder@thanx-agent-builder
 ```
 
 ### Local Development
