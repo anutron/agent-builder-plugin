@@ -11,10 +11,13 @@
   "plugins": [
     {
       "name": "agent-builder",
-      "source": ".",
+      "source": "./",
       "description": "Build MCP-powered workflow agents through guided planning, iterative development, and continuous improvement loops",
       "version": "0.1.0",
-      "author": "Thanx AI",
+      "author": {
+        "name": "Thanx AI",
+        "email": "support@thanx.com"
+      },
       "homepage": "https://github.com/thanx-ai/agent-builder-plugin#readme",
       "repository": "https://github.com/thanx-ai/agent-builder-plugin",
       "license": "MIT",
