@@ -45,7 +45,16 @@ Guide the user through 6 phases to create a working V1 workflow:
    - **Agents**: All review agents → `.claude/agents/`
    - **Templates**: All file templates → `.claude/knowledge/templates/`
 
-4. **Confirm installation**:
+4. **Write version file**:
+
+   Create `.agent-builder-version` file to track installed version:
+   ```bash
+   echo "0.1.2" > .agent-builder-version
+   ```
+
+   (Replace "0.1.2" with the actual current plugin version from `.claude-plugin/plugin.json`)
+
+5. **Confirm installation**:
    - List what was installed
    - Explain that these tools are now part of their project
    - They can customize them as needed

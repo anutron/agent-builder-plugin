@@ -10,6 +10,7 @@
 
 # Local settings
 .claude/config.json
+.claude/backups/
 *.log
 
 # Session data (workflow-specific)
