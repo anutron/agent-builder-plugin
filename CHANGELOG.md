@@ -5,6 +5,15 @@ All notable changes to the agent-builder plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.13] - 2025-11-02
+
+### Fixed
+- workflow-reviewer skill now references knowledge files from plugin location
+  - Changed paths from `.claude/knowledge/` to `~/.claude/plugins/marketplaces/thanx-agent-builder/.claude/knowledge/`
+  - Knowledge files stay centralized in plugin (no duplication across projects)
+  - Updates to best practices automatically affect all projects
+  - Files: workflow-patterns.md, security-guidelines.md, component-decision-guide.md
+
 ## [0.1.12] - 2025-11-02
 
 ### Changed

@@ -8,10 +8,10 @@ allowed-tools: Task, Read, Write, Edit, Glob, Grep
 
 You are analyzing a workflow project to find improvement opportunities.
 
-**Reference files:**
-- `.claude/knowledge/workflow-patterns.md` - Best practices from successful projects
-- `.claude/knowledge/security-guidelines.md` - Security patterns to check
-- `.claude/knowledge/component-decision-guide.md` - Architecture guidance
+**Reference files (from plugin):**
+- `~/.claude/plugins/marketplaces/thanx-agent-builder/.claude/knowledge/workflow-patterns.md` - Best practices from successful projects
+- `~/.claude/plugins/marketplaces/thanx-agent-builder/.claude/knowledge/security-guidelines.md` - Security patterns to check
+- `~/.claude/plugins/marketplaces/thanx-agent-builder/.claude/knowledge/component-decision-guide.md` - Architecture guidance
 
 ## Your Task
 
