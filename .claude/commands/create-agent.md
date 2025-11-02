@@ -578,31 +578,44 @@ Example format:
 ```
 ✅ Workflow created successfully!
 
-**Next steps:**
+**What would you like to do next?**
 
-✅ Run your workflow: `/[workflow-name]`
+1. **Review for improvements** - Run `/review-workflow` to get:
+   - Security vulnerability analysis
+   - Code quality recommendations
+   - Best practice suggestions
+   - Potential improvements and optimizations
 
-✅ Iterate and improve:
+2. **Test the workflow** - Run `/[workflow-name]` to:
+   - See how it performs on a real use case
+   - Verify the research quality
+   - Check if the output meets your needs
+   - Identify any issues or gaps
+
+**Additional resources:**
+
+📚 Documentation:
+   - `README.md` - Usage guide and examples
+   - `CLAUDE.md` - Project-specific instructions
+   - `project-plan/` - Design decisions and reasoning
+
+🔄 Iteration commands:
    - `/save-workflow` - Commit changes with context
-   - `/review-workflow` - Get comprehensive recommendations
+   - `/review-workflow` - Get comprehensive analysis anytime
 
-✅ Check documentation:
-   - `README.md` - Usage guide
-   - `CLAUDE.md` - Project instructions
-   - `project-plan/` - Design decisions and backlog
-
-✅ Plan future enhancements:
+📋 Future enhancements:
    - See `project-plan/IMPROVEMENTS.md` for V2+ ideas
 
-Want to try running the workflow now? I can help debug if anything doesn't work as expected.
+Which option would you like to try first?
 ```
 
-The summary should include:
-1. **How to run their workflow**: `/[workflow-name]`
-2. **How to iterate**: `/save-workflow` and `/review-workflow` commands
-3. **Where to find documentation**: README.md, CLAUDE.md, project-plan/
-4. **V2+ roadmap**: What's in `IMPROVEMENTS.md`
-5. **Offer to help**: Invite them to test the workflow
+The summary should:
+1. Present two clear options: review first OR test first
+2. Explain what each option does and why they might choose it
+3. Include documentation locations
+4. Include iteration commands
+5. Reference the improvement backlog
+6. Ask which option they want to try
 
 ## Error Handling
 
