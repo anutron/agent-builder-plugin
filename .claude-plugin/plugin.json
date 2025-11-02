@@ -21,5 +21,7 @@
     "automation",
     "mcp",
     "agent"
-  ]
+  ],
+  "commands": [".claude/commands"],
+  "agents": [".claude/skills"]
 }
