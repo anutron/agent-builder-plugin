@@ -49,7 +49,7 @@ git add .
 Create a detailed commit message using this format:
 
 ```
-[Type]: Brief description
+Brief description
 
 Detailed changes:
 - Change 1 from IMPROVEMENTS.md
@@ -60,22 +60,12 @@ Context:
 - Why this was needed
 - What was tried (if relevant)
 - What worked / what didn't
-
-References: IMPROVEMENTS.md
 ```
-
-**Types**:
-- `feat`: New feature or capability
-- `fix`: Bug fix or correction
-- `refactor`: Code restructuring
-- `docs`: Documentation changes
-- `test`: Test additions or changes
-- `chore`: Maintenance tasks
 
 **Examples**:
 
 ```
-feat: Add parallel research to Notion and Slack
+Add parallel research to Notion and Slack
 
 Detailed changes:
 - Split research into two agents (notion-researcher, slack-researcher)
@@ -86,12 +76,10 @@ Context:
 - Research phase was the main bottleneck
 - Tried sequential optimization first, but parallel was more effective
 - Both sources are independent, so parallelization is safe
-
-References: IMPROVEMENTS.md - "Parallelize research phase"
 ```
 
 ```
-fix: Handle Notion write errors gracefully
+Handle Notion write errors gracefully
 
 Detailed changes:
 - Add retry logic for Notion writes (3 attempts)
@@ -102,8 +90,6 @@ Context:
 - Workflow was failing on Notion writes
 - Tried replace_content pattern first, but insert_content_after is more reliable
 - Added retry logic to handle transient API errors
-
-References: IMPROVEMENTS.md - "Notion write pattern doesn't work"
 ```
 
 ### Step 5: Commit
@@ -123,12 +109,9 @@ Update `project-plan/IMPROVEMENTS.md`:
 - Remove completed items that were committed
 - Keep in-progress items
 - Keep future items
-- Add a note about what was completed
 
 Example update:
 ```markdown
-## Completed - [Date]
-- ✅ [Item that was just completed]
 
 ## In Progress
 - [Current work]
@@ -181,8 +164,7 @@ Updated documentation:
 - Suggest fix
 
 **If IMPROVEMENTS.md is empty**:
-- Don't fail, just commit with a generic message
-- Suggest: "Consider adding notes to IMPROVEMENTS.md before saving next time. It helps create better commit messages!"
+- Don't fail, just commit with a generic message and congratulate the user on having finished implementing all of their ideas (so far!)
 
 **If no changes to commit**:
 - Let the user know: "No changes to commit. Everything is up to date."

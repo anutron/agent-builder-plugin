@@ -182,6 +182,62 @@ Check for:
    - Need decision on approach
    - Hit fundamental blocker
 
+### Goal Drift Prevention
+
+**IMPORTANT**: Before spending significant time on fixes, re-evaluate the approach.
+
+**STOP and ask every 20 minutes or after 3 obstacles**:
+
+1. **What was the original goal?**
+   - Example: "Connect to service to get data" NOT "Make tests pass"
+   - Re-read session/GOAL.md or context.md if it exists
+
+2. **Is this obstacle blocking THE goal or just MY approach?**
+   - Blocking goal: "Service API requires auth we don't have"
+   - Blocking approach: "Test framework won't install"
+
+3. **How long have I spent on implementation details vs the actual goal?**
+   - Red flag: 30+ minutes on test setup when tests aren't the goal
+   - Red flag: Adding multiple dependencies for a one-time task
+   - Red flag: Debugging framework issues unrelated to core problem
+
+4. **What's the simplest way to achieve the original goal?**
+   - Could I call the API manually and copy/paste results?
+   - Could I use an existing tool instead of writing code?
+   - Could I defer this feature to V2 and do something simpler?
+
+**Examples of goal drift**:
+- ❌ Original goal: "Get user data from API"
+  - Drift: Now writing unit tests for HTTP client library
+  - Recovery: "Can I just use `curl` and save the JSON?"
+
+- ❌ Original goal: "Parse CSV file"
+  - Drift: Now building robust ETL pipeline with error handling
+  - Recovery: "Can I just read the file with pandas?"
+
+- ❌ Original goal: "Check if service is available"
+  - Drift: Now implementing retry logic with exponential backoff
+  - Recovery: "Can I just try once and show user the result?"
+
+**Good reasons to continue current approach**:
+- ✅ This is the only viable way to achieve the goal
+- ✅ Already 80% complete and almost working
+- ✅ User explicitly requested this specific implementation
+- ✅ Current obstacle is small and directly related to goal
+
+**When to pivot**:
+- ⚠️ Spent 20+ minutes on tooling/infrastructure
+- ⚠️ Added 3+ dependencies for a simple task
+- ⚠️ Building abstractions before proving core concept works
+- ⚠️ Current approach more complex than the problem
+- ⚠️ User asks "is there an easier way?"
+
+**Pivot strategies**:
+1. **Simplify**: Remove abstraction layers, do the minimum
+2. **Manual fallback**: Let user do it by hand for V1
+3. **Different tool**: Use existing tool instead of writing code
+4. **Defer**: Add to IMPROVEMENTS.md, ship without this feature
+
 **Example iteration**:
 ```
 Run 1: ModuleNotFoundError: No module named 'requests'

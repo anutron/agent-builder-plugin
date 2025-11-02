@@ -1,7 +1,7 @@
 ---
 name: workflow-reviewer
-description: Comprehensive workflow analysis to identify improvements, security issues, conflicts, and simplification opportunities. Writes actionable recommendations to IMPROVEMENTS.md.
-allowed-tools: Read, Write, Edit, Glob, Grep
+description: Comprehensive workflow analysis to identify improvements, security issues, conflicts, and simplification opportunities. Shows recommendations to user for selection.
+allowed-tools: Task, Read, Write, Edit, Glob, Grep
 ---
 
 # Workflow Reviewer Skill
@@ -11,290 +11,195 @@ You are analyzing a workflow project to find improvement opportunities.
 **Reference files:**
 - `.claude/knowledge/workflow-patterns.md` - Best practices from successful projects
 - `.claude/knowledge/security-guidelines.md` - Security patterns to check
+- `.claude/knowledge/component-decision-guide.md` - Architecture guidance
 
 ## Your Task
 
-Analyze the workflow comprehensively and write findings to `project-plan/IMPROVEMENTS.md`.
+Analyze the workflow comprehensively using parallel agents, show findings to user, and write selected recommendations to `project-plan/IMPROVEMENTS.md`.
 
-### Step 1: Understand the Workflow
+## Process
 
-Read key files to understand what this workflow does:
-1. `README.md` - What is this workflow for?
-2. `CLAUDE.md` - What are the project rules?
-3. `.claude/commands/*.md` - What are the user-facing workflows?
-4. `.claude/skills/*/SKILL.md` OR `.claude/agents/*.md` - What components exist?
-5. `.claude/knowledge/*.md` - What reference materials are used?
-6. `project-plan/project-design.md` - What was the original design?
+### Step 1: Launch Parallel Review Agents
 
-### Step 2: Analyze for Improvements
+Launch these 5 agents simultaneously using the Task tool:
 
-Look for these opportunities (LLM decides what to examine in depth):
+**Agent 1: Duplication and Simplification**
+- Subagent: `review-duplication-simplification`
+- Analyzes: Repeated logic, over-engineering, unnecessary complexity
 
-#### 2.1 Duplication Opportunities
-- Same logic in multiple places?
-- Could shared logic become a skill?
-- Repeated patterns that should be in knowledge files?
-- Similar agent prompts that could be templated?
+**Agent 2: Conflicts and Setup Drift**
+- Subagent: `review-conflicts-setup`
+- Analyzes: Documentation conflicts, setup command accuracy
 
-**Example finding**:
+**Agent 3: Security Analysis**
+- Subagent: `review-security`
+- Invokes: `security-checker` skill
+- Analyzes: Credentials, secrets, .gitignore patterns
+
+**Agent 4: Best Practices**
+- Subagent: `review-best-practices`
+- Invokes: `software-best-practices` skill if code exists
+- Analyzes: Code quality, workflow architecture, parallelization opportunities
+
+**Agent 5: Goal Drift Detection**
+- Subagent: `review-goal-drift`
+- Analyzes: Over-engineered solutions, scope creep
+
+**IMPORTANT**: Launch all 5 agents in a single message using multiple Task tool calls.
+
+### Step 2: Aggregate Findings
+
+Once all agents complete:
+
+1. **Collect all findings** from agent reports
+2. **Organize by priority**:
+   - **Critical**: Security issues, blocking bugs
+   - **High**: Significant time savings, setup drift, major improvements
+   - **Medium**: Nice-to-haves, polish, minor simplifications
+   - **Low**: Future considerations
+
+3. **Deduplicate**: If multiple agents found same issue, merge into one finding
+
+4. **Format for user review**:
 ```markdown
-### Duplication: Research patterns repeated across agents
-- Both notion-researcher and slack-researcher have identical retry logic
-- **Recommendation**: Extract retry logic into a reusable skill
-- **Impact**: Easier maintenance, consistency across agents
+# Workflow Review Findings - [Date]
+
+## Critical Priority
+### [Finding 1 Title]
+- **Issue**: [Description]
+- **Location**: [file:line]
+- **Recommendation**: [What to do]
+- **Impact**: [Why it matters]
+- **Source**: [Which agent found this]
+
+[Repeat for each critical finding]
+
+## High Priority
+[Same format]
+
+## Medium Priority
+[Same format]
+
+## Low Priority
+[Same format]
+
+## Summary
+- Total findings: [count]
+- Critical: [count]
+- High: [count]
+- Medium: [count]
+- Low: [count]
 ```
 
-#### 2.2 Better Use of Features
-- Could serial operations be parallel?
-- Should agents be skills or vice versa?
-- Missing opportunities for Task tool parallelization?
-- Knowledge files vs inline instructions?
+### Step 3: Show Findings to User
 
-**Example finding**:
-```markdown
-### Parallelization: Generation could be concurrent
-- Currently generating 3 sections sequentially (90s)
-- Sections are independent and could run in parallel
-- **Recommendation**: Use Task tool to launch 3 section-writer agents concurrently
-- **Impact**: Reduce generation time from 90s to 30s
+**Present the organized findings to the user** with this message:
+
+```
+I've completed the workflow review using 5 parallel analysis agents. Here are the findings:
+
+[Show the formatted findings from Step 2]
+
+---
+
+Which of these recommendations would you like to track in IMPROVEMENTS.md?
+
+You can select:
+- All critical and high priority items
+- Specific items by number
+- All items
+- None (just wanted to see the analysis)
+
+Let me know which findings to save.
 ```
 
-#### 2.3 Conflicts and Contradictions
-- Do files contradict each other?
-- Does CLAUDE.md conflict with command instructions?
-- Are there inconsistent patterns?
-- Outdated documentation?
+### Step 4: Write Selected Findings
 
-**Example finding**:
-```markdown
-### Conflict: CLAUDE.md vs actual workflow
-- CLAUDE.md says "always use replace_content"
-- But workflow uses insert_content_after (which works)
-- **Recommendation**: Update CLAUDE.md to match working pattern
-```
+Based on user's selection:
 
-#### 2.4 Security Issues
-Invoke `security-checker` skill for detailed security analysis.
-
-Check for:
-- API keys or secrets in code
-- Sensitive files not in .gitignore
-- Missing .env.example
-- Hardcoded credentials
-
-**Example finding**:
-```markdown
-### Security: API key in workflow file
-- Found hardcoded API key in .claude/commands/query.md
-- Not in .gitignore patterns
-- **Recommendation**: Move to .env file, add .env to .gitignore
-- **Priority**: HIGH - Fix before next commit
-```
-
-#### 2.5 Best Practice Violations
-Invoke `software-best-practices` skill if code files exist.
-
-Check for:
-- Missing tests
-- No linting setup
-- Missing run script
-- Poor error handling
-- No progress visibility
-
-**Example finding**:
-```markdown
-### Best Practice: Missing tests
-- query-validator skill has no tests
-- Complex logic that could break
-- **Recommendation**: Add unit tests for query validation
-- **Impact**: Catch regressions early
-```
-
-#### 2.6 Simplification Opportunities
-- Overly complex logic?
-- Unnecessary abstractions?
-- Could simpler approach work?
-- Unused features or files?
-
-**Example finding**:
-```markdown
-### Simplification: Session management is over-engineered
-- Current approach uses JSON state files with complex schema
-- Only tracking phase number and status
-- **Recommendation**: Simplify to just phase.txt with current phase
-- **Impact**: Easier to understand and maintain
-```
-
-#### 2.7 Setup Command Drift
-- Does `/setup` document all required MCPs?
-- Are new environment variables documented in `/setup`?
-- Are new local config files explained in `/setup`?
-- Does `/setup` match current workflow requirements?
-
-**When to check**:
-- Workflow uses MCP tools not listed in `/setup` MCP list
-- .env files exist but not documented in `/setup`
-- New local config files created but not in `/setup`
-- Directory structure changed but `/setup` still checks old dirs
-
-**Example finding**:
-```markdown
-### Setup Drift: New Jira MCP not documented
-- Workflow now calls Jira MCP tools (added in v2)
-- `/setup` command doesn't check for Jira availability
-- New users will get runtime errors instead of setup validation
-- **Recommendation**: Add jira to [MCP_LIST] in `.claude/commands/setup.md`
-- **Impact**: Better onboarding experience, catches missing MCPs early
-```
-
-### Step 3: Prioritize Findings
-
-Organize findings by priority:
-1. **Critical**: Security issues, blocking bugs
-2. **High**: Significant time savings, major improvements
-3. **Medium**: Nice-to-haves, polish
-4. **Low**: Future considerations
-
-### Step 4: Write to IMPROVEMENTS.md
-
-Read existing `project-plan/IMPROVEMENTS.md` and add findings:
-
+1. **Read existing** `project-plan/IMPROVEMENTS.md`
+2. **Append selected findings** with timestamp
+3. **Preserve existing** IMPROVEMENTS.md content
+4. **Format**:
 ```markdown
 ## Review Findings - [Date]
 
-### Critical Priority
-- [Finding with recommendation]
-
-### High Priority
-- [Finding with recommendation]
-
-### Medium Priority
-- [Finding with recommendation]
-
-### Low Priority
-- [Finding with recommendation]
+[Selected findings in priority order]
 
 ### Proposed Action Plan
-1. [Step 1 - what to do first]
-2. [Step 2 - what to do next]
-3. [Step 3 - etc]
+1. [First step based on priorities]
+2. [Second step]
+3. [Third step]
 
-Estimated time: [X hours]
-Expected impact: [What will improve]
+---
+
+[Existing IMPROVEMENTS.md content below]
 ```
 
-### Step 5: Present Findings
+**If user selects none**: Just thank them and exit. No file write needed.
 
-Show the user:
-1. Summary of what you found
-2. Prioritized list (focus on high-impact items)
-3. Proposed action plan
-4. Estimated time and impact
+## Important Notes
 
-**Example**:
+### Parallel Execution
+- **Always launch all 5 agents in parallel** (single message, multiple Task calls)
+- Don't wait for one to finish before launching next
+- Total review time should be ~30-40 seconds, not 2-3 minutes
+
+### User Choice
+- **Never auto-write to IMPROVEMENTS.md without user selection**
+- User may want to see analysis without tracking everything
+- Some findings may not be relevant to user's goals
+- User knows their priorities better than we do
+
+### Finding Quality
+- Be specific about locations (file:line format)
+- Provide actionable recommendations
+- Explain impact (why it matters)
+- Don't nitpick - focus on meaningful improvements
+
+### If No Issues Found
+If all agents report no issues, tell the user:
 ```
-📊 Workflow Review Complete
+Great news! The workflow review found no significant issues:
 
-Found 8 improvement opportunities:
-- 2 high priority (70% time savings potential)
-- 4 medium priority (code quality improvements)
-- 2 low priority (future enhancements)
+✅ No duplication or over-engineering
+✅ No conflicts or setup drift
+✅ No security issues
+✅ Follows best practices
+✅ No goal drift detected
 
-Top recommendations:
-1. Parallelize research phase → 40s time savings
-2. Extract retry logic to skill → easier maintenance
-3. Update CLAUDE.md → fix contradictions
-
-Full details in: project-plan/IMPROVEMENTS.md
-
-Would you like me to:
-1. Start implementing these improvements?
-2. Focus on just the high-priority items?
-3. Let you review first?
-```
-
-### Step 6: Offer to Implement
-
-If user agrees:
-1. Create project plan from IMPROVEMENTS.md
-2. Start with highest priority items
-3. Test after each change
-4. Use `/save` to commit when ready
-
-## What to Review (LLM Decision)
-
-You decide what areas to examine based on:
-- Project size and complexity
-- Time since last review
-- What's changed recently (check git log)
-- What user is struggling with
-
-Don't review everything every time. Focus on high-value analysis.
-
-## Good Review Characteristics
-
-✅ **Specific**: "Line 45 has retry logic" not "retries are scattered"
-✅ **Actionable**: Concrete recommendation, not just observation
-✅ **Prioritized**: High-impact first
-✅ **Realistic**: Achievable improvements, not rewrites
-✅ **Explained**: Why this matters, what the benefit is
-
-❌ **Vague**: "Code could be better"
-❌ **Overwhelming**: 50 items to fix
-❌ **Obvious**: "You could add comments"
-❌ **Theoretical**: "Rewrite in Rust for performance"
-
-## Error Handling
-
-**If no workflow files exist**:
-- "No workflow files found. Have you run `/quick-start` yet?"
-
-**If IMPROVEMENTS.md doesn't exist**:
-- Create it with findings
-
-**If nothing significant found**:
-- Still write a brief review noting things look good
-- Suggest possible future enhancements
-- Don't invent problems that don't exist
-
-## Integration with Improvement Loops
-
-This skill feeds both loops:
-
-**User-initiated improvements**:
-- User runs `/review`
-- LLM finds opportunities
-- User chooses what to fix
-- Use `/save` when done
-
-**LLM-initiated improvements**:
-- After `/save`, offer `/review`
-- Surface issues LLM noticed during execution
-- Propose fixes based on recent struggles
-
-## Examples from Real Projects
-
-### From prd_sidekick:
-```markdown
-### High Priority: Parallelize Notion and Slack research
-- Currently runs sequentially (2+ minutes total)
-- Both sources are independent
-- Recommendation: Launch as parallel agents via Task tool
-- Expected: Significant time savings from parallel execution
+The workflow is in good shape. No changes needed in IMPROVEMENTS.md.
 ```
 
-### From data-knowledge:
-```markdown
-### Medium Priority: Extract validation logic to skill
-- Validation code duplicated in 3 commands
-- Should be single query-validator skill
-- Benefits: Consistent validation, easier to improve
+## Example User Interaction
+
 ```
+User: /review
+Assistant: Running comprehensive workflow review with 5 parallel agents...
 
-## Key Principles
+[Agents complete in 35 seconds]
 
-1. **Be helpful, not pedantic**: Focus on real improvements
-2. **Prioritize impact**: Time savings and bug prevention matter most
-3. **Be specific**: Point to exact files and lines
-4. **Explain tradeoffs**: Why this recommendation makes sense
-5. **Respect the user**: Their workflow, their decisions
+Assistant: Review complete\! Here are the findings:
+
+## High Priority
+### Parallelization: Research could be concurrent
+- Duplication agent found sequential research operations
+- Recommendation: Use parallel agents for notion + slack research
+- Impact: Reduce time from 60s to 30s
+
+## Medium Priority
+### Simplification: Session state over-engineered
+- Goal drift agent found complex JSON state management
+- Recommendation: Simplify to phase.txt file
+- Impact: Easier to maintain
+
+---
+
+Which recommendations would you like to track in IMPROVEMENTS.md?
+
+User: Just the high priority one
+
+Assistant: [Writes high priority finding to IMPROVEMENTS.md]
+
+Done\! Added 1 finding to IMPROVEMENTS.md.
+```

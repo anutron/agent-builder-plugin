@@ -1,0 +1,39 @@
+# Primary Goal
+
+[One sentence: What are we actually trying to achieve?]
+
+## Success Criteria
+
+What does success look like for THIS goal?
+
+- [ ] [Concrete outcome 1]
+- [ ] [Concrete outcome 2]
+- [ ] [Concrete outcome 3]
+
+## Current Approach
+
+**Chosen**: [Describe the approach you're taking]
+
+**Why this approach**: [Reason for choosing this path]
+
+**Alternatives considered**:
+- [Alternative 1]: [Why not chosen]
+- [Alternative 2]: [Why not chosen]
+- Manual fallback: [Defer to V2 if current approach too complex]
+
+## Re-evaluation Triggers
+
+**STOP and reconsider if**:
+- ⏱️ More than 30 minutes on implementation details
+- 🚧 More than 3 obstacles encountered
+- 🔧 Tests/tooling taking longer than core logic
+- ❓ User asks clarifying question about direction
+- 🤔 Current approach feels more complex than the problem
+
+## Progress Notes
+
+**[Timestamp]**: [What's working, what's not, any pivots]
+
+---
+
+**Remember**: The goal is to [restate primary goal], not to make perfect code.

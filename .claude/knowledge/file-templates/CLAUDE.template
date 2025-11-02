@@ -64,6 +64,97 @@ Assistant: Let me gather some information:
 
 This conversational approach builds better understanding and keeps users engaged.
 
+## Staying Focused on Goals (Avoiding Goal Drift)
+
+**When working on tasks, maintain goal visibility:**
+
+### Create GOAL.md for Complex Tasks
+
+For any task requiring code or complex implementation, create `session/GOAL.md`:
+```markdown
+# Primary Goal
+[One sentence: what we're actually trying to achieve]
+
+## Success Criteria
+- [ ] [Concrete outcome]
+
+## Current Approach
+**Chosen**: [What we're trying]
+**Why**: [Reason]
+
+## Re-evaluation Triggers
+- More than 30 minutes on implementation
+- More than 3 obstacles encountered
+- Tooling taking longer than core logic
+```
+
+### Recognize Goal Drift
+
+**Red flags** (you've drifted from the goal):
+- ❌ Writing tests for code that doesn't solve the problem yet
+- ❌ Debugging framework when you could call API manually
+- ❌ Building abstractions before proving core concept works
+- ❌ Spending more time on tooling than on the actual task
+- ❌ Adding dependencies that double the complexity
+
+**Examples**:
+- Goal: "Get data from API" → Drift: "Make HTTP client tests pass"
+- Goal: "Parse CSV file" → Drift: "Build robust ETL pipeline"
+- Goal: "Check service availability" → Drift: "Implement exponential backoff"
+
+### Recovery Questions
+
+**When stuck or after 3 obstacles, STOP and ask**:
+
+1. **What was I originally trying to do?**
+   - Re-read GOAL.md or context.md
+   - State the goal in one sentence
+
+2. **Is this obstacle blocking THE goal or just MY approach?**
+   - Blocking goal: "We don't have API credentials"
+   - Blocking approach: "Python library won't install"
+
+3. **What's the simplest possible way to achieve the goal?**
+   - Could I do it manually and copy/paste?
+   - Could I use an existing tool?
+   - Could I defer this to V2?
+
+4. **Would I choose this approach if starting fresh?**
+   - If no: pivot to simpler approach
+   - If yes: continue but set time limit
+
+### Time Limits and Pivot Points
+
+**Set limits**:
+- If implementation takes >30 minutes, pause and re-evaluate
+- After 3 blockers, ask "is there an easier way?"
+- Check alignment every 20 minutes
+
+**Prefer simple**:
+- MVP > perfect solution
+- Working roughly > broken elegantly
+- Manual V1 > automated never-ships
+
+### Good Reasons to Continue vs Pivot
+
+**Continue if**:
+- ✅ This is the only viable way
+- ✅ Already 80% complete
+- ✅ User explicitly requested this approach
+- ✅ Obstacle is small and directly goal-related
+
+**Pivot if**:
+- ⚠️ Spent 20+ minutes on tooling/setup
+- ⚠️ Added 3+ dependencies for simple task
+- ⚠️ Current approach more complex than problem
+- ⚠️ User asks "is there an easier way?"
+
+**Pivot strategies**:
+1. Simplify: Remove layers, do minimum
+2. Manual fallback: Let user do by hand for V1
+3. Different tool: Use existing instead of building
+4. Defer: Add to IMPROVEMENTS.md, ship without feature
+
 ## Workflow-Specific Instructions
 
 ### File Organization
