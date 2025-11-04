@@ -24,7 +24,15 @@ Your workflow and settings are safe:
 
 ## Instructions
 
-1. **Check plugin version first** (only if GitHub MCP available):
+1. **Check if agent-builder is installed**:
+   - Try to read `.agent-builder-version` file
+   - If file doesn't exist:
+     - Show error message (see Error Handling section)
+     - STOP command immediately
+     - Do NOT proceed to any other steps
+   - If file exists: Continue to step 2
+
+2. **Check plugin version first** (only if GitHub MCP available):
    - Try to check if GitHub MCP is available by attempting to use it
    - If available:
      - Get latest release from GitHub: `mcp__plugin_github_github__get_file_contents` with:
@@ -49,9 +57,9 @@ Your workflow and settings are safe:
        ```
        - STOP here, do not continue with project updates
    - If GitHub MCP not available:
-     - Skip plugin version check (proceed to step 2)
+     - Skip plugin version check (proceed to step 3)
 
-2. **Check if project update is needed**:
+3. **Check if project update is needed**:
    - Read `.agent-builder-version` file to get current project version
    - Get plugin version from `~/.claude/plugins/marketplaces/thanx-agent-builder/.claude-plugin/plugin.json`
    - If versions match:
@@ -66,7 +74,7 @@ Your workflow and settings are safe:
      - STOP here, exit command
    - If project version is older: Continue with update
 
-3. **Show what's new**:
+4. **Show what's new**:
    - Read `~/.claude/plugins/marketplaces/thanx-agent-builder/CHANGELOG.md`
    - Extract changelog entries between current version and new version
    - Present to user:
@@ -82,23 +90,23 @@ Your workflow and settings are safe:
      A backup will be created at .claude/backups/agent-builder-{old}-{timestamp}/
      ```
 
-4. **Confirm with user**:
+5. **Confirm with user**:
    - Ask: "Would you like to update to v{new}?"
    - If no: Exit gracefully
    - If yes: Proceed
 
-5. **Run update**:
+6. **Run update**:
    ```bash
    bash ~/.claude/plugins/marketplaces/thanx-agent-builder/.claude/files-to-install/install.sh --backup
    ```
 
-6. **Update version file**:
+7. **Update version file**:
    - Write new version to `.agent-builder-version`
    ```bash
    echo "{new_version}" > .agent-builder-version
    ```
 
-7. **Show summary**:
+8. **Show summary**:
    ```
    ✅ Update complete!
 
@@ -120,10 +128,24 @@ Your workflow and settings are safe:
 ## Error Handling
 
 **If `.agent-builder-version` doesn't exist**:
-- This project wasn't created with `/create-agent` or is pre-version-tracking
-- Ask user: "No version file found. This command only works for projects created with /create-agent. Create one now?"
-- If yes: Detect installed files, write current plugin version to `.agent-builder-version`
-- If no: Exit with instructions to manually track versions
+- STOP immediately and show:
+  ```
+  ❌ Agent-builder is not installed in this project
+
+  This command updates an existing agent-builder installation.
+  You need to install it first.
+
+  To install agent-builder in this project:
+  1. Run: /create-agent
+  2. Follow the setup wizard
+  3. Then you can use /update-agent-builder to get updates
+
+  If you already have agent-builder files but no version file,
+  the installation was incomplete. Run /create-agent to set up properly.
+  ```
+- Do NOT proceed with any update
+- Do NOT offer to create version file
+- Exit command
 
 **If backup fails**:
 - Warn user but continue: "⚠️ Backup failed, but continuing with update..."
