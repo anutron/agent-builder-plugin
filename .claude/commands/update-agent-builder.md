@@ -36,11 +36,11 @@ Your workflow and settings are safe:
    - Try to check if GitHub MCP is available by attempting to use it
    - If available:
      - Get latest release from GitHub: `mcp__plugin_github_github__get_file_contents` with:
-       - owner: "thanx-ai"
+       - owner: "anutron"
        - repo: "agent-builder-plugin"
        - path: ".claude-plugin/plugin.json"
      - Extract version from the JSON response
-     - Get installed plugin version from `~/.claude/plugins/marketplaces/thanx-agent-builder/.claude-plugin/plugin.json`
+     - Get installed plugin version from `~/.claude/plugins/marketplaces/anutron-agent-builder/.claude-plugin/plugin.json`
      - If installed plugin is outdated:
        ```
        ⚠️  Your plugin is outdated!
@@ -49,7 +49,7 @@ Your workflow and settings are safe:
        Latest: v{new}
 
        Please update the plugin first:
-       1. Run: /plugin update agent-builder@thanx-agent-builder
+       1. Run: /plugin update agent-builder@anutron-agent-builder
        2. Restart Claude Code
        3. Run /agent-builder:update-agent-builder again
 
@@ -61,7 +61,7 @@ Your workflow and settings are safe:
 
 3. **Check if project update is needed**:
    - Read `.agent-builder-version` file to get current project version
-   - Get plugin version from `~/.claude/plugins/marketplaces/thanx-agent-builder/.claude-plugin/plugin.json`
+   - Get plugin version from `~/.claude/plugins/marketplaces/anutron-agent-builder/.claude-plugin/plugin.json`
    - If versions match:
      ```
      ✅ Your project is already up to date!
@@ -75,7 +75,7 @@ Your workflow and settings are safe:
    - If project version is older: Continue with update
 
 4. **Show what's new**:
-   - Read `~/.claude/plugins/marketplaces/thanx-agent-builder/CHANGELOG.md`
+   - Read `~/.claude/plugins/marketplaces/anutron-agent-builder/CHANGELOG.md`
    - Extract changelog entries between current version and new version
    - Present to user:
      ```
@@ -97,7 +97,7 @@ Your workflow and settings are safe:
 
 6. **Run update**:
    ```bash
-   bash ~/.claude/plugins/marketplaces/thanx-agent-builder/.claude/files-to-install/install.sh --backup
+   bash ~/.claude/plugins/marketplaces/anutron-agent-builder/.claude/files-to-install/install.sh --backup
    ```
 
 7. **Update version file**:

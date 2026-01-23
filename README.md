@@ -241,10 +241,10 @@ See `.claude/knowledge/workflow-patterns.md` in the plugin for details.
 
 ```bash
 # Add the agent-builder marketplace
-/plugin marketplace add thanx-ai/agent-builder-plugin
+/plugin marketplace add anutron/agent-builder-plugin
 
 # Install the agent-builder plugin
-/plugin install agent-builder@thanx-agent-builder
+/plugin install agent-builder@anutron-agent-builder
 ```
 
 ### Local Development
