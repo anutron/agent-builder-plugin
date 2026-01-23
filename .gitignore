@@ -15,6 +15,9 @@
 # Test/session data
 project-plan/
 
+# Internal documentation - keep local only
+docs/internal/
+
 # Dependencies
 node_modules/
 __pycache__/

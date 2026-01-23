@@ -10,6 +10,25 @@ This plugin helps you create Claude Code workflow agents that:
 - ✅ Self-improve through testing and iteration
 - ✅ Include security and best practices by default
 
+## Installation
+
+### Via Claude Code Marketplace
+
+This plugin is available via Claude Code marketplace under the namespace: `anutron-agent-builder`
+
+1. Open Claude Code settings
+2. Navigate to Plugins → Marketplace
+3. Search for "agent-builder"
+4. Click Install
+
+### Manual Installation
+
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/anutron/agent-builder-plugin.git
+   ```
+2. Follow the manual plugin installation instructions in the [Claude Code documentation](https://github.com/anthropics/claude-code)
+
 ## Quick Start
 
 ```bash

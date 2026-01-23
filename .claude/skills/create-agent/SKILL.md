@@ -140,15 +140,19 @@ These tools are now part of your project. Let's build your workflow!
    - Internal APIs, databases, CRMs (Salesforce, HubSpot)
    - Any other systems they mentioned
 
-2. **Check for organizational plugins/MCPs**:
+2. **Check for available plugins/MCPs**:
    "Before we build this workflow, let's make sure you have access to the data sources you need.
 
-   You mentioned [list of data sources]. Does your organization provide any shared plugins or MCP servers to connect to these systems? Check with your team or in your organization's internal docs."
+   You mentioned [list of data sources]. Do you have any shared plugins or MCP servers configured for these systems?
+
+   If not, you can find official MCPs at:
+   - Claude Code Plugin Marketplace (in your Claude Code settings)
+   - Model Context Protocol Registry: https://github.com/modelcontextprotocol/servers"
 
 3. **For each data source, recommend setup**:
 
-   **If org provides shared MCP/plugin**:
-   - "Great! Install your org's [system] MCP: [installation instructions they provide]"
+   **If MCP/plugin is available**:
+   - "Great! Install the [system] MCP: [installation instructions from marketplace]"
    - Test connection before proceeding
 
    **If no org plugin, check public MCPs**:
