@@ -1,7 +1,7 @@
 {
   "name": "agent-builder",
   "description": "Build MCP-powered workflow agents through guided planning, iterative development, and continuous improvement loops",
-  "version": "0.1.17",
+  "version": "1.0.0",
   "author": {
     "name": "anutron"
   },
