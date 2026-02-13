@@ -1,7 +1,7 @@
 ---
 name: create-agent
 description: Install agent-builder tools and guide users through creating MCP-powered workflow agents. Conducts use case interview, designs architecture, generates initial files, and creates project plan documentation.
-allowed-tools: Read, Write, Edit, Glob, Bash, AskUserQuestion, TodoWrite
+allowed-tools: Read, Write, Edit, Glob, Bash, AskUserQuestion, TodoWrite, EnterPlanMode, ExitPlanMode
 ---
 
 # Create Agent Skill
@@ -255,6 +255,18 @@ These tools are now part of your project. Let's build your workflow!
 - Allows user to get credentials/approvals while we design
 - Sets realistic V1 expectations based on what's actually available
 
+---
+
+**IMPORTANT: Enter Plan Mode**
+
+Before designing the implementation plan, enter plan mode to enable collaborative review:
+
+1. Call `EnterPlanMode` tool
+2. Explain to user: "I'm entering plan mode to design your workflow architecture. You'll be able to review and request changes to the plan before we start implementation."
+3. Continue to Phase 3 (now in plan mode)
+
+---
+
 ### Phase 3: Improvement Plan Design
 
 **Goal**: Design a workflow using Claude Code features
@@ -311,13 +323,78 @@ Use **Knowledge files** for reference materials:
 - V3: Add validation (prevent common errors)
 - Document future enhancements
 
-**Show user the plan** and get buy-in before proceeding.
+**Format and write the plan**:
 
-**Output**: Write to `project-plan/project-design.md`
+1. **Structure the plan** following markdown formatting guidelines from CLAUDE.md:
+   - Use proper headings (## for sections)
+   - Use bullet lists for related items
+   - Use blank lines between sections
+   - Include code blocks for code examples
+
+2. **Plan structure**:
+   ```markdown
+   # [Workflow Name] Implementation Plan
+
+   ## Context
+   [Why this workflow is needed, what problem it solves]
+
+   ## Use Case Summary
+   - **Current process**: [Description]
+   - **Time currently**: [Duration]
+   - **Pain points**: [Key issues]
+   - **Desired outcome**: [What success looks like]
+
+   ## Data Sources
+   [List from data-source-setup.md with MCP availability]
+
+   ## Architecture Design
+
+   ### Commands
+   [List user-facing commands with descriptions]
+
+   ### Agents/Skills
+   [List parallel workers or reusable components]
+
+   ### Knowledge Files
+   [List reference materials needed]
+
+   ## V1 Scope
+   [What will be built in initial version]
+
+   ## Implementation Steps
+   [High-level phases for execution]
+
+   ## V2+ Roadmap
+   [Future enhancements from IMPROVEMENTS.md]
+
+   ## Verification
+   [How to test the workflow end-to-end]
+   ```
+
+3. **Write to plan file**: Use Write tool to create the plan at the path provided in system instructions
+
+4. **Exit plan mode**: Call `ExitPlanMode` tool to request user approval
+
+**Output**: Plan file written and submitted for user review
 
 ### Phase 4: Implementation
 
 **Goal**: Build the V1 workflow
+
+**Note**: This phase begins after plan approval. The plan has been reviewed and approved by the user.
+
+**First step - Copy plan to project**:
+
+1. Read the approved plan from the plan file location (check system instructions for path)
+2. Write to `project-plan/project-design.md` in the user's project directory
+3. Inform user: "I've saved the approved plan to `project-plan/project-design.md` for your reference."
+
+This ensures the design document is:
+- Easy for new users to find in the project directory
+- Available for Claude to reference in future sessions
+- Part of the project's documentation alongside interview notes and data source setup
+
+**Then proceed with implementation as normal**:
 
 **Process**:
 1. Set up file structure
