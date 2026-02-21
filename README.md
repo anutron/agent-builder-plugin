@@ -268,7 +268,7 @@ cd your-project-directory
 
 The command will:
 1. Install agent-builder tools (first run only)
-2. Prompt you to restart Claude Code
+2. Prompt you to start a new session (restart in terminal, new tab in VS Code/Claude Desktop)
 3. Guide you through workflow creation (second run)
 
 Choose between:

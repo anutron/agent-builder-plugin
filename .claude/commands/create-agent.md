@@ -56,14 +56,17 @@ Guide the user through 6 phases to create a working V1 workflow:
    🤖 Agents: 5 parallel review agents
    📝 Templates: File templates for workflow generation
 
-   ⚠️  IMPORTANT: You must restart Claude Code to load these new tools.
+   ⚠️  IMPORTANT: You must start a new session to load these new tools.
 
    Steps:
-   1. Quit and restart Claude Code
-   2. Navigate back to this directory
+   1. Start a new session:
+      - **Terminal**: Quit and restart Claude Code
+      - **VS Code**: Open a new Claude Code tab
+      - **Claude Desktop**: Start a new conversation
+   2. Navigate back to this directory (if using terminal)
    3. Run /create-agent again to begin the workflow interview
 
-   The files are installed, but Claude needs to restart to see them.
+   The files are installed, but Claude needs a fresh session to see them.
    ```
 
    **DO NOT CONTINUE TO PHASE 1**. End the command here. The user must restart Claude first.
@@ -83,11 +86,14 @@ Guide the user through 6 phases to create a working V1 workflow:
    ```
    ⚠️  Agent-builder tools are installed but not loaded yet.
 
-   You need to restart Claude Code to load the new commands and skills.
+   You need to start a new session to load the new commands and skills.
 
    Steps:
-   1. Quit and restart Claude Code
-   2. Navigate back to this directory
+   1. Start a new session:
+      - **Terminal**: Quit and restart Claude Code
+      - **VS Code**: Open a new Claude Code tab
+      - **Claude Desktop**: Start a new conversation
+   2. Navigate back to this directory (if using terminal)
    3. Run /create-agent again to begin the workflow interview
    ```
 
