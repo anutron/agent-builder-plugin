@@ -10,7 +10,7 @@ Review the project holistically, checking for:
 2. **Code quality** - Tests exist and pass, clear error messages, code actually runs
 3. **Architecture** - Duplication, unnecessary complexity, goal drift from original purpose
 4. **Documentation** - README accuracy, CLAUDE.md completeness, setup instructions work
-5. **Conflicts** - Contradictory instructions across files, stale references
+5. **Conflicts & duplication** - Contradictory instructions across files, stale references, duplicated logic that could be consolidated
 
 ## Process
 
