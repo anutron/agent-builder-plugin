@@ -1,33 +1,18 @@
-# Save Workflow - Commit Progress with Context
+# Save Workflow
 
-Commit changes to git with detailed context from IMPROVEMENTS.md
-
-## Overview
-
-This command:
-1. Checks git status
-2. Reads IMPROVEMENTS.md for context
-3. Stages all changes
-4. Generates detailed commit message
-5. Commits with full history
-6. Cleans completed items from IMPROVEMENTS.md
-7. Updates documentation if needed
-8. Shows summary to user
+Commit the current state of the workflow project to git.
 
 ## Instructions
 
-Invoke the `save-progress` skill:
+1. Run `git status` and `git diff` to understand what changed
+2. Read `project-plan/IMPROVEMENTS.md` if it exists, for context on what was being worked on
+3. Stage the relevant files (prefer specific files over `git add .`)
+4. Write a commit message that explains **why** the changes were made, not just what changed
+5. After committing, update `project-plan/IMPROVEMENTS.md` to mark completed items
 
-```
-Skill: save-progress
-```
+## Tips for good commits
 
-## After Save
-
-Offer to run `/review-workflow` for comprehensive recommendations:
-
-"Changes committed successfully. Would you like me to run `/review-workflow` to analyze the workflow and suggest improvements?"
-
-## User Experience
-
-This is a manual trigger when the user wants to save their work. The skill can also be invoked autonomously by Claude when appropriate.
+- Each commit should represent one logical unit of work
+- The commit message helps future-you (or future-Claude) understand what happened
+- Include context from IMPROVEMENTS.md when relevant
+- If no changes exist, say so — don't create empty commits

@@ -33,17 +33,13 @@ Guide the user through 6 phases to create a working V1 workflow:
 2. **Copy all tools from `.claude/files-to-install/` to current directory**:
 
    **Commands to copy**:
-   - `.claude/files-to-install/commands/review.md` → `.claude/commands/review.md`
-   - `.claude/files-to-install/commands/save.md` → `.claude/commands/save.md`
+   - `.claude/files-to-install/commands/review-workflow.md` → `.claude/commands/review-workflow.md`
+   - `.claude/files-to-install/commands/save-workflow.md` → `.claude/commands/save-workflow.md`
 
    **Skills to copy**:
-   - `.claude/files-to-install/skills/workflow-reviewer/SKILL.md` → `.claude/skills/workflow-reviewer/SKILL.md`
-   - `.claude/files-to-install/skills/save-progress/SKILL.md` → `.claude/skills/save-progress/SKILL.md`
    - `.claude/files-to-install/skills/security-checker/SKILL.md` → `.claude/skills/security-checker/SKILL.md`
    - `.claude/files-to-install/skills/software-best-practices/SKILL.md` → `.claude/skills/software-best-practices/SKILL.md`
-
-   **Agents to copy**:
-   - All `.claude/files-to-install/agents/*.md` → `.claude/agents/*.md`
+   - `.claude/files-to-install/skills/improve/SKILL.md` → `.claude/skills/improve/SKILL.md`
 
    **Knowledge templates to copy**:
    - All `.claude/files-to-install/templates/*` → `.claude/knowledge/templates/*`
@@ -56,10 +52,10 @@ Guide the user through 6 phases to create a working V1 workflow:
 **Output**:
 ```
 Installed agent-builder tools:
-✅ /review command (5 parallel analysis agents)
-✅ /save command (smart git commits)
-✅ workflow-reviewer, save-progress, security-checker, software-best-practices skills
-✅ File templates for workflow generation
+- /review-workflow command (holistic workflow analysis)
+- /save-workflow command (commit with context)
+- security-checker, software-best-practices, improve skills
+- File templates for workflow generation
 
 These tools are now part of your project. Let's build your workflow!
 ```
@@ -411,7 +407,7 @@ This ensures the design document is:
 Create directories:
 ```bash
 mkdir -p .claude/commands
-mkdir -p .claude/agents  # AND/OR .claude/skills (based on design)
+mkdir -p .claude/skills  # Reusable components
 mkdir -p .claude/knowledge
 mkdir -p [work-sessions]  # e.g., prd-sessions, query-sessions
 ```
@@ -477,13 +473,10 @@ Include:
 
 **4.4 Research Implementation**
 
-**If using agents** (prd_sidekick pattern):
-- Create `.claude/agents/[agent-name].md` for each research source
-- Each agent reads context, searches one source, writes findings
-
-**If using skills** (data-knowledge pattern):
-- Create `.claude/skills/[skill-name]/SKILL.md` for each reusable component
+Create `.claude/skills/[skill-name]/SKILL.md` for each reusable component:
 - Include YAML metadata: name, description, allowed-tools
+- One skill per data source or reusable operation
+- Use the Agent tool to run research skills in parallel when appropriate
 
 **4.5 Knowledge Files**
 
@@ -597,7 +590,7 @@ Use case: [brief description]
 Files created:
 - project-plan/ (interview notes, design, improvements)
 - .claude/commands/[workflow-name].md
-- .claude/[agents|skills]/ (research components)
+- .claude/skills/ (reusable components)
 - .claude/knowledge/ (reference materials)
 - README.md (usage documentation)
 - CLAUDE.md (project instructions)
@@ -605,8 +598,9 @@ Files created:
 
 Next steps:
 - Run workflow: /[workflow-name]
-- Review findings: /review
-- Save improvements: /save
+- Review: /review-workflow
+- Save: /save-workflow
+- Improve: /improve
 "
 ```
 
@@ -615,8 +609,9 @@ Next steps:
 Show the user:
 1. **How to run their workflow**: `/[workflow-name]`
 2. **How to iterate**:
-   - `/save` - Commit changes with context
-   - `/review` - Get comprehensive recommendations
+   - `/save-workflow` - Commit changes with context
+   - `/review-workflow` - Analyze for improvements
+   - `/improve` - End-of-session retrospective to upgrade skills and capture learnings
 3. **Where to find documentation**:
    - `README.md` - Usage guide
    - `CLAUDE.md` - Project instructions

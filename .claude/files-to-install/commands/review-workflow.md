@@ -1,33 +1,25 @@
-# Review Workflow - Comprehensive Workflow Analysis
+# Review Workflow
 
-Analyze the workflow for improvement opportunities, security issues, and best practice violations.
-
-## Overview
-
-This command:
-1. Analyzes workflow files comprehensively
-2. Identifies improvement opportunities
-3. Checks for security issues
-4. Validates best practices
-5. Writes findings to IMPROVEMENTS.md
-6. Proposes concrete action plan
-7. Offers to implement improvements
+Analyze this workflow project for improvement opportunities.
 
 ## Instructions
 
-Invoke the `workflow-reviewer` skill:
+Review the project holistically, checking for:
 
-```
-Skill: workflow-reviewer
-```
+1. **Security** - Hardcoded secrets, missing .gitignore patterns, sensitive files tracked in git
+2. **Code quality** - Tests exist and pass, clear error messages, code actually runs
+3. **Architecture** - Duplication, unnecessary complexity, goal drift from original purpose
+4. **Documentation** - README accuracy, CLAUDE.md completeness, setup instructions work
+5. **Conflicts** - Contradictory instructions across files, stale references
 
-## After Review
+## Process
 
-Present findings to the user and offer:
-1. Show what was found
-2. Propose prioritized action plan
-3. Offer to implement improvements: "Would you like me to start implementing these improvements?"
+1. Read `project-plan/interview-notes.md` and `project-plan/project-design.md` to understand the original intent
+2. Scan the codebase for issues across all five categories above
+3. Present findings grouped by category, prioritized by impact
+4. For each finding, include a concrete fix recommendation
+5. Ask the user which findings to track in `project-plan/IMPROVEMENTS.md`
 
-## User Experience
+## Tone
 
-This is comprehensive analysis. Be thorough but actionable. Focus on high-impact improvements first.
+Be thorough but actionable. Lead with high-impact items. Skip nitpicks unless there's nothing else to report.
