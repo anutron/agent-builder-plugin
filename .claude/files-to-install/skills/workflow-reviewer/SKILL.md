@@ -9,9 +9,17 @@ allowed-tools: Task, Read, Write, Edit, Glob, Grep
 You are analyzing a workflow project to find improvement opportunities.
 
 **Reference files (from plugin):**
-- `~/.claude/plugins/marketplaces/thanx-agent-builder/.claude/knowledge/workflow-patterns.md` - Best practices from successful projects
-- `~/.claude/plugins/marketplaces/thanx-agent-builder/.claude/knowledge/security-guidelines.md` - Security patterns to check
-- `~/.claude/plugins/marketplaces/thanx-agent-builder/.claude/knowledge/component-decision-guide.md` - Architecture guidance
+
+The agent-builder plugin lives under `~/.claude/plugins/marketplaces/`, but the marketplace directory name depends on how the user added the marketplace. Resolve the plugin's knowledge directory dynamically rather than assuming a fixed name:
+
+```bash
+KNOWLEDGE_DIR=$(ls -d ~/.claude/plugins/marketplaces/*agent-builder*/.claude/knowledge 2>/dev/null | head -1)
+```
+
+Then read these files from `$KNOWLEDGE_DIR`:
+- `workflow-patterns.md` - Best practices from successful projects
+- `security-guidelines.md` - Security patterns to check
+- `component-decision-guide.md` - Architecture guidance
 
 ## Your Task
 

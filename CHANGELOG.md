@@ -5,6 +5,21 @@ All notable changes to the agent-builder plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- Phase 0 of `/create-agent` no longer hardcodes the marketplace directory name
+  - Install script is now invoked via `${CLAUDE_PLUGIN_ROOT}`, so it resolves regardless of how the user named the marketplace (previously hardcoded `thanx-agent-builder`, which failed with exit 127)
+  - `workflow-reviewer` skill resolves the plugin knowledge directory with a glob (`*agent-builder*`) instead of the stale hardcoded path
+- `.agent-builder-version` is now written by `install.sh` reading the version from `plugin.json` (single source of truth) instead of a hardcoded literal that drifted out of date
+
+### Changed
+- Phase 0 of `/create-agent` continues directly into the interview in the same session
+  - Commands and skills hot-reload, so the forced two-pass restart is gone
+  - After install, it probes that the tools are live (invokes `workflow-reviewer`) and continues to Phase 1 on success
+  - The "please restart your session" message is now a fallback shown only if the probe fails, not the default path
+  - Collapsed the redundant "installed but not loaded" branch into the single probe step
+
 ## [0.1.17] - 2025-11-02
 
 ### Fixed

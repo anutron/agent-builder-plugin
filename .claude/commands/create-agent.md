@@ -15,97 +15,71 @@ Guide the user through 6 phases to create a working V1 workflow:
 
 ### Phase 0: Install Agent-Builder Tools
 
-**Goal**: Copy all agent-builder tools into the user's current directory
+**Goal**: Copy all agent-builder tools into the user's current directory, then continue straight into the interview in this same session.
+
+Commands and skills hot-reload in current versions of Claude Code, so freshly installed tools are normally available immediately — no restart required. The flow below installs (if needed), probes that the tools are live, and continues directly to Phase 1. A restart is only ever needed in the rare case the probe fails.
 
 **Process**:
 
-1. **Check if tools are already installed AND loaded**:
-   - Check if `.agent-builder-version` file exists in current directory
-   - If file does NOT exist: Files are not installed, proceed to step 2
-   - If file DOES exist: Files are installed, proceed to step 4
+1. **Check if tools are already installed**:
+   - If `.agent-builder-version` exists in the current directory → tools are already installed; skip to step 4 (probe).
+   - If it does NOT exist → proceed to step 2.
 
-2. **If `.agent-builder-version` does NOT exist (first time setup)**:
-
-   Verify we're in a good location:
-   - Check if current directory looks like a project root
-   - If empty directory: perfect
-   - If has files: ask user if they want to install here
-
-   Then proceed to step 3.
+2. **Verify location** (only when not yet installed):
+   - If the current directory is empty: perfect, proceed to step 3.
+   - If it already has files: confirm with the user that they want to install agent-builder tools here, then proceed to step 3.
 
 3. **Run installation** (only when `.agent-builder-version` does NOT exist):
 
-   Execute the installation script:
+   Execute the installation script via the plugin's own root path (`${CLAUDE_PLUGIN_ROOT}` resolves to wherever the plugin is installed, regardless of the marketplace name):
    ```bash
-   bash ~/.claude/plugins/marketplaces/thanx-agent-builder/.claude/files-to-install/install.sh
+   bash "${CLAUDE_PLUGIN_ROOT}/.claude/files-to-install/install.sh"
    ```
 
-   Write version file:
-   ```bash
-   echo "0.1.3" > .agent-builder-version
-   ```
-   (Get actual version from `~/.claude/plugins/marketplaces/thanx-agent-builder/.claude-plugin/plugin.json`)
+   The install script copies the commands, skills, agents, and templates, creates `.claude/config.json`, and writes the current plugin version to `.agent-builder-version` (read from the plugin's own `plugin.json` — there is no hardcoded version to keep in sync).
 
-   **IMMEDIATELY STOP** and show this message (do NOT proceed to Phase 1):
+   Then proceed to step 4 (probe) in this same session — do NOT stop or ask the user to restart.
 
-   ```
-   ✅ Installed agent-builder tools!
+4. **Probe that the new tools are live** (hot-reload check):
 
-   📋 Commands: /review-workflow, /save-workflow
-   🧠 Skills: workflow-reviewer, save-progress, security-checker, software-best-practices
-   🤖 Agents: 5 parallel review agents
-   📝 Templates: File templates for workflow generation
-
-   ⚠️  IMPORTANT: You must start a new session to load these new tools.
-
-   Steps:
-   1. Start a new session:
-      - **Terminal**: Quit and restart Claude Code
-      - **VS Code**: Open a new Claude Code tab
-      - **Claude Desktop**: Start a new conversation
-   2. Navigate back to this directory (if using terminal)
-   3. Run /create-agent again to begin the workflow interview
-
-   The files are installed, but Claude needs a fresh session to see them.
-   ```
-
-   **DO NOT CONTINUE TO PHASE 1**. End the command here. The user must restart Claude first.
-
-4. **If `.agent-builder-version` DOES exist (files already installed)**:
-
-   Try to use one of the installed skills to check if they're loaded:
+   Confirm the installed tools registered by invoking the installed skill:
    ```
    Skill: workflow-reviewer
    Task: Just return "loaded"
    ```
 
-   - If skill works: Skills are loaded, proceed to step 5
-   - If skill fails with error: Skills not loaded yet, show message below and STOP
+   - If the skill responds (tools are live) → go to step 5 (success, continue to Phase 1).
+   - If the skill invocation fails (tools not yet registered — rare) → go to step 6 (restart fallback) and STOP.
 
-   **If skill fails**, show this message and **STOP**:
+5. **Success path (probe succeeded)** — show this and continue directly to Phase 1:
+
    ```
-   ⚠️  Agent-builder tools are installed but not loaded yet.
+   ✅ Agent-builder tools installed and loaded. Let's build your workflow!
 
-   You need to start a new session to load the new commands and skills.
+   📋 Commands: /review-workflow, /save-workflow
+   🧠 Skills: workflow-reviewer, save-progress, security-checker, software-best-practices
+   🤖 Agents: 5 parallel review agents
+   📝 Templates: File templates for workflow generation
+   ```
 
-   Steps:
+   Continue to Phase 1 in this same session.
+
+6. **Restart fallback (probe failed — rare)** — show this and **STOP**:
+
+   ```
+   ⚠️  Agent-builder tools are installed but didn't register in this session.
+
+   This is unusual — tools normally load automatically. Start a fresh session to pick them up:
+
    1. Start a new session:
       - **Terminal**: Quit and restart Claude Code
       - **VS Code**: Open a new Claude Code tab
       - **Claude Desktop**: Start a new conversation
    2. Navigate back to this directory (if using terminal)
-   3. Run /create-agent again to begin the workflow interview
+   3. Run /create-agent again — it will detect the installed tools and continue to the interview
    ```
 
    **DO NOT CONTINUE TO PHASE 1**. End the command here.
-
-5. **If skills are loaded (skill invocation succeeded in step 4)**:
-
-   ```
-   ✅ Agent-builder tools installed and loaded. Let's build your workflow!
-   ```
-
-   Continue to Phase 1.
 
 ### Phase 1: Use Case Discovery
 

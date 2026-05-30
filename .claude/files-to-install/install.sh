@@ -75,6 +75,17 @@ else
     echo "   Warning: config.template.json not found, skipping"
 fi
 
+# Record the installed version (read from plugin.json — single source of truth)
+echo "🏷️  Recording version..."
+PLUGIN_JSON="$SCRIPT_DIR/../../.claude-plugin/plugin.json"
+if [ -f "$PLUGIN_JSON" ]; then
+    VERSION=$(grep '"version"' "$PLUGIN_JSON" | head -1 | sed -E 's/.*"version"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/')
+    echo "$VERSION" > "$TARGET_DIR/.agent-builder-version"
+    echo "   Recorded version $VERSION in .agent-builder-version"
+else
+    echo "   Warning: plugin.json not found, skipping version file"
+fi
+
 echo ""
 echo "✅ Installation complete!"
 echo ""

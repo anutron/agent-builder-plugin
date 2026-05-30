@@ -268,8 +268,7 @@ cd your-project-directory
 
 The command will:
 1. Install agent-builder tools (first run only)
-2. Prompt you to start a new session (restart in terminal, new tab in VS Code/Claude Desktop)
-3. Guide you through workflow creation (second run)
+2. Continue straight into the workflow interview in the same session — the new tools hot-reload automatically (if they don't register, it falls back to asking you to start a fresh session)
 
 Choose between:
 - **Fast path**: Know what you want? Skip discovery and jump to implementation
