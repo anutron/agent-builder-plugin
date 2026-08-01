@@ -15,9 +15,29 @@ You are guiding a user through building a workflow agent using Claude Code.
 - `.claude/knowledge/setup-command-guide.md` - How to implement /setup commands in user workflows
 - `.claude/knowledge/templates/` - File templates used during Phase 4
 
+## Saving progress as you go
+
+Once git is set up in Phase 0, **take a snapshot at the end of each phase** rather
+than saving everything once at the end. Where a phase says **📌 Checkpoint**, run:
+
+```bash
+git add -A
+git commit -m "[short description of what this phase produced]"
+```
+
+Then tell the user in one line what you saved — "Saved your interview notes" — and
+move on. Don't ask permission each time; don't make a production of it.
+
+If git was unavailable in Phase 0, skip every checkpoint silently.
+
+Why this matters: it's the habit that makes AI-assisted work safe to experiment
+with. If a later step goes wrong, there's a known-good point to return to. Say
+this out loud the first time you checkpoint, then stop narrating it.
+
 ## Your Task
 
-Guide the user through 6 phases to create a working V1 workflow:
+Guide the user through these phases to create a working V1 workflow (0 through 6,
+including a 2.5 for data sources):
 
 ### Phase 0: Confirm Environment
 
@@ -78,6 +98,65 @@ Since you're running this skill, the toolkit downloaded into this folder correct
    Let's build your workflow!
    ```
 
+5. **Set up version control now** (first run only)
+
+   Do this at the START, not the end. Two reasons: the very first `git` command on
+   a fresh Mac can trigger a system popup, and it's far better for that to happen
+   now — while the user is settled in and you can explain it — than after an hour
+   of unsaved work. And once git is working, you can save progress as you go.
+
+   ```
+   🧭 Guide's note: Before we build anything, I'm setting up git — a tool that saves
+   a snapshot of your work every time we finish a step. If we ever break something,
+   we can go back. You don't need to learn any git commands; I'll handle it and tell
+   you what I'm saving.
+   ```
+
+   **a. Is git installed?**
+   ```bash
+   git --version
+   ```
+   - **If a version prints**: continue to b.
+   - **If macOS shows a "command line developer tools" popup**: tell the user
+     plainly: "macOS is asking to install its developer tools — that's normal and
+     expected, it's what provides git. Click Install, and tell me when it finishes."
+     Wait for them, then re-run `git --version`.
+   - **If git is genuinely unavailable** and the user doesn't want to install it:
+     don't block. Say: "No problem — we'll build your workflow without automatic
+     saving. Your files are still written to this folder normally." Then set a
+     mental flag: **skip every commit step for the rest of this flow** and don't
+     mention git again.
+
+   **b. Does git know who the user is?**
+
+   Git refuses to save a snapshot until it knows a name and email. Check both:
+   ```bash
+   git config user.name; git config user.email
+   ```
+   - **If both print values**: continue to c.
+   - **If either is empty**: ask the user for a name and an email address, in plain
+     terms — "Git labels each save with a name and email. What should I use?" Note
+     that these are only labels on their own local snapshots. Then set them for
+     this project only, after `git init` in step c:
+     ```bash
+     git config --local user.name "[their name]"
+     git config --local user.email "[their email]"
+     ```
+
+   **c. Start tracking this folder**
+   ```bash
+   git rev-parse --git-dir 2>/dev/null || git init
+   ```
+   Then apply their identity from step b if it was missing, and take the first
+   snapshot:
+   ```bash
+   git add -A
+   git commit -m "Starting point: agent-builder toolkit"
+   ```
+
+   Tell the user: "Saved a starting snapshot. From here I'll save after each big
+   step, so nothing gets lost."
+
 Continue to Phase 1.
 
 ### Phase 1: Use Case Discovery
@@ -135,6 +214,9 @@ Do you already know what workflow you want to automate?
 
 **Output**: Document to `project-plan/interview-notes.md`
 
+**📌 Checkpoint**: `"Capture use case: [workflow name]"` — this is the first
+checkpoint, so briefly explain what saving means (see "Saving progress as you go").
+
 ### Phase 2: Process Interview
 
 **Goal**: Deeply understand current process and pain points
@@ -175,6 +257,8 @@ Ask the user directly:
 🧭 Guide's note: This is a habit worth building on your own projects — ask your AI what it thinks before you tell it what to do. You get ideas you wouldn't have thought of, and you can always ignore them.
 
 **Output**: Append the chosen direction to `project-plan/interview-notes.md`
+
+**📌 Checkpoint**: `"Document current process and chosen direction"`
 
 ### Phase 2.5: Data Source Setup
 
@@ -298,6 +382,8 @@ Ask the user directly:
 - Append status to `project-plan/interview-notes.md`
 - Update V1 scope in design if needed
 
+**📌 Checkpoint**: `"Record data source setup plan"`
+
 **Why this matters**:
 - Prevents building a workflow that can't access its data
 - Discovers missing integrations early
@@ -390,7 +476,7 @@ Use **Knowledge files** for reference materials:
 
 **Format and write the plan**:
 
-1. **Structure the plan** following markdown formatting guidelines from CLAUDE.md:
+1. **Structure the plan** using these markdown conventions:
    - Use proper headings (## for sections)
    - Use bullet lists for related items
    - Use blank lines between sections
@@ -438,11 +524,17 @@ Use **Knowledge files** for reference materials:
    [How to test the workflow end-to-end]
    ```
 
-3. **Write to plan file**: Use Write tool to create the plan at the path provided in system instructions
+3. **Submit the plan for approval**: Call `ExitPlanMode`, passing the full plan
+   content as the plan text.
 
-4. **Exit plan mode**: Call `ExitPlanMode` tool to request user approval
+   **Do NOT try to write the plan to a file here.** Plan mode intentionally blocks
+   file writes — that's the whole point of it, and attempting a Write will fail.
+   Hold the plan content and persist it in Phase 4, after it's approved.
 
-**Output**: Plan file written and submitted for user review
+4. **If the user requests changes**: revise and call `ExitPlanMode` again. Stay in
+   plan mode until they approve.
+
+**Output**: Plan submitted for user review. Nothing written to disk yet.
 
 ### Phase 4: Implementation
 
@@ -450,16 +542,22 @@ Use **Knowledge files** for reference materials:
 
 **Note**: This phase begins after plan approval. The plan has been reviewed and approved by the user.
 
-**First step - Copy plan to project**:
+**First step - Persist the approved plan**:
 
-1. Read the approved plan from the plan file location (check system instructions for path)
-2. Write to `project-plan/project-design.md` in the user's project directory
-3. Inform user: "I've saved the approved plan to `project-plan/project-design.md` for your reference."
+Plan mode has now exited, so writes work again.
+
+1. Write the plan you just got approved — the same content you passed to
+   `ExitPlanMode` — to `project-plan/project-design.md`.
+2. Inform user: "I've saved the approved plan to `project-plan/project-design.md` for your reference."
+
+**📌 Checkpoint**: `"Save approved design for [workflow name]"`
 
 This ensures the design document is:
 - Easy for new users to find in the project directory
 - Available for Claude to reference in future sessions
 - Part of the project's documentation alongside interview notes and data source setup
+- The marker Phase 0 uses to detect that a workflow was already built here, so
+  don't skip it
 
 **Then proceed with implementation as normal**:
 
@@ -483,31 +581,51 @@ mkdir -p .claude/knowledge
 mkdir -p [work-sessions]  # e.g., prd-sessions, query-sessions
 ```
 
-Add to `.gitignore` (use template from `.claude/knowledge/templates/gitignore.template`):
+Merge the `.gitignore` template (`.claude/knowledge/templates/gitignore.template`)
+into the existing root `.gitignore` — don't overwrite it, it already has the
+security patterns. Add the workflow's session directory:
 ```
 [work-sessions]/
-.claude/config.json
-.env
-*.log
 ```
+
+Do **not** add `project-plan/` to `.gitignore`. Those notes are the record of why
+this workflow exists and should be committed.
+
+If the workflow uses a `.env` file, also create a committed `.env.example`
+alongside it listing every required variable with placeholder values:
+```
+# Copy to .env and fill in real values. Never commit .env itself.
+NOTION_API_KEY=your-key-here
+```
+`/review-workflow` checks for this, and it's how the next person knows what the
+workflow needs.
 
 **4.2 Permissions Configuration**
 
-Create `.claude/config.json` automatically using the template from `.claude/knowledge/templates/config.template.json`.
+Create `.claude/settings.json` by copying `.claude/knowledge/templates/settings.template.json`.
 
-**Process**:
-1. Read the template file
-2. Replace `[PROJECT_PATH]` with the actual absolute path to the project directory (use `pwd` to get it)
-3. Write to `.claude/config.json` in the user's new workflow project
+```bash
+cp .claude/knowledge/templates/settings.template.json .claude/settings.json
+```
 
-This configuration reduces permission prompts within the project directory by allowing:
-- Read, write, and edit operations on any files in the project (`**` pattern)
+There is nothing to fill in — the template uses project-relative patterns
+(`Read(**)`), not absolute paths, so it works on any machine and gets committed
+with the project.
+
+This reduces permission prompts within the project by pre-approving:
+- Read, write, and edit operations on files in the project (`**` pattern)
 - Common safe bash commands (mkdir, mv, cp, ls, cat, tree, echo, find)
-- Claude still requires permission for potentially dangerous operations (rm, git push --force, etc.)
+- Ordinary git commands (status, diff, log, add, commit)
 
-**Important**: The `.gitignore` template already includes `.claude/config.json` since it's a local configuration file that shouldn't be committed.
+Genuinely risky operations (rm, force-push) still prompt every time.
 
-**Note**: This file is local to each user's machine. The `/setup` command will verify it exists but won't try to recreate it (since paths are machine-specific).
+🧭 Guide's note: Claude Code reads project permissions from `.claude/settings.json`.
+If you ever find yourself approving the same action over and over in a project,
+that file is where to fix it — and `.claude/settings.local.json` is the gitignored
+version for machine-specific overrides you don't want to share.
+
+**Note**: `/setup` verifies this file exists and can re-copy it from the template
+if it's ever missing.
 
 **4.2.1 Create /setup Command**
 
@@ -602,18 +720,35 @@ Test the workflow:
 
 **4.8 Documentation**
 
-Create `README.md` using template from `.claude/knowledge/templates/README.template`:
+Write `README.md` using template from `.claude/knowledge/templates/README.template`:
 - Features
 - Prerequisites (MCPs needed)
-- Installation steps
 - Usage instructions
 - Architecture overview
+
+**Heads up — this replaces a file the user has been reading.** Right now the root
+`README.md` is agent-builder's own guide (it came out of the zip). From here on
+this folder is *their* workflow project, so its README should describe their
+workflow. Before writing, tell them plainly:
+
+```
+I'm about to replace README.md — right now it's the agent-builder guide that came
+with the download, and from here it should describe YOUR workflow instead.
+
+The toolkit's own reference docs stay in .claude/knowledge/, and the original
+guide is always available at github.com/anutron/agent-builder-plugin.
+```
+
+The previous version is also recoverable from the Phase 0 snapshot, which is one
+more reason that checkpoint happens first.
 
 Create `CLAUDE.md` using template from `.claude/knowledge/templates/CLAUDE.template`:
 - Project-specific instructions for Claude
 - File organization rules
 - Common patterns
 - Error handling
+
+**📌 Checkpoint**: `"Build V1 of [workflow name]"`
 
 **Output**: Working V1 implementation
 
@@ -657,38 +792,44 @@ Keep it to one offer, framed as optional: "No pressure — just flagging it's po
 
 **Output**: Write to `project-plan/IMPROVEMENTS.md`
 
-### Phase 6: Git Initialization
+### Phase 6: Final Save
 
-**Initialize git and make first commit**:
+Git was set up back in Phase 0 and you've been checkpointing along the way, so
+this is just the closing snapshot — not a first-time setup.
 
-1. Check if git is initialized: `git status`
-2. If not: `git init`
-3. Stage all files: `git add .`
-4. Create initial commit:
+If git was unavailable in Phase 0, skip this phase entirely.
+
+1. Stage everything: `git add -A`
+2. Final commit:
 
 ```bash
-git commit -m "Initial workflow setup via agent-builder
+git commit -m "Complete V1 of [workflow-name]
 
-Created by: agent-builder create-agent skill
-Workflow: [workflow-name]
 Use case: [brief description]
 
-Files created:
-- project-plan/ (interview notes, design, improvements)
+Built:
 - .claude/commands/[workflow-name].md
 - .claude/[agents|skills]/ (research components)
 - .claude/knowledge/ (reference materials)
-- README.md (usage documentation)
-- CLAUDE.md (project instructions)
-- .gitignore (security patterns)
+- .claude/settings.json (project permissions)
+- README.md, CLAUDE.md
+- project-plan/ (interview notes, design, improvements)
 
-Next steps:
-- Run workflow: /[workflow-name]
-- After using it, capture lessons: /improve-workflow
-- Review findings: /review-workflow
-- Save improvements: /save-workflow
+Next: run /[workflow-name], then /improve-workflow to capture what to fix.
 "
 ```
+
+3. Show the user their history, so the habit is concrete rather than abstract:
+   ```bash
+   git log --oneline
+   ```
+   Then say: "That's every step we took, saved. If anything ever breaks, we can
+   look at what changed or go back to any of these points."
+
+4. **Mention pushing, but don't do it.** If they want an off-machine backup:
+   "Right now these snapshots only exist on this computer. If you want a backup
+   you can reach from anywhere, GitHub is the usual next step — say the word and I
+   can walk you through it." Don't create accounts or push anything on their behalf.
 
 ## Final Summary
 

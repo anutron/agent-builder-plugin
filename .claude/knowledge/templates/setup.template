@@ -48,7 +48,7 @@ Checking MCP servers...
    Configure MCP in: ~/.claude/settings.json (global) or .claude/settings.local.json (local)
 ```
 
-**Note**: Permissions are already configured in `.claude/config.json` (created during installation).
+**Note**: Project permissions live in `.claude/settings.json`, which is committed to git. Section 6 below verifies it.
 
 ### 3. File Structure
 
@@ -70,44 +70,31 @@ Scan for security issues:
 
 [ENV_VARS_SECTION]
 
-### 6. Local Permissions Configuration
+### 6. Permissions Configuration
 
-**Required**: Create `.claude/config.json` with project-specific permissions.
+Project permissions live in `.claude/settings.json`. It uses project-relative
+patterns (`Read(**)`, not `/Users/you/...`), so it works on any machine and is
+committed to git along with the rest of the project.
 
-**Check if exists**:
+**Check it exists**:
 ```bash
-ls -la .claude/config.json
+ls -la .claude/settings.json
 ```
 
-**If missing, create it**:
+**If it's missing**, recreate it from the toolkit template:
 ```bash
-cat > .claude/config.json << 'EOF'
-{
-  "permissions": {
-    "allow": [
-      "Read(/full/path/to/project/**)",
-      "Write(/full/path/to/project/**)",
-      "Edit(/full/path/to/project/**)",
-      "Glob(/full/path/to/project/**)",
-      "Grep(/full/path/to/project/**)",
-      "Bash(tree:*)",
-      "Bash(mkdir:*)",
-      "Bash(mv:*)",
-      "Bash(cp:*)",
-      "Bash(ls:*)",
-      "Bash(cat:*)",
-      "Bash(echo:*)",
-      "Bash(find:*)"
-    ]
-  }
-}
-EOF
+cp .claude/knowledge/templates/settings.template.json .claude/settings.json
 ```
 
-**IMPORTANT**: Replace `/full/path/to/project` with your actual project directory path.
-Example: `/Users/yourname/projects/my-workflow`
+No editing required - there are no machine-specific paths to fill in.
 
-This file is `.gitignore`d and should NEVER be committed.
+**What it does**: pre-approves reading and writing files inside this project plus
+a handful of safe shell commands, so you aren't prompted on every single step.
+Anything genuinely risky (deleting files, force-pushing) still asks first.
+
+**If you ever need a machine-specific override** (a local-only MCP path, an
+experiment you don't want committed), put it in `.claude/settings.local.json`.
+That file IS gitignored. Most workflows never need one.
 
 [ADDITIONAL_LOCAL_SETTINGS]
 

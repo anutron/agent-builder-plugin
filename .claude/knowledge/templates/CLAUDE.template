@@ -185,26 +185,33 @@ For any task requiring code or complex implementation, create `session/GOAL.md`:
 ## MCPs Used
 [List of MCP servers this workflow depends on]
 - [MCP name]: [Purpose]
-- Required permissions in `.claude/settings.local.json`
+- MCP servers are configured in `~/.claude/settings.json` (all projects) or
+  `.claude/settings.local.json` (this project only)
 
 ## Error Handling
 [Common errors and how to handle them]
 
-## Local Settings Pattern
+## Settings Pattern
 
-**CRITICAL**: Local configuration files should NEVER be committed to git.
+Two different files, two different rules:
 
-**Pattern for adding local settings**:
-1. Create the local config file (e.g., `.env`, `.claude/config.json`)
-2. Add it to `.gitignore`
-3. **Update `/setup` command** with instructions to recreate it
-4. Document any required values (paths, keys) that user must provide
+**`.claude/settings.json` - committed.** Project permissions, written with
+project-relative patterns (`Read(**)`) so they work on anyone's machine. This is
+part of the project and belongs in git.
 
-**Examples of local settings**:
-- `.claude/config.json` - Local permissions (contains explicit paths)
+**Anything holding secrets or machine-specific paths - never committed.**
+
+**Pattern for adding a local-only setting**:
+1. Create the file (e.g., `.env`, `.claude/settings.local.json`)
+2. Confirm it's in `.gitignore`
+3. **Update the `/setup` command** with instructions to recreate it
+4. Commit an example with fake values (e.g., `.env.example`) so others know what's needed
+
+**Examples of local-only settings**:
 - `.env` - API keys, credentials, secrets
-- `credentials.json` - Service account keys
-- Any file with absolute paths specific to a user's machine
+- `.claude/settings.local.json` - machine-specific overrides, local MCP paths
+- `credentials.json` - service account keys
+- Any file containing an absolute path specific to one machine
 
 **The `/setup` command captures ALL local configuration** so new contributors can recreate the environment.
 

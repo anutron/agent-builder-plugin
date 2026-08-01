@@ -22,36 +22,27 @@
 
 ### Setup
 
-1. **Clone/create this project**:
-   ```bash
-   git clone [repo-url]
-   cd [project-name]
-   ```
+If you built this workflow on this machine, it's already set up — skip to Usage.
+These steps are for getting it running somewhere else, or after a fresh start.
 
-2. **Install required MCPs**:
-   ```bash
-   # Example for Notion
-   npm install -g @modelcontextprotocol/server-notion
+1. **Open this folder in Claude Code.**
 
-   # See .claude/settings.local.json for full list
-   ```
+2. **Install any required MCPs** (only if the Prerequisites above list some).
+   Each MCP has its own install instructions; ask Claude to help if unsure.
 
-3. **Configure environment**:
+3. **Configure secrets** (only if this workflow uses a `.env` file):
    ```bash
    cp .env.example .env
-   # Edit .env and fill in your API keys
    ```
+   Then edit `.env` and fill in your real values. Never commit `.env`.
 
-4. **Configure Claude Code**:
-   - Copy `.claude/settings.local.json.example` to `.claude/settings.local.json`
-   - Update MCP configurations with your tokens
-   - Or add to your global `~/.claude/settings.json`
-
-5. **Verify setup**:
-   ```bash
-   # In Claude Code:
+4. **Verify everything**, by typing this in Claude Code:
+   ```
    /setup
    ```
+   It checks git, MCPs, file structure and permissions, and tells you what's
+   missing. Project permissions live in `.claude/settings.json`, which is already
+   committed — nothing to configure by hand.
 
 ## Usage
 

@@ -8,10 +8,14 @@
 **/secrets.json
 **/secrets.yaml
 
-# Local settings
-.claude/config.json
+# Local settings (machine-specific absolute paths - never commit)
+.claude/settings.local.json
 .claude/backups/
 *.log
+
+# NOTE: project-plan/ is deliberately NOT listed here.
+# Your interview notes, design doc and improvement backlog are the record of
+# why this workflow works the way it does. Keep them in git.
 
 # Session data (workflow-specific)
 # [WORKFLOW_SESSIONS_DIR]/

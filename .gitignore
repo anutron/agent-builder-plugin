@@ -10,10 +10,10 @@
 
 # Local settings with explicit paths - don't commit
 .claude/settings.local.json
-.claude/config.json
 
-# Test/session data
-project-plan/
+# NOTE: project-plan/ is deliberately NOT ignored.
+# It holds your interview notes, design doc and improvement backlog - the
+# record of why your workflow is built the way it is. That belongs in git.
 
 # Internal documentation - keep local only
 docs/internal/
