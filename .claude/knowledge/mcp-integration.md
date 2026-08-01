@@ -4,14 +4,24 @@
 
 Model Context Protocol (MCP) servers provide Claude Code with access to external systems and data sources. They act as bridges between Claude and your tools.
 
-## Common MCP Servers
+## Finding MCP servers
 
-### Official MCPs
-- **@modelcontextprotocol/server-notion** - Notion workspace integration
-- **@modelcontextprotocol/server-slack** - Slack workspace access
-- **@modelcontextprotocol/server-github** - GitHub repositories
-- **@modelcontextprotocol/server-google-drive** - Google Drive files
-- **@modelcontextprotocol/server-gmail** - Gmail access
+**Don't hardcode package names anywhere.** This ecosystem churns fast: the old
+`@modelcontextprotocol/server-*` reference packages were archived, and several
+official replacements (Notion's included) have since been superseded again by
+hosted servers needing no install at all. Any list written here is wrong within
+months. The repository history has burned this lesson twice already.
+
+Find what's actually available instead:
+
+- **`/mcp` in Claude Code** – manage connectors and see what's already connected
+- **`ListMcpResourcesTool`** – programmatically list connected servers, which is
+  what `/setup` uses to verify a workflow's requirements
+- **Most major tools** (Notion, Slack, GitHub, Google, Atlassian) now offer a
+  hosted connector – no npm install, just an authorization step
+
+When the user needs a system connected, help them find the current official
+connector at that moment rather than quoting a name from this file.
 
 ### When to Use MCPs vs APIs
 
@@ -22,10 +32,18 @@ Model Context Protocol (MCP) servers provide Claude Code with access to external
 - Want automatic retries and error handling
 
 **When no MCP exists**:
-Offer the user two options:
 
-**Option A: Create local MCP server** (cleaner but more work upfront)
-**Option B: Manual data handling for V1** (faster to start, automate later)
+**During `/create-agent`, the answer is always Option B – manual for V1.** Don't
+present this as a choice while someone is still trying to reach a first working
+version. Building a custom MCP server is a project of its own, it needs an
+authentication decision a first-time user isn't equipped to make, and offering it
+mid-flow reliably prevents anyone from finishing anything.
+
+Option A below is here for when a user has a working workflow and explicitly asks
+for it, as a separate piece of work.
+
+**Option A: Create local MCP server** (cleaner, but its own project)
+**Option B: Manual data handling for V1** (the default – faster to start, automate later)
 
 ### Option A: Local MCP Server
 
@@ -131,10 +149,10 @@ First gather context, then take action:
 2. **Planning Phase**: Decide what to do based on findings
 3. **Action Phase**: Write/update via MCPs
 
-**Example**: Update PRD in Notion
-- Research: Read existing PRD, related docs, Slack discussions
-- Plan: Identify what sections need updates
-- Action: Write updates to Notion
+**Example**: Update this week's close-out report
+- Research: read the sales export, the schedule, and last week's report
+- Plan: identify which sections actually changed
+- Action: write the updated report to wherever the GM reads it
 
 ### Pattern 3: Validation Before Write (with Parallel Writes)
 Generate and validate content locally before writing to external systems in parallel:
@@ -164,23 +182,23 @@ Generate and validate content locally before writing to external systems in para
    - Archive draft files (external system is now source of truth)
    - Report any failures explicitly
 
-**From prd-sidekick pattern**:
+**Worked example** – the weekly close-out report:
 ```markdown
 Phase 3: Serial generation (local files)
-- Generate draft-background.md
-- Generate draft-problem.md
-- Generate draft-solution.md
-(Each section reads previous sections to avoid duplication)
+- Generate draft-sales-summary.md
+- Generate draft-labour.md
+- Generate draft-callouts.md
+(Each section reads the previous ones so it doesn't repeat them)
 
-Phase 4: Parallel writes to Notion
+Phase 4: Parallel writes to the published report
 Launch agents simultaneously:
-- Agent 1: Write draft-background.md → Notion
-- Agent 2: Write draft-problem.md → Notion
-- Agent 3: Write draft-solution.md → Notion
+- Agent 1: Write draft-sales-summary.md → report
+- Agent 2: Write draft-labour.md → report
+- Agent 3: Write draft-callouts.md → report
 
 Phase 5: Archive drafts
 - Move draft-*.md to drafts-archived/
-- Notion is now source of truth
+- The published report is now the source of truth
 ```
 
 **Benefits**:
@@ -276,7 +294,7 @@ github.repos.get("owner", "repo")
 
 ## Common Patterns from Real Projects
 
-### From prd_sidekick
+### Single-entry-point workflow
 
 **Parallel Notion + Slack Research**:
 - Launch 2 agents simultaneously
@@ -289,7 +307,7 @@ github.repos.get("owner", "repo")
 - Verify sections were created
 - Report success/failure to user
 
-### From data-knowledge
+### Modular multi-command workflow
 
 **Multi-Repo Exploration**:
 - Parallel skills exploring different repositories
@@ -318,7 +336,8 @@ Result: [list of available MCP servers]
 **Fix options**:
 
 1. **If MCP is missing entirely**:
-   - Install the MCP server: `npm install -g @modelcontextprotocol/server-notion`
+   - Add the connector with `/mcp`, or find the tool's current official server
+     (see "Finding MCP servers" above – don't guess a package name)
    - Configure in settings (global OR local):
      - **Global**: `~/.claude/settings.json` (available in all projects)
      - **Local**: `.claude/settings.local.json` (project-specific)

@@ -76,23 +76,13 @@ This conversational approach builds better understanding and keeps users engaged
 
 ### Create GOAL.md for Complex Tasks
 
-For any task requiring code or complex implementation, create `session/GOAL.md`:
-```markdown
-# Primary Goal
-[One sentence: what we're actually trying to achieve]
+For any task requiring code or complex implementation, create `session/GOAL.md` by
+copying `.claude/knowledge/templates/GOAL.template` and filling it in. It covers
+the primary goal, success criteria, the chosen approach and why, alternatives
+considered, and the triggers that should make you stop and reconsider.
 
-## Success Criteria
-- [ ] [Concrete outcome]
-
-## Current Approach
-**Chosen**: [What we're trying]
-**Why**: [Reason]
-
-## Re-evaluation Triggers
-- More than 30 minutes on implementation
-- More than 3 obstacles encountered
-- Tooling taking longer than core logic
-```
+Keep it open while you work – the point is that the goal stays visible, not that
+the file exists.
 
 ### Recognize Goal Drift
 

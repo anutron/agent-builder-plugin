@@ -5,6 +5,32 @@ All notable changes to the agent-builder plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2026-07-31
+
+### Changed
+- **Rewrote every example for the actual audience.** The repo taught a non-technical audience using nothing but software-engineering examples (PRD authoring, bug triage, SQL generation, Snowflake, LookML), which told a restaurant manager that this tool wasn't for them
+  - `workflow-patterns.md` rebuilt around two restaurant workflows – a weekly close-out report and a vendor price tracker – carrying all 11 patterns, the architectural comparison, best practices and anti-patterns unchanged
+  - README example use cases replaced with close-out report, vendor price tracking, onboarding packet and shift handoff
+  - Example command names throughout are now `/close-out` and `/vendor-watch` rather than `/write-prd` and `/analyze-tickets`
+  - Session directory examples are `close-out-sessions`, not `prd-sessions`
+- **README rewritten for a first-timer.** Drops "MCP-powered" from the opening sentence (an unexplained acronym in the first line), adds a pointer to installing Claude Code, explains how to make a folder, warns that GitHub's zip unpacks into a `-main` wrapper folder, sets a realistic time expectation, and notes what Windows users should expect
+- Phase 2.5 cut from 128 lines to roughly 40. It arrived before the user had built anything and asked them to choose between OAuth, service accounts and API keys while offering to build a custom MCP server
+  - Now has exactly two outcomes per data source: already connected, or manual for V1
+  - Explicitly forbids offering to build a custom MCP server mid-flow; `mcp-integration.md` agrees rather than contradicting it
+  - Defines "MCP" in one plain sentence the first time the word appears
+- The `/create-agent` skill description now says what it does in plain language and states it's written for people who have never coded
+
+### Fixed
+- Stale MCP package names (`@modelcontextprotocol/server-notion` and friends) removed rather than updated. Those reference packages were archived, and the official replacements have since been superseded again by hosted connectors – any hardcoded list is wrong within months. Guidance now points at `/mcp` and `ListMcpResourcesTool`
+- Surviving "Claude Code Plugin Marketplace" reference in Phase 2.5, which contradicted the README's opening line
+- A 🧭 Guide's note addressed to Claude rather than the user ("When you explain this architecture choice to the user...") sat among four notes that are printed verbatim, so a student would have read a note telling them to explain architecture to themselves
+- `GOAL.template` was orphaned – advertised in the README and described by `CLAUDE.template`, but nothing ever read it. `CLAUDE.template` now points at the actual file
+- Dead reference to a root `CLAUDE.md` that does not exist
+- `workflow-reviewer` now excludes `.claude/scripts/*` and `.claude/settings.json`, so a student's first review doesn't report findings against toolkit-owned files
+- Escaped shell bangs (`Review complete\!`) in user-facing sample output
+- README repository tree was missing `improve-workflow.md`, `workflow-improver/`, `scripts/`, `settings.json`, `CHANGELOG.md` and `LICENSE`, and its phase list omitted git setup and the final save
+- `/promote` is no longer presented as a command students can type – it isn't in this repo. `/fewer-permission-prompts`, `/mcp` and `/workflows` are built in and stay
+
 ## [2.2.0] - 2026-07-31
 
 ### Added

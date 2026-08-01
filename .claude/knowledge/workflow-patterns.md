@@ -1,250 +1,258 @@
-# Workflow Agent Patterns - Synthesis
+# Workflow Agent Patterns
 
-## Common Patterns Across Both Projects
+Patterns that show up again and again in workflows people actually keep using.
 
-### 1. **Phase-Based Workflows**
-Both projects break complex tasks into distinct phases:
+Two running examples are used throughout, both drawn from restaurant operations
+because that's the kind of work this toolkit is aimed at. The patterns themselves
+are domain-neutral – the same shapes apply to a law office or a warehouse.
 
-**PRD Sidekick**:
-- Phase 0: Context gathering
-- Phase 1: Parallel research (30s)
-- Phase 2: Interactive interview OR one-shot
-- Phase 3: Serial content generation
-- Phase 4: Parallel writes
-- Phase 5: Cleanup
+- **Close-Out** – a weekly close-out report. Pulls last week's sales export and
+  the staff schedule, produces a one-page summary for the GM. One command, several
+  research agents, one document out.
+- **Vendor Watch** – a vendor price tracker. Reads this week's invoices, compares
+  line-item prices against recent weeks, flags what moved and what it does to plate
+  cost. Several commands sharing a growing knowledge base of items and prices.
 
-**Data-Knowledge**:
-- Research phase (parallel exploration)
-- Requirements gathering
-- Query generation
-- Validation phase
-- Save & copy
-- Optional execution
+## Common patterns
 
-**Key insight**: Clear phases help users understand progress and enable resumption
+### 1. Phase-based workflows
 
-### 2. **Parallel Execution for Speed**
-Both use Task/Skill tool to launch multiple agents simultaneously:
+Break a complex task into distinct phases:
+
+**Close-Out**:
+- Phase 0: Gather context (which week, which location)
+- Phase 1: Parallel research (read sales export, read schedule) – 30s
+- Phase 2: Interview the manager about anything unusual that week
+- Phase 3: Generate the summary sections in order
+- Phase 4: Write the finished report
+- Phase 5: Clean up working files
+
+**Vendor Watch**:
+- Research phase (read invoices, look up known items)
+- Comparison phase (this week against history)
+- Flagging phase (what moved beyond a threshold)
+- Validation phase (are these real changes or a unit mix-up?)
+- Save and update the price history
+
+**Key insight**: Clear phases let the user see progress, and let the workflow
+resume if it's interrupted.
+
+### 2. Parallel execution for speed
+
+Launch multiple agents simultaneously rather than one at a time:
 - Single message with multiple tool calls
-- Agents run in parallel, not serial
-- Results synthesized after all complete
+- Agents run at the same time
+- Results combined after all finish
 
-**Critical pattern**: User blocking time minimized by parallelization
+**Close-Out** reads the sales export and the schedule at once instead of in
+sequence. Two 20-second reads become one 20-second wait.
 
-### 3. **Specialized Sub-Agents/Skills**
-Rather than monolithic commands, both use specialized components:
+**Critical pattern**: Minimize the time the user sits waiting.
 
-**PRD Sidekick Agents**:
-- Research agents (Notion, Slack)
-- Section writers
-- Requirements writer
+### 3. Specialized components
 
-**Data-Knowledge Skills**:
-- Explorer skills (Looker, DBT, App)
-- Validator skills
-- Executor skills
-- Orchestrator skills
+Rather than one giant command, use focused pieces:
 
-**Key insight**: Single responsibility principle for each agent/skill
+**Close-Out agents**:
+- Sales-export reader
+- Schedule reader
+- Summary writer
 
-### 4. **Knowledge Files as Instructions**
-Both store reference materials separately from workflow logic:
+**Vendor Watch skills**:
+- Invoice parser
+- Price comparer
+- Plate-cost calculator
+- Orchestrator that runs the others
 
-**PRD Sidekick**:
-- `.claude/knowledge/` - Interview guides, content guidelines, templates
-- Agents reference knowledge files for technical details
+**Key insight**: One job per component. Easier to fix when one part misbehaves.
 
-**Data-Knowledge**:
-- `knowledge/` - Table schemas, business logic, relationships
-- Skills validate against knowledge base
+### 4. Knowledge files as instructions
 
-**Pattern**: Knowledge files are executable documentation
+Keep reference material separate from workflow logic:
 
-### 5. **State Management & Resumption**
-Both support interrupted workflow resumption:
+**Close-Out**: `.claude/knowledge/` holds the report format the GM expects, what
+counts as a notable comp, and which dayparts to break out.
 
-**PRD Sidekick**:
-- `execution-plan.json` tracks progress
-- Session directories preserve all work
-- Can resume from any phase
+**Vendor Watch**: a knowledge file holds known items, expected units (case vs
+each vs pound), and normal price ranges. The comparison logic checks against it.
 
-**Data-Knowledge**:
-- Query files persist work
-- Knowledge base accumulates discoveries
-- Setup state tracking
+**Pattern**: Knowledge files are documentation the workflow actually reads. When
+the report format changes, you edit a knowledge file, not the logic.
 
-**Pattern**: Workflows survive session boundaries
+### 5. State management and resumption
 
-### 6. **Two-Mode Operation**
-Both support interactive and autonomous modes:
+Support picking up an interrupted run:
 
-**PRD Sidekick**:
-- Interactive: Step-by-step interview
-- One-shot: Autonomous from initial context
+**Close-Out**: a session directory per week preserves the drafts, so a report
+interrupted on Monday can be finished Tuesday without redoing the research.
 
-**Data-Knowledge**:
-- Business queries: Full workflow with headers
-- Diagnostic queries: Quick, clipboard-only
+**Vendor Watch**: the price history file accumulates across runs and *is* the
+long-term value of the workflow.
 
-**Pattern**: Adapt workflow to user's time constraints
+**Pattern**: Workflows should survive being interrupted.
 
-### 7. **Validation as First-Class Concern**
-Both validate work before finalizing:
+### 6. Two-mode operation
 
-**PRD Sidekick**:
-- Anti-duplication rules for content
-- Contradiction detection in research
-- Write verification
+Support both a guided and a fast path:
 
-**Data-Knowledge**:
-- query-validator skill before save
-- Knowledge base consistency checks
-- Field name verification
+**Close-Out**:
+- Guided: asks about the week, unusual events, anything to call out
+- One-shot: given the exports, produces the report with no questions
 
-**Pattern**: Catch errors early, not in production
+**Vendor Watch**:
+- Full: complete comparison with plate-cost impact
+- Quick: just tell me what moved this week
 
-### 8. **Local-First Drafting with Parallel Writes**
+**Pattern**: Adapt to how much time the user has right now.
+
+### 7. Validation as a first-class concern
+
+Check the work before finalizing:
+
+**Close-Out**: do the labour hours reconcile against the schedule? Does the sales
+total match the export's own total line?
+
+**Vendor Watch**: is this a real price change or did the vendor switch from
+case-price to unit-price? A 6x jump usually means units changed, not prices.
+
+**Pattern**: Catch errors before the user acts on the output. A confidently wrong
+report is worse than no report.
+
+### 8. Local-first drafting with parallel writes
+
 Generate content locally, then write to external systems in parallel:
 
-**PRD Sidekick pattern**:
-- Phase 3: Generate all sections as local `draft-*.md` files (serial)
-  - Each section reads previous sections to avoid duplication
-  - All drafts validated before any writes
-  - Local files = inspectable, recoverable, resumable
-- Phase 4: Write all sections to Notion simultaneously (parallel)
-  - Each write agent reads one draft file
-  - 5 sections write in 30s instead of 2.5min serial
-  - Verify all writes succeeded
-- Phase 5: Archive drafts, external system is source of truth
+**Close-Out pattern**:
+- Phase 3: Generate each section as a local `draft-*.md` file, in order
+  - Each section can read earlier ones to avoid repeating itself
+  - All drafts validated before anything is published
+  - Local files are inspectable, recoverable, resumable
+- Phase 4: Write all sections to their destination simultaneously
+  - Each write agent handles one draft
+  - 5 sections in 30s instead of 2.5 minutes serially
+  - Verify every write actually succeeded
+- Phase 5: Archive drafts; the published document is now the source of truth
 
-**Benefits**:
-- **Speed**: Parallel writes dramatically faster than serial
-- **Safety**: Validate all content before any production writes
-- **Reliability**: Local drafts survive write failures
-- **Transparency**: User can inspect drafts before write
-- **Resumability**: Failed writes can retry from drafts
+**Benefits**: speed from parallel writes, safety from validating before publishing,
+recoverability when a write fails, and transparency because the user can read the
+drafts first.
 
-**When to use**:
-- Writing multiple related pieces of content (sections, pages, records)
-- Content generation is interdependent (needs to read previous work)
-- External system writes are independent (can be parallelized)
-- Write failures need to be recoverable
+**When to use**: writing several related pieces of content where generation is
+interdependent but the writes are not.
 
-**Anti-pattern**: Don't generate and write simultaneously - if write fails, you lose the content
+**Anti-pattern**: Don't generate and publish in the same step. If the write fails,
+the content is gone.
 
-### 9. **MCP as Integration Layer**
-Both heavily use MCP servers for external systems:
+### 9. Connectors as the integration layer
 
-**PRD Sidekick**:
-- Notion MCP for document operations
-- Slack MCP for customer feedback
+Use MCP connectors for external systems rather than hand-rolled scripting:
 
-**Data-Knowledge**:
-- GitHub MCP for cross-repo access
-- Looker MCP for LookML operations
-- Snowflake (via query-executor)
+**Close-Out**: a connector for wherever the report gets published; the sales export
+starts as a manual CSV drop and gets connected later.
 
-**Pattern**: MCPs abstract external system complexity
+**Vendor Watch**: invoices start as PDFs in a folder. Connecting the vendor portal
+directly is a V2 goal, not a V1 requirement.
 
-### 10. **Research Before Action**
-Both mandate research phase before generation:
+**Pattern**: Connectors hide the messy parts of talking to other systems. Starting
+manual is legitimate – see `mcp-integration.md`, and never block a V1 on a
+connector that doesn't exist yet.
 
-**PRD Sidekick**:
-- Research related Notion docs
-- Gather customer quotes
-- Identify contradictions
+### 10. Research before action
 
-**Data-Knowledge**:
-- Search knowledge base for schemas
-- Explore multiple codebases
-- Verify table/field names
+Gather context before generating anything:
 
-**Pattern**: Context gathering prevents errors
+**Close-Out**: read the actual numbers before writing a single sentence of summary.
 
-### 11. **Permissions as Configuration**
-Both use `.claude/settings.local.json` for fine-grained permissions:
-- MCP tool permissions
-- Bash command patterns
-- File path restrictions
-- Skill invocation rights
+**Vendor Watch**: look up what an item cost historically before calling a change
+notable.
 
-**Pattern**: Security through explicit allow-lists
+**Pattern**: Context gathering prevents confident errors.
 
-## Architectural Differences
+### 11. Permissions as configuration
 
-### Commands vs. Agents
+Use `.claude/settings.json` for project permissions, so the user isn't approving
+the same action repeatedly:
+- Which files may be read and written
+- Which shell commands are pre-approved
+- Machine-specific overrides go in `.claude/settings.local.json`, which is never
+  committed
 
-**PRD Sidekick**:
-- Single main command (`/prd`)
-- Workflow embedded in command file
-- Agents in separate `.claude/agents/` files
+**Pattern**: Pre-approve the safe and ordinary; keep prompting for the dangerous.
 
-**Data-Knowledge**:
+## Architectural choices
+
+### Commands vs. skills
+
+**Close-Out** – single entry point:
+- One main command (`/close-out`)
+- The workflow lives in the command file
+- Research agents in separate `.claude/agents/` files
+
+**Vendor Watch** – modular:
 - Multiple commands for different entry points
-- Commands invoke skills
-- Skills compose other skills
-- Clear separation: Commands (UX) vs Skills (logic)
+- Commands invoke skills; skills compose other skills
+- Clear split: Commands are the interface, Skills are the logic
 
-**Insight**: Data-knowledge architecture is more modular
+**Insight**: Start with the Close-Out shape. Move toward the Vendor Watch shape
+when you notice two commands needing the same logic – that's the signal, not a
+preference for tidiness.
 
-### File Organization
+### File organization
 
-**PRD Sidekick**:
+**Close-Out**:
 ```
 .claude/
 ├── commands/
-├── agents/      # Invoked by Task tool
+├── agents/          # Invoked by the Task tool
 └── knowledge/
 
-prd-sessions/    # Stateful work
-└── [page-id]/
+close-out-sessions/  # One directory per week's work
+└── [week-of-date]/
 ```
 
-**Data-Knowledge**:
+**Vendor Watch**:
 ```
 .claude/
-├── commands/    # User-facing
-├── skills/      # Invoked by Skill tool
-└── settings.local.json
+├── commands/        # User-facing entry points
+├── skills/          # Invoked by the Skill tool
+└── settings.json
 
-knowledge/       # Source of truth
-queries/         # Persistent output
+knowledge/           # Item and price reference - the source of truth
+reports/             # Persistent output
 ```
 
-### Skill vs Agent Invocation
+### Skill vs. agent invocation
 
-**PRD Sidekick**:
-- Uses `Task` tool with `subagent_type` parameter
-- Agents are markdown files with prompts
-- No metadata format
+**Agents** (the Close-Out style): invoked with the `Task` tool and a
+`subagent_type`. Markdown files containing a prompt. Good for parallel one-shot
+work – "go read this file and report back."
 
-**Data-Knowledge**:
-- Uses `Skill` tool with skill name
-- Skills have YAML frontmatter metadata
-- Defined `allowed-tools` constraints
+**Skills** (the Vendor Watch style): invoked with the `Skill` tool by name. Have
+YAML frontmatter and can declare `allowed-tools`. Good for reusable logic that
+more than one command needs.
 
-## Best Practices Extracted
+## Best practices
 
-1. **Minimize user blocking time** - Parallelize wherever possible
-2. **Make workflows resumable** - Persist state in JSON/markdown
-3. **Validate before finalizing** - Catch errors early
-4. **Research first, never assume** - Query docs before generating
-5. **Single responsibility agents** - Each does one thing well
-6. **Knowledge files over prompts** - Separate data from logic
-7. **Support both interactive and autonomous** - Different time budgets
-8. **Explicit permissions** - Security through allow-lists
-9. **Copy to clipboard** - Seamless workflow integration (pbcopy)
-10. **Progress visibility** - Show users what's happening when
+1. **Minimize user blocking time** – parallelize wherever possible
+2. **Make workflows resumable** – persist state as files
+3. **Validate before finalizing** – catch errors early
+4. **Research first, never assume** – read the real data before generating
+5. **Single responsibility components** – each does one thing well
+6. **Knowledge files over prompts** – separate the data from the logic
+7. **Support both guided and fast modes** – different time budgets
+8. **Explicit permissions** – pre-approve the ordinary
+9. **Meet the user where they work** – put output where they'll actually read it
+10. **Progress visibility** – say what's happening while it happens
 
-## Anti-Patterns to Avoid
+## Anti-patterns to avoid
 
-1. **Monolithic workflows** - Hard to debug and resume
-2. **Serial when parallel possible** - Wastes user time
-3. **Assumptions over research** - Leads to errors
-4. **Weakening tests** - Hides bugs
-5. **Mixing data sources** - Analytics + Application tables
-6. **Embedding knowledge in code** - Hard to update
-7. **Claiming success when failed** - Erodes trust
-8. **Batch status updates** - Mark complete immediately
-9. **Using bash for file operations** - Use specialized tools
-10. **Guessing at integrations** - Use MCPs properly
+1. **Monolithic workflows** – hard to debug, impossible to resume
+2. **Serial when parallel is possible** – wastes the user's time
+3. **Assumptions over research** – produces confident errors
+4. **Weakening a check to make it pass** – hides the real problem
+5. **Blocking V1 on a connector that doesn't exist** – manual input is fine
+6. **Embedding reference data in logic** – makes routine updates scary
+7. **Claiming success when something failed** – erodes trust fastest of all
+8. **Batching status updates** – mark work done as it completes
+9. **Hand-rolled shell for file operations** – use the proper tools
+10. **Guessing at an integration** – check what's actually connected

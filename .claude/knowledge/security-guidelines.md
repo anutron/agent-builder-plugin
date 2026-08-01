@@ -46,8 +46,8 @@
 
 # Session data (workflow-specific)
 # Add your session directories here
-# Example: prd-sessions/
-# Example: query-sessions/
+# Example: close-out-sessions/
+# Example: report-sessions/
 
 # System files
 .DS_Store
@@ -192,7 +192,7 @@ api_key = os.getenv("API_KEY")
   "mcpServers": {
     "notion": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-notion"],
+      "args": ["-y", "[current-notion-mcp-package]"],
       "env": {
         "NOTION_API_KEY": "secret_abc123..."
       }

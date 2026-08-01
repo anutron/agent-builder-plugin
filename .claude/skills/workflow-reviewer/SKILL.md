@@ -42,6 +42,8 @@ Agents should NOT review these files as they're maintained by agent-builder itse
 - `.claude/skills/workflow-improver/*`
 - `.claude/skills/create-agent/*`
 - `.claude/agents/review-*.md` (all 5 review agents)
+- `.claude/scripts/toolkit.sh`, `.claude/scripts/toolkit.ps1` (agent-builder's own helpers)
+- `.claude/settings.json` (shipped with the toolkit)
 - `.claude/knowledge/templates/*` (agent-builder's own templates)
 - `.claude/knowledge/workflow-patterns.md`, `component-decision-guide.md`, `mcp-integration.md`, `setup-command-guide.md`, `security-guidelines.md` (agent-builder's own reference docs – but review any *other* knowledge file the user added for their workflow)
 
@@ -271,7 +273,7 @@ Assistant: Running comprehensive workflow review with 5 parallel agents...
 
 [Agents complete in 35 seconds]
 
-Assistant: Review complete\! Here are the findings:
+Assistant: Review complete! Here are the findings:
 
 ## High Priority
 ### Parallelization: Research could be concurrent
@@ -293,5 +295,5 @@ User: Just the high priority one
 
 Assistant: [Writes high priority finding to IMPROVEMENTS.md]
 
-Done\! Added 1 finding to IMPROVEMENTS.md.
+Done! Added 1 finding to IMPROVEMENTS.md.
 ```

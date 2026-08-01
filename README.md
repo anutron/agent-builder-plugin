@@ -1,126 +1,170 @@
 # Agent builder for Claude Code
 
-Build MCP-powered workflow agents through guided planning, iterative development, and continuous improvement loops.
+Build your own workflow assistant – something that does one repetitive part of your
+job the same careful way every time. You describe the task in plain language;
+Claude interviews you, designs it with you, and builds it.
+
+You do not need to know how to code.
 
 ## Quick start
 
-No git, no plugin marketplace, no install step – just download this repo into an empty folder and run one command.
+No git, no plugin marketplace, no install step – just download this repo into an
+empty folder and run one command.
 
-1. Open Claude Code and create (or navigate to) an empty folder for your new project.
+**Before you start**, you need Claude Code installed. If you don't have it yet, see
+[claude.com/code](https://claude.com/code). Everything below happens inside Claude
+Code – you'll be typing to Claude, not typing shell commands yourself.
 
-2. Ask Claude to fetch this repo, for example:
+1. **Make an empty folder for your project** and open it in Claude Code.
 
-   > Please download the zip archive of github.com/anutron/agent-builder-plugin (use curl, no need for git) and unzip it directly into this folder – not into a subfolder.
+   If you're not sure how, you can just ask Claude: *"Make a new folder called
+   weekly-report in my Documents and open it."* Naming it after the task you want
+   to automate is a good habit.
 
-   The first time Claude reaches out to github.com you may see a one-time prompt asking you to approve network access. That's expected – approve it and continue.
+2. **Ask Claude to fetch this toolkit.** Copy this in:
 
-3. Run:
+   > Please download the zip archive of github.com/anutron/agent-builder-plugin
+   > (use curl, no need for git) and unzip it directly into this folder – not into
+   > a subfolder. GitHub's zip unpacks into a folder called
+   > `agent-builder-plugin-main`, so move the contents up into this folder and
+   > remove the empty wrapper.
+
+   You'll likely see a one-time prompt asking you to approve network access, and
+   another to approve running the download. Both are expected – approve them.
+
+3. **Start building:**
 
    ```
    /create-agent
    ```
 
-That's it – `/create-agent` walks you through a short interview and builds your first workflow.
+   The first time you use a skill, Claude may ask permission for that too. Approve
+   it and you're off.
+
+That's it. `/create-agent` walks you through a short interview and builds your
+first workflow. Expect roughly 30–60 minutes for a first one, most of it you
+talking about how you already do the task.
+
+**On Windows?** Everything works, but if you don't have git installed you'll be
+offered it during setup – it's a small download and it also gives Claude Code a
+better shell on Windows. Taking the offer is worth it.
 
 ## What this does
 
-Agent-builder helps you create Claude Code workflow agents that:
-- ✅ Gather data from multiple sources in parallel
-- ✅ Follow repeatable processes
-- ✅ Self-improve through testing and iteration
-- ✅ Include security and best practices by default
+Agent-builder helps you create Claude Code workflows that:
+
+- ✅ Gather information from several places at once
+- ✅ Follow the same repeatable process every time
+- ✅ Get better through use, rather than staying frozen at version one
+- ✅ Include security and good practice by default
 
 ## A note on the 🧭 icon
 
-Throughout `/create-agent` and the other tools, you'll see notes marked 🧭 **Guide's note**. These aren't Claude thinking out loud – they're commentary built into this teaching tool that calls out real Claude Code features (Plan Mode, Auto mode, Skills, Subagents, and so on) as they come up, so you start recognizing them for your own future projects.
+Throughout `/create-agent` and the other tools, you'll see notes marked 🧭 **Guide's
+note**. These aren't Claude thinking out loud – they're commentary built into this
+teaching tool that calls out real Claude Code features (Plan Mode, Auto mode,
+Skills, Subagents, and so on) as they come up, so you start recognizing them for
+your own future projects.
 
 ## How it works
 
 ### `/create-agent` – one command does it all
 
-Once the files are in your project folder, running `/create-agent` guides you through:
+Running `/create-agent` guides you through:
 
-1. **Use case discovery** – two paths:
-   - Know what you want? Skip discovery, describe your workflow.
-   - Need help? Guided discovery to identify automation opportunities.
-2. **Process interview** – understand your current workflow deeply.
-3. **Data source setup** – connect to your data before building.
-4. **Architecture design** – design with best practices (via Plan Mode, so you review before anything is built).
-5. **Implementation** – generate a working V1.
-6. **Iteration planning** – define a V2+ roadmap.
+0. **Setup** – checks the toolkit is present and offers to set up saving (git) so
+   your work is snapshotted as you go. You can decline; nothing else depends on it.
+1. **Use case discovery** – two paths: know what you want, or get help finding it.
+2. **Process interview** – understanding how you do the task today, one question at
+   a time. Then Claude offers its own ideas before you commit to an approach.
+3. **Data sources** – what information the workflow needs, and whether it can reach
+   it automatically or you'll paste it in for now. Pasting is fine.
+4. **Architecture design** – designed *with* you in Plan Mode, so you review and
+   change the plan before a single file is written.
+5. **Implementation** – a working version one.
+6. **Iteration planning** – what version two should be.
+7. **Final save** – everything committed, with a history you can walk back through.
 
 ### Tools already in this project
 
-Because everything downloads flat into your project folder, these are available immediately – no separate install step:
+Everything downloads flat into your project folder, so these work immediately:
 
 #### `/review-workflow` – parallel workflow analysis
-- Launches 5 agents simultaneously
-- Duplication and simplification analysis
-- Conflicts and setup drift detection
-- Security scanning
-- Best practices checking
-- Goal drift detection
-- Shows findings, you choose what to track
+- Launches 5 agents simultaneously (~30–40s, vs 2–3 min one at a time)
+- Duplication, simplification, conflicts, security, best practices, goal drift
+- Shows findings; you choose what to track
+
+#### `/improve-workflow` – retrospective after actual use
+- Run this after you've *used* your workflow, not just built it
+- Captures what worked and what got in the way
+- Updates the workflow's own files based on what was learned
+- The habit this whole toolkit is built around: use it → `/improve-workflow` → use it again
 
 #### `/save-workflow` – smart git commits
 - Reads improvements from `IMPROVEMENTS.md`
 - Generates detailed commit messages
-- Cleans completed items
-
-#### `/improve-workflow` – retrospective after actual use
-- Run this after you've *used* your workflow, not just built it
-- Captures what worked and what didn't
-- Updates the workflow's own files based on what was learned
-- The habit this whole loop is meant to build: use it → `/improve-workflow` → use it again
+- Cleans up completed items
 
 #### Skills (self-contained)
+- `create-agent` – the guided build, the `/create-agent` entry point
 - `workflow-reviewer` – orchestrates the 5 parallel review agents
-- `save-progress` – intelligent git commits with context
-- `security-checker` – scans for secrets and credentials
-- `software-best-practices` – validates tests, linting, prevents goal drift
 - `workflow-improver` – the retrospective loop behind `/improve-workflow`
+- `save-progress` – git commits with real context
+- `security-checker` – scans for secrets and credentials
+- `software-best-practices` – validates tests and linting, prevents goal drift
 
 ## Key features
 
 ### Goal-drift prevention
-Added to prevent Claude from losing track of objectives:
-- Stop and re-evaluate every 20 minutes or after 3 obstacles
-- `GOAL.md` template for complex tasks
-- Recovery questions when stuck
-- Pivot strategies when an approach isn't working
 
-### Parallel review analysis
-- 5 agents run simultaneously (~30-40s vs 2-3min serial)
-- You choose which findings to track
-- No auto-writing to `IMPROVEMENTS.md`
+Stops Claude wandering away from what you actually asked for:
+
+- Stop and re-evaluate every 20 minutes, or after 3 obstacles
+- `GOAL.template` for complex tasks, kept visible while working
+- Recovery questions when stuck, and pivot strategies when an approach isn't working
+
+### Saving as you go
+
+Work is snapshotted after each phase rather than once at the end, so there's always
+a known-good point to return to. Setting this up is offered at the very start and
+is entirely optional.
 
 ## Repository structure
 
 ```
-agent-builder-plugin/            # This repo – download it, it IS your .claude/ layout
+agent-builder-plugin/              # This repo – download it, it IS your .claude/ layout
 ├── .claude/
+│   ├── settings.json              # Project permissions, so you aren't prompted constantly
 │   ├── commands/
 │   │   ├── review-workflow.md
-│   │   └── save-workflow.md
+│   │   ├── save-workflow.md
+│   │   └── improve-workflow.md
 │   ├── skills/
-│   │   ├── create-agent/         # /create-agent entry point
+│   │   ├── create-agent/          # /create-agent entry point
 │   │   ├── workflow-reviewer/
+│   │   ├── workflow-improver/
 │   │   ├── save-progress/
 │   │   ├── security-checker/
 │   │   └── software-best-practices/
-│   ├── agents/                   # 5 parallel review agents
+│   ├── agents/                    # 5 parallel review agents
 │   │   ├── review-duplication-simplification.md
 │   │   ├── review-conflicts-setup.md
 │   │   ├── review-security.md
 │   │   ├── review-best-practices.md
 │   │   └── review-goal-drift.md
+│   ├── scripts/                   # All shell lives here, not scattered in prose
+│   │   ├── toolkit.sh             # macOS / Linux
+│   │   └── toolkit.ps1            # Windows
 │   └── knowledge/
 │       ├── workflow-patterns.md
 │       ├── mcp-integration.md
 │       ├── component-decision-guide.md
 │       ├── setup-command-guide.md
 │       ├── security-guidelines.md
-│       └── templates/            # File templates used by /create-agent
+│       └── templates/             # File templates used by /create-agent
+├── .gitignore
+├── CHANGELOG.md
+├── LICENSE
 └── README.md
 ```
 
@@ -129,7 +173,7 @@ agent-builder-plugin/            # This repo – download it, it IS your .claude
 After `/create-agent` builds your V1, your project also has:
 
 ```
-your-project/                     # Same folder – agent-builder files above, plus:
+your-project/                      # Same folder – agent-builder files above, plus:
 ├── project-plan/
 │   ├── interview-notes.md
 │   ├── project-design.md
@@ -137,90 +181,82 @@ your-project/                     # Same folder – agent-builder files above, p
 │   └── IMPROVEMENTS.md
 ├── .claude/
 │   ├── commands/
-│   │   ├── setup.md              # Generated by /create-agent
-│   │   └── [your-workflow].md    # Your workflow's entry point
+│   │   ├── setup.md               # Generated by /create-agent
+│   │   └── [your-workflow].md     # Your workflow's entry point
 │   ├── skills/ or agents/
-│   │   └── [your-components]     # Your workflow's own components
+│   │   └── [your-components]      # Your workflow's own components
 │   └── knowledge/
 │       └── [your-references].md
 ├── CLAUDE.md
-├── README.md
-├── .gitignore
-└── .env.example
+├── README.md                      # Replaces this one – it describes YOUR workflow
+└── .env.example                   # Only if your workflow needs credentials
 ```
 
-## Based on real projects
+## Example use cases
 
-Analysis of successful Claude Code workflow agents:
+These are the shape of thing this is good at – a task you do on a schedule, that
+pulls from a couple of places, and where being thorough matters more than being
+clever.
 
-### PRD sidekick
-- AI-powered collaborative PRD authoring
-- Parallel research across Notion and Slack
-- ~1 minute total blocking time
-- Phase-based workflow with session resumption
+### Weekly close-out report
+- **Input**: last week's sales export, the staff schedule
+- **Gathers**: sales by daypart, labour hours, notable comps and voids
+- **Output**: a one-page summary in the format your GM actually reads
+- **Replaces**: 90 minutes of spreadsheet wrangling every Monday
 
-### Data-knowledge
-- AI-assisted Snowflake query development
-- 9 specialized slash commands, 8 reusable skills
-- Research-first query generation
-- SQL validation against documentation
+### Vendor price-change tracker
+- **Input**: this week's invoices
+- **Gathers**: line-item prices, compares against the last few weeks
+- **Output**: what moved, by how much, and what it does to plate cost
+- **Replaces**: noticing the cheese got expensive two months late
 
-## Key patterns extracted
+### New-hire onboarding packet
+- **Input**: role, start date, location
+- **Gathers**: the right handbook sections, checklists, training schedule
+- **Output**: a personalized first-week packet, consistent every time
+- **Replaces**: rebuilding it from the last person's copy and forgetting a step
 
-10 common patterns across successful projects:
+### Shift-handoff summary
+- **Input**: the day's notes, open tickets, 86'd items
+- **Gathers**: what's unresolved, what the next shift needs to know first
+- **Output**: a short handoff the closing manager can skim in two minutes
+- **Replaces**: a verbal handoff that half-survives
+
+## Key patterns
+
+10 patterns common to workflows that actually get used:
+
 1. Phase-based workflows
 2. Parallel execution
 3. Specialized components
 4. Knowledge files
 5. State management
-6. Two-mode operation
+6. Two-mode operation (guided and one-shot)
 7. Validation first
-8. MCP integration
+8. Connecting to real data sources
 9. Research before action
 10. Permission configuration
 
 See `.claude/knowledge/workflow-patterns.md` for details.
 
-## Example use cases
-
-### PRD assistant
-- **Input**: PRD topic, Notion page
-- **Research**: Notion docs, Slack discussions (parallel)
-- **Output**: Structured PRD in Notion
-- **MCPs**: Notion, Slack
-
-### Bug triager
-- **Input**: Bug report URLs
-- **Research**: Jira history, Slack mentions, related issues
-- **Output**: Triage recommendation
-- **MCPs**: Jira, Slack, GitHub
-
-### Query builder
-- **Input**: Business question
-- **Research**: Schema docs, existing queries, business logic
-- **Output**: Validated SQL query
-- **MCPs**: GitHub, custom schema MCP
-
 ## Going further
 
-Once building and iterating on a workflow feels comfortable, there's more of Claude Code worth exploring:
+Once building and iterating on a workflow feels comfortable, there's more of Claude
+Code worth exploring:
 
-- **Global skills & `CLAUDE.md`** – conventions and skills that apply across every project, not just one
-- **`/promote`** – graduate a skill you like from one project to everywhere
-- **`/fewer-permission-prompts`** – cut down on repeated permission prompts as you get more comfortable
-- **Connectors / MCP** – more data sources to connect your workflows to
-- **Aaron's public skill library** – `github.com/anutron/ai`
+- **Global skills & `CLAUDE.md`** – conventions that apply across every project
+- **`/fewer-permission-prompts`** – trim repeated permission prompts as you get more comfortable
+- **`/mcp`** – connect more data sources to your workflows
+- **`/workflows`** – orchestrate bigger multi-step jobs once one workflow outgrows a single command
+- **Aaron's public skill library** – `github.com/anutron/ai`, which includes `/promote` for graduating a skill you like from one project to everywhere
 
 ## Contributing
 
-Contributions welcome! See:
+Contributions welcome. See:
+
 1. Design patterns in `.claude/knowledge/workflow-patterns.md`
 2. Component decisions in `.claude/knowledge/component-decision-guide.md`
 
 ## License
 
 MIT License
-
-## Acknowledgments
-
-Built from analysis of successful Claude Code workflow agents, extracting patterns and best practices into a reusable toolkit.

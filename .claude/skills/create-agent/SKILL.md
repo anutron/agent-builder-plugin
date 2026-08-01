@@ -1,6 +1,6 @@
 ---
 name: create-agent
-description: Guide users through creating MCP-powered workflow agents. Conducts a use case interview, designs the architecture, generates initial files, and creates project plan documentation.
+description: Guide someone through building their first workflow assistant - a custom command that automates a repetitive task in their job. Interviews them about the task, designs it together in Plan Mode, builds a working version, and sets up the use-and-improve loop. Written for people who have never coded.
 allowed-tools: Read, Write, Edit, Glob, Bash, AskUserQuestion, TodoWrite, EnterPlanMode, ExitPlanMode
 ---
 
@@ -19,7 +19,7 @@ You are guiding a user through building a workflow agent using Claude Code.
 
 **Never write raw shell in this flow.** Every shell operation is a verb on a
 helper script that ships with the toolkit. There are two copies with identical
-verbs and identical output, so pick by platform — you already know which OS you're
+verbs and identical output, so pick by platform – you already know which OS you're
 on, so just choose; don't run a command to detect it.
 
 **macOS / Linux**:
@@ -33,14 +33,14 @@ powershell -ExecutionPolicy Bypass -File .claude\scripts\toolkit.ps1 <verb> [arg
 ```
 
 Both are pre-approved in `.claude/settings.json`, so neither prompts. Invoke the
-`.sh` via `bash` rather than `./` — zip archives don't reliably preserve the
+`.sh` via `bash` rather than `./` – zip archives don't reliably preserve the
 executable bit. `-ExecutionPolicy Bypass` is required on Windows because files
 extracted from a downloaded zip are blocked by default.
 
 Verbs: `git-probe`, `git-setup`, `checkpoint`, `final-commit`, `scaffold`,
 `settings-init`, `copy-toolkit`.
 
-Below, verbs are written bare (`checkpoint "..."`) — expand to the right platform
+Below, verbs are written bare (`checkpoint "..."`) – expand to the right platform
 form. If a verb ever fails, tell the user plainly what broke instead of
 improvising raw shell around it.
 
@@ -156,7 +156,7 @@ Since you're running this skill, the toolkit downloaded into this folder correct
    ```
 
    The script deliberately avoids running `git` itself when checking whether git
-   exists — on macOS that would trigger the Command Line Tools installer popup
+   exists – on macOS that would trigger the Command Line Tools installer popup
    before the user has been asked whether they want it. Don't work around this by
    running `git --version` yourself.
 
@@ -336,51 +336,56 @@ Ask the user directly:
 
 **IMPORTANT**: If the user's workflow requires accessing external data sources (systems of record), handle setup NOW before implementation.
 
+**Keep this short.** The user hasn't built anything yet and this is not the
+interesting part. The only question that matters per data source is: *can we reach
+it automatically, or does the user paste it in for now?* Both answers are fine.
+
+**First, explain what an MCP is** – in one sentence, the first time you use the
+word:
+
+```
+🧭 Guide's note: You'll hear "MCP" a lot. It just means a connector that lets
+Claude read from a system directly – your Notion, your email, a spreadsheet –
+instead of you copying and pasting. Some tools have one ready to go; some don't.
+```
+
 **Process**:
 
-1. **List all data sources identified** in the interview:
-   - Notion, Confluence, Jira, GitHub, Slack, Gmail, Google Sheets
-   - Internal APIs, databases, CRMs (Salesforce, HubSpot)
-   - Any other systems they mentioned
+1. **List the data sources** they mentioned in the interview, and ask which they
+   already have connected:
 
-2. **Check for available plugins/MCPs**:
-   "Before we build this workflow, let's make sure you have access to the data sources you need.
+   "You mentioned [list]. Are any of these already connected to Claude for you?
+   If you're not sure, that's fine – we'll find out."
 
-   You mentioned [list of data sources]. Do you have any shared plugins or MCP servers configured for these systems?
+   To check what's actually available, look at the connected MCP servers with
+   `ListMcpResourcesTool`. If the user wants to add one, `/mcp` in Claude Code is
+   where connectors are managed, and most major tools (Notion, Slack, GitHub,
+   Google, Atlassian) now offer a hosted connector that needs no install.
 
-   If not, you can find official MCPs at:
-   - Claude Code Plugin Marketplace (in your Claude Code settings)
-   - Model Context Protocol Registry: https://github.com/modelcontextprotocol/servers"
+   Don't recite package names – they change constantly. Offer to help them connect
+   a specific tool if they want it.
 
-3. **For each data source, recommend setup**:
+2. **For each source, pick one of two paths** – and bias hard toward the second:
 
-   **If MCP/plugin is available**:
-   - "Great! Install the [system] MCP: [installation instructions from marketplace]"
-   - Test connection before proceeding
+   **Connected already** → use it. Note it in the checklist and move on.
 
-   **If no org plugin, check public MCPs**:
-   - Notion: `@modelcontextprotocol/server-notion`
-   - Slack: `@modelcontextprotocol/server-slack`
-   - GitHub: `@modelcontextprotocol/server-github`
-   - Google: `@modelcontextprotocol/server-google-drive`, `@modelcontextprotocol/server-gmail`
-   - Jira: Check for Atlassian MCP plugins
+   **Not connected** → do it manually for V1. Say so plainly and without
+   apology:
 
-   **If no MCP available**:
-   - Follow guidance in `.claude/knowledge/mcp-integration.md` "When no MCP exists"
-   - **Recommended**: Create a local MCP server in the workflow project
-     - Inform user: this takes extra time but provides better maintainability
-     - Generate `mcp-servers/[system-name]/` directory
-     - Implement MCP using system's APIs
-     - **Check authentication options**: Prefer SSO/OAuth > Service accounts > API keys
-       - Ask user: "Does [system] support SSO or OAuth? That's more secure than API keys."
-       - If SSO available: implement OAuth flow, no stored credentials needed
-       - If not: document API key setup in .env (never hardcode)
-     - Update `/setup` to document local MCP installation
-     - Run `software-best-practices` and `security-checker` before commit
-   - **Alternative**: Use APIs directly only for simple one-off operations
-   - **Fallback**: Consider deferring to V2 (build simpler V1 first without this source)
+   "There's no connection set up for [system], so for the first version you'll
+   paste that part in yourself. That's a completely normal way to start – we get
+   the workflow working end to end, and connecting it properly is a good V2."
 
-4. **Create setup checklist** in `project-plan/data-source-setup.md`:
+   Then add to `project-plan/IMPROVEMENTS.md`: "V2: connect [system] directly",
+   and document the manual step in the workflow itself.
+
+**Do not offer to build a custom MCP server here.** It's a genuine project of its
+own, it requires an authentication decision the user isn't equipped to make yet,
+and it guarantees they never reach a working V1 today. If they explicitly ask for
+one, point them at `.claude/knowledge/mcp-integration.md` and treat it as a
+separate piece of work after V1 ships.
+
+3. **Create setup checklist** in `project-plan/data-source-setup.md`:
 
 ```markdown
 # Data Source Setup Checklist
@@ -410,42 +415,29 @@ Ask the user directly:
 [What user needs to do before continuing]
 ```
 
-5. **Handle missing MCPs** (IMPORTANT):
-   For each data source, check MCP availability:
+   Example, for a workflow that pulls together a weekly close-out report:
+   ```markdown
+   # Data Source Setup Checklist
 
-   **If MCP exists** (official or org-provided):
-   - Proceed with MCP-based workflow
-   - Document MCP requirements in data-source-setup.md
-   - User will verify MCP setup when running `/setup` later
-   - No manual option needed
+   ## Required Data Sources
+   - [x] Toast sales export - Connected
+     - Method: Manual (CSV export)
+     - Setup: Download "Weekly Sales Summary" from Toast, save to inbox/
+   - [ ] Staff schedule (Google Sheets) - Not started
+     - Method: Manual for V1
+     - Setup: Paste the week's schedule when asked
 
-   **If NO MCP exists**:
-   - Warn user: "No MCP exists for [system]. We can create a custom MCP server, but this is tedious and takes extra time."
-   - Offer choice:
-     - **Option A**: "We can build a custom MCP server now" (follow guidance in mcp-integration.md)
-     - **Option B**: "We can defer this and do it manually for now"
-   - If user chooses Option B (defer):
-     - Add to `project-plan/IMPROVEMENTS.md`: "V2: Create custom MCP for [system]"
-     - Document in workflow: "Manual step: User provides [system] data via [copy-paste/file/etc.]"
-     - Instruct user how to gather/provide data manually
-     - Workflow processes data from manual input
-   - **Don't block workflow creation** - manual is always an option
+   ## Deferred to V2
+   - [ ] Connect Google Sheets directly
+     - Reason: manual paste works fine for V1; connect once the format settles
 
-   Example dialogue:
-   ```
-   "You mentioned Airtable. There's no official Airtable MCP. We have two options:
-
-   1. Build a custom Airtable MCP server now - this is tedious but makes the workflow fully automated
-   2. Handle Airtable data manually for V1 - you export data or copy-paste it, we'll automate in V2
-
-   Which would you prefer?"
+   ## Next Steps
+   Export the Toast weekly summary before running the workflow.
    ```
 
-6. **Decision point**:
-   Based on availability and user choice:
-   - **All sources have MCPs?** → Proceed to Phase 3 with automated workflow
-   - **User chose to build custom MCP?** → Create local MCP, then proceed to Phase 3
-   - **User chose manual for missing MCPs?** → Add to IMPROVEMENTS.md, document manual steps, proceed to Phase 3
+4. **Never block on this.** Manual input is always an acceptable answer. A
+   workflow that works today with one paste-in step beats a fully automated one
+   the user never finishes.
 
 **Output**:
 - `project-plan/data-source-setup.md` with checklist
@@ -521,7 +513,7 @@ Read `.claude/knowledge/workflow-patterns.md` and `.claude/knowledge/mcp-integra
 Read `.claude/knowledge/component-decision-guide.md` for detailed guidance. Quick summary:
 
 Use **Commands** for user-facing entry points:
-- Example: `/write-prd`, `/analyze-tickets`
+- Example: `/close-out`, `/vendor-watch`
 - User types this to start the workflow
 
 Use **Skills** when logic is reusable or composable:
@@ -536,7 +528,17 @@ Use **Knowledge files** for reference materials:
 - Example: Interview guides, templates, validation rules
 - Data that changes independently of logic
 
-🧭 Guide's note: When you explain this architecture choice to the user, name the concept out loud (e.g. "I'm making this a Skill because..."). Commands, Skills, Agents, and Knowledge files are the same building blocks used throughout Claude Code, not just here.
+As you pick each piece, name the concept out loud to the user rather than silently
+choosing – "I'm making this a Skill because you'll want to reuse it." Then show
+them this note once, when you make the first such choice:
+
+```
+🧭 Guide's note: Commands, Skills, Agents and Knowledge files are the four
+building blocks of Claude Code – not something special to this toolkit. A Command
+is what you type. A Skill is reusable know-how. Agents run in parallel. Knowledge
+files are reference material. You'll see all four everywhere once you know the
+names.
+```
 
 **Define V1 Scope** (start minimal):
 - V1: Research + manual generation (prove research works)
@@ -644,7 +646,7 @@ This ensures the design document is:
 **4.1 File Structure**
 
 Create directories – pass the workflow's session directory name (e.g.
-`prd-sessions`, `query-sessions`), or omit the argument if it doesn't need one:
+`close-out-sessions`, `report-sessions`), or omit the argument if it doesn't need one:
 
 ```
 scaffold "[work-sessions]"
@@ -675,7 +677,7 @@ workflow needs.
 
 **4.2 Permissions Configuration**
 
-`.claude/settings.json` already exists — it ships with the toolkit, which is why
+`.claude/settings.json` already exists – it ships with the toolkit, which is why
 you haven't been prompted for permission on every file write so far. There's
 normally nothing to do here.
 
@@ -717,7 +719,7 @@ Fill in the placeholders:
   - **github** - For repository and PR information
   ```
   Only include MCPs (not APIs or manual sources). If no MCPs needed, state: "This workflow doesn't require any MCP servers."
-- `[WORKFLOW_SESSIONS_DIR]` - Session directory name (e.g., prd-sessions)
+- `[WORKFLOW_SESSIONS_DIR]` - Session directory name (e.g., close-out-sessions)
 - `[ENV_VARS_SECTION]` - If using .env, document required variables
 - `[ADDITIONAL_LOCAL_SETTINGS]` - Any other local config beyond permissions
 - `[TROUBLESHOOTING_TIPS]` - Common setup issues specific to this workflow
@@ -737,11 +739,11 @@ Include:
 
 **4.4 Research Implementation**
 
-**If using agents** (prd_sidekick pattern):
+**If using agents** (the single-entry-point pattern – see `workflow-patterns.md`):
 - Create `.claude/agents/[agent-name].md` for each research source
 - Each agent reads context, searches one source, writes findings
 
-**If using skills** (data-knowledge pattern):
+**If using skills** (the modular pattern – see `workflow-patterns.md`):
 - Create `.claude/skills/[skill-name]/SKILL.md` for each reusable component
 - Include YAML metadata: name, description, allowed-tools
 
@@ -754,11 +756,11 @@ Create `.claude/knowledge/[reference].md` for:
 
 **4.6 Validate Setup**
 
-`/setup` has to be run by the user — Claude cannot invoke its own slash commands,
+`/setup` has to be run by the user – Claude cannot invoke its own slash commands,
 so don't try. Ask them to type it:
 
 ```
-Type /setup and paste me what it says — that runs the setup command we just
+Type /setup and paste me what it says – that runs the setup command we just
 built and tells us whether it actually works.
 ```
 
@@ -927,7 +929,17 @@ Show the user, in this order:
    through it – takes a few minutes.
    ```
 
-5. **Going further** (optional, mention briefly): once this feels comfortable, there's more to explore – promoting a skill you like to use everywhere (`/promote`), cutting down permission prompts (`/fewer-permission-prompts`), global `CLAUDE.md` conventions, connecting more MCPs, and Aaron's own public skill library at `github.com/anutron/ai`.
+5. **Going further** (optional, mention briefly): once this feels comfortable, there
+   are more Claude Code features worth knowing – `/fewer-permission-prompts` to trim
+   repeated approvals, `/mcp` to connect more data sources, global `CLAUDE.md`
+   conventions that apply across every project, and `/workflows` if this one ever
+   outgrows a single command. Aaron's public skill library at
+   `github.com/anutron/ai` has more, including `/promote` for graduating a skill you
+   like from one project to everywhere.
+
+   Only name things that exist in the user's environment. `/fewer-permission-prompts`,
+   `/mcp` and `/workflows` are built into Claude Code; `/promote` is not – it comes
+   from that library, so don't present it as something they can already type.
 
 **Offer to help**:
 "Want to try running the workflow now? I can help debug if anything doesn't work as expected."

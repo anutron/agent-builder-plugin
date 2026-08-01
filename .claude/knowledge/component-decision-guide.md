@@ -36,9 +36,9 @@ Is this reference material/data?
 - Can invoke skills, agents, or use tools directly
 
 **Examples:**
-- `/write-prd` - Creates product requirements document
-- `/analyze-tickets` - Analyzes support tickets
-- `/review-code` - Reviews code changes
+- `/close-out` - Builds the weekly close-out report
+- `/vendor-watch` - Flags vendor price changes from this week's invoices
+- `/onboard` - Assembles a new hire's first-week packet
 
 **Don't use for:**
 - Reusable logic (use Skills instead)
@@ -135,10 +135,10 @@ All run simultaneously, results merged after completion.
 **Use case:** Research from multiple sources simultaneously
 
 ```
-Command: /write-prd
-├─ Agent: research-notion (parallel)
-├─ Agent: research-slack (parallel)
-└─ Agent: research-github (parallel)
+Command: /close-out
+├─ Agent: read-sales-export (parallel)
+├─ Agent: read-schedule (parallel)
+└─ Agent: read-last-weeks-report (parallel)
 ```
 
 **Why:** Minimize blocking time (30s parallel vs 90s serial)
@@ -220,7 +220,7 @@ Command: /write-document
 - Knowledge: Content guidelines separate from logic
 - Inline: Interview logic specific to this workflow
 
-**Use this pattern for:** Documents, reports, PRDs, proposals, summaries
+**Use this pattern for:** Reports, summaries, recurring documents, handoffs, packets
 
 ### Example Pattern: Data Tool (Explore → Validate → Execute)
 

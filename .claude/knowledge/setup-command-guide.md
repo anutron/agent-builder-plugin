@@ -43,7 +43,8 @@ The workflow-specific `/setup` command (in the user's project) will list require
    - Report status with setup instructions
 
 **IMPORTANT**: If MCPs are missing, provide clear instructions but don't block:
-- Show installation commands (e.g., `npm install -g @modelcontextprotocol/server-notion`)
+- Point at `/mcp` to add the connector, rather than quoting a package name that may
+  have moved (see `.claude/knowledge/mcp-integration.md`)
 - Explain configuration locations (global `~/.claude/settings.json` or local `.claude/settings.local.json`)
 - Document required credentials (API keys, OAuth setup)
 - **Note**: Workflow may support manual data input if MCPs unavailable (check workflow documentation)
