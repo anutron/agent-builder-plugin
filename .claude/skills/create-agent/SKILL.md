@@ -117,7 +117,7 @@ Since you're running this skill, the toolkit downloaded into this folder correct
    recognizing them for your own future projects.
    ```
 
-   **Only if you are actually in Auto mode**, add this. Don't assert it blindly —
+   **Only if you are actually in Auto mode**, add this. Don't assert it blindly –
    the user may be in a mode where you stop and ask far more often, and claiming
    otherwise will confuse them when it doesn't match what they see:
    ```
