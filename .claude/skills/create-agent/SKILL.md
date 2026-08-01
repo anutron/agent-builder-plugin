@@ -17,10 +17,23 @@ You are guiding a user through building a workflow agent using Claude Code.
 
 ## Running toolkit commands
 
-**Never write raw shell in this flow.** Every shell operation is a verb on a
-helper script that ships with the toolkit. There are two copies with identical
-verbs and identical output, so pick by platform – you already know which OS you're
-on, so just choose; don't run a command to detect it.
+**This applies to running the walkthrough, not to what you build.**
+
+While guiding someone through `/create-agent`, don't hand-write shell for the
+toolkit's own housekeeping – setting up git, making directories, taking snapshots.
+Those are verbs on a helper script, so they behave identically on every machine and
+never surprise a first-time user with a permission prompt.
+
+**The workflow you build for them has no such restriction.** If their workflow needs
+to run a script, parse a file, call a command-line tool or crunch numbers in Python,
+write that code – it's often the *right* answer (see "Leveling Up" in
+`.claude/knowledge/component-decision-guide.md`). This rule is about not improvising
+platform-specific shell in the guided flow; it is not a rule against code.
+
+Every shell operation the walkthrough needs is a verb on a helper script that ships
+with the toolkit. There are two copies with identical verbs and identical output, so
+pick by platform – you already know which OS you're on, so just choose; don't run a
+command to detect it.
 
 **macOS / Linux**:
 ```bash
@@ -55,6 +68,10 @@ checkpoint "[short description of what this phase produced]"
 
 It prints `result=committed`, `result=nothing-to-commit`, or
 `result=skipped-no-git`. Only the first is worth mentioning to the user.
+
+**At every checkpoint, also update `project-plan/BUILD-STATE.md`** with the phase
+just completed. Do this even when git was declined – the state file is what makes an
+interrupted session resumable, and it's independent of whether snapshots are on.
 
 Then tell the user in one line what you saved – "Saved your interview notes" – and
 move on. Don't ask permission each time; don't make a production of it.
@@ -91,21 +108,62 @@ Since you're running this skill, the toolkit downloaded into this folder correct
      ```
      **STOP** – do not continue until this is resolved.
 
-2. **Check for an existing workflow**: Use Glob to check if `project-plan/project-design.md` already exists in this folder.
+2. **Check whether work already happened here** – and distinguish *finished* from
+   *interrupted*. Read `project-plan/BUILD-STATE.md` if it exists.
 
-   - **If it doesn't exist**: this is a first run. Continue to step 3.
-   - **If it exists**: a workflow was already built here. Read the file's title to get its name, then ask (`AskUserQuestion`):
+   A file existing doesn't mean it has anything in it. Someone who got interrupted
+   halfway through Phase 2 leaves behind the same filenames as someone who finished.
+   Check the state file's recorded phase, and sanity-check that
+   `project-plan/project-design.md` is non-empty before treating a build as complete.
+
+   - **No `BUILD-STATE.md` and no `project-plan/`** → first run. Continue to step 3.
+
+   - **`BUILD-STATE.md` says the build is incomplete** (or the design file is
+     missing/empty while notes exist) → **they were interrupted**. Don't start over
+     and don't make them repeat themselves:
+
+     "Looks like we started building **[name]** and didn't finish – we got as far as
+     [last completed phase]. Want to pick up where we left off?"
+
+     If yes: read `project-plan/interview-notes.md` to recover everything they
+     already told you, summarize it back in two or three lines so they know it
+     wasn't lost, and resume at the next phase. **Never re-ask a question the notes
+     already answer.**
+
+     If they'd rather restart, confirm before overwriting anything.
+
+   - **`BUILD-STATE.md` says complete** → a finished workflow lives here. Ask
+     (`AskUserQuestion`):
 
      "It looks like you already built **[workflow name]** in this folder. What would you like to do?"
-     - **Build something different** – a second, unrelated workflow is cleaner in its own folder. Ask for a name/path for the new folder, then run:
-       ```
-       copy-toolkit "[new-folder]"
-       ```
-       This copies only the toolkit (commands, skills, agents, knowledge, scripts,
-       `.gitignore`) and deliberately leaves behind `project-plan/`, the existing
-       custom workflow command, `CLAUDE.md` and `README.md`. Expect `result=copied`.
+     - **Build something different** – a second, unrelated workflow belongs in its
+       own folder, and the cleanest way to start one is a **fresh download**, exactly
+       as they did the first time:
 
-       Then tell the user: "I've copied the toolkit into `[new-folder]`. Open a new Claude Code session there (new tab, or quit and reopen in that folder) and run `/create-agent` again to start fresh."
+       ```
+       Let's start that one in a new folder. Two reasons it's cleaner than copying
+       this one: you get the current version of the toolkit, and you get its own
+       README and docs rather than this project's.
+
+       1. Make a new empty folder (I can do that for you)
+       2. Open it in Claude Code
+       3. Ask me to download the toolkit zip into it, same as last time
+       4. Run /create-agent there
+       ```
+
+       Offer to create the folder for them, but **don't try to run `/create-agent`
+       in it from here** – it needs its own session in that directory.
+
+       **Why not just copy this folder?** Because by now this one contains *their*
+       workflow: an overwritten README describing it, a `CLAUDE.md` with its
+       preferences, and its own command. Copying the toolkit alone leaves the new
+       folder without a README to orient them. A fresh download avoids all of it.
+
+       (The `copy-toolkit` verb exists for the offline case, if they genuinely can't
+       download. It copies the toolkit only – no `project-plan/`, no custom command,
+       no `CLAUDE.md`/`README.md` – so mention they'll be starting without the
+       toolkit's own README if they go that route.)
+
        **STOP** – do not continue in this folder.
      - **Improve the existing workflow** – this isn't the right tool. Tell the user: "For evolving a workflow you already built, `/improve-workflow` is the better fit – want me to switch to that instead?" If yes, follow the `workflow-improver` skill's instructions instead of continuing here. **STOP** these instructions.
 
@@ -117,14 +175,27 @@ Since you're running this skill, the toolkit downloaded into this folder correct
    recognizing them for your own future projects.
    ```
 
-   **Only if you are actually in Auto mode**, add this. Don't assert it blindly –
-   the user may be in a mode where you stop and ask far more often, and claiming
-   otherwise will confuse them when it doesn't match what they see:
+   Then explain the permission modes once. **Describe the mode you're actually in** –
+   don't assert Auto mode blindly, because if they're in a mode that stops and asks
+   constantly, a note claiming otherwise just confuses them.
+
    ```
-   🧭 Guide's note: You're in Auto mode right now – that's the setting where I make
-   more calls on my own instead of stopping to ask at every step. It's why this will
-   feel fast. You can change it any time; it's your call how much rope I get.
+   🧭 Guide's note: Right now I'm in [mode] – that controls how often I stop and ask
+   before doing something. The options:
+
+   • Plan       – I can only read and plan, never change files
+   • Default    – I ask before each change
+   • Auto       – I make routine calls myself, and ask on the risky ones
+   • Full access – I don't stop to ask (use sparingly)
+
+   To change it: in Claude Code press Shift+Tab to cycle modes; in Claude Desktop
+   the control sits just below where you type.
+
+   Auto is a good setting for this walkthrough – it keeps things moving. But it's
+   your call how much rope I get, and you can change it mid-flow.
    ```
+
+   Keep it to this once. Don't re-explain modes later.
 
 4. **Welcome message**:
    ```
@@ -203,10 +274,13 @@ Since you're running this skill, the toolkit downloaded into this folder correct
 
    **If they decline (either ask)**: accept it immediately and cheerfully. Say:
    "No problem – we'll build without it. Your files still save to this folder
-   normally." Then set a mental flag: **skip every 📌 Checkpoint and all of Phase 6
-   for the rest of this flow, and do not bring git up again.** Nagging a user who
-   already said no is worse than not offering. Mention once, in the Final Summary
-   only, that they can add it later if they change their mind.
+   normally."
+
+   Then **record the decision in `CLAUDE.md` (step 6 below) rather than just
+   remembering it.** A mental note dies with the session; the next session would ask
+   again, which is exactly the nagging we're avoiding. Once recorded: skip every
+   📌 Checkpoint and all of Phase 6, and don't raise git again. Mention it once more
+   in the Final Summary only.
 
    **If they accept the install**: tell them what to click, wait for them to say
    it's finished, then re-run `git-probe`. If it still reports `git=missing`, don't
@@ -233,65 +307,131 @@ Since you're running this skill, the toolkit downloaded into this folder correct
    Expect `result=committed`. Then tell the user: "Saved a starting snapshot. From
    here I'll save after each big step, so nothing gets lost."
 
+6. **Write down what we've decided so far** (first run only)
+
+   Two small files, created now rather than at the end. Both exist so that an
+   interrupted session can be resumed without the user repeating themselves.
+
+   **`CLAUDE.md`** – project preferences, starting with the git decision:
+
+   ```markdown
+   # [Folder name] - Project Instructions
+
+   > Being built with agent-builder. This file grows as decisions get made.
+
+   ## Preferences
+
+   - **Saving with git**: enabled | declined by the user – do not re-offer
+   - **Platform**: macOS | Windows | Linux
+
+   ## Decisions
+   [Appended as they're made]
+   ```
+
+   ```
+   🧭 Guide's note: I'm writing your preferences into a file called CLAUDE.md.
+   Claude Code reads it automatically at the start of every session in this folder,
+   so decisions like "don't ask about git again" stick even after you close this
+   window. It's the main way to teach Claude your preferences for a project.
+   ```
+
+   **`project-plan/BUILD-STATE.md`** – so an interrupted build can resume:
+
+   ```markdown
+   # Build State
+
+   - **Status**: in-progress
+   - **Last completed phase**: 0 (setup)
+   - **Workflow name**: [not yet chosen]
+   ```
+
+   **Update `BUILD-STATE.md` at every 📌 Checkpoint** – same moment, one extra edit,
+   and set `Status: complete` in Phase 6. This is what tells the next session whether
+   it's resuming or starting fresh.
+
+   Add to `CLAUDE.md` as they come up: the workflow's purpose, its audience, any
+   format rules, anything the user says twice.
+
 Continue to Phase 1.
 
 ### Phase 1: Use Case Discovery
 
 **Goal**: Identify a repetitive workflow that could benefit from automation
 
-**Step 1: Determine user's starting point**
+**Write as you go.** Append to `project-plan/interview-notes.md` after each
+substantive answer, not in one batch at the end of the phase. Interviews get
+interrupted – a phone call, a shift starting – and nothing the user has already told
+you should ever need saying twice. Keep it rough; it's notes, not prose.
 
-Ask this question FIRST:
+**Step 1: Set the stage, then find out where they're starting**
+
+Open with a sentence so they know what's happening:
+
+"Now we're going to build your workflow. First I need to understand what you'd like
+to automate."
+
+Then ask via `AskUserQuestion`:
 
 ```
 Do you already know what workflow you want to automate?
 
-1. Yes - I have a specific use case in mind
-2. No - Help me discover automation opportunities
+1. Yes - I have something specific in mind
+2. No - help me find a good candidate
 ```
 
-**If user selects Option 1 (knows what they want)**:
-- Skip the discovery questions below
-- Jump directly to: "Describe the workflow you want to automate"
-- Continue to Phase 2 (Process Interview) with targeted questions about their specific use case
+**If they know what they want**:
+- Skip discovery
+- "Tell me about it – what's the task?"
+- Continue to Phase 2 with targeted questions about their specific case
 
-**If user selects Option 2 (needs help discovering)**:
-- Continue with the discovery process below
+**If they need help finding one**: continue below.
 
-**Step 2: Discovery Process** (only if user selected Option 2)
+**Step 2: Discovery** (only if they need help)
 
-1. Ask about their work context (ONE QUESTION AT A TIME)
-2. Identify repetitive tasks
-3. Evaluate automation potential
-4. Select one use case to start
+Ask **one question at a time**, adapting as you go. Don't work through this as a
+checklist – follow what's interesting.
 
-**Questions to ask** (ONE AT A TIME - adapt based on responses):
 - What kind of work do you do regularly?
-- What tasks take up most of your time?
-- Which tasks feel repetitive or mechanical?
-- What tasks require gathering information from multiple sources?
-- What tasks involve writing similar documents repeatedly?
+- What takes up most of your time?
+- What feels repetitive or mechanical?
+- What makes you gather information from several places?
+- What has you writing a similar document again and again?
+- **What about your business do you wish you understood better?**
+- **Is there a number or a trend you check regularly, or wish you could?**
+- **What do you get asked for over and over by someone else?**
 
-**Good use case characteristics**:
-- ✅ Requires gathering information from 2+ sources
-- ✅ Involves writing/generating content
+The last three matter for people who manage rather than execute. A senior person may
+not have an obviously repetitive task, but almost always has a question about the
+business they answer by hand, on a schedule, from scattered data. That's an
+excellent first workflow.
+
+**A good first use case**:
+- ✅ Pulls together information from 2+ places
+- ✅ Produces something written – a report, a summary, a document
 - ✅ Follows a repeatable process
-- ✅ Takes 30+ minutes currently
-- ✅ Done weekly or more frequently
-- ✅ Quality depends on completeness/consistency
-- ❌ Requires real-time human judgment calls
-- ❌ Highly creative/novel each time
-- ❌ No clear success criteria
+- ✅ Takes 30+ minutes today
+- ✅ Happens weekly or more
+- ✅ Quality depends on being complete and consistent
+- ❌ Needs real-time human judgment at every step
+- ❌ Is different and creative every time
+- ❌ Has no clear definition of "done well"
 
-**If use case is poor fit**:
-- Explain why (doesn't match good characteristics)
-- Help identify better alternatives
-- Don't force implementation of bad use case
+**If the use case is a poor fit**, be careful how you say it. The issue is fit *for a
+first build*, not their idea being bad:
 
-**Output**: Document to `project-plan/interview-notes.md`
+"That's a real problem and Claude can absolutely help with it – but it's a tricky
+first build, because [reason]. This walkthrough works best on something repeatable
+with a clear finished product. Could we start with something like [alternative], and
+come back to that one once you've got the hang of it?"
+
+Never imply the tool can't help them, or that they picked wrong. They're learning a
+method, and the first attempt should be one that succeeds.
+
+**Output**: `project-plan/interview-notes.md`, written continuously as above.
 
 **📌 Checkpoint**: `"Capture use case: [workflow name]"` – this is the first
-checkpoint, so briefly explain what saving means (see "Saving progress as you go").
+checkpoint, so briefly explain what saving means, and name the tool: "Saved your
+interview notes with git – that's the snapshot thing I set up earlier."
 
 ### Phase 2: Process Interview
 
@@ -304,35 +444,91 @@ checkpoint, so briefly explain what saving means (see "Saving progress as you go
 4. Understand quality criteria
 5. Identify improvement opportunities
 
-**Questions to ask** (ONE AT A TIME):
-- Walk me through a recent time you did this task
-- **What information sources do you consult?** (IMPORTANT: Ask this proactively)
-- **Where does this data live?** (CRMs, wikis like Notion/Confluence, Jira, GitHub, Google Sheets, Gmail, Slack, databases, APIs, etc.)
-- What tools/systems do you use?
-- Where do you get stuck or slowed down?
-- What mistakes happen sometimes?
-- What would make this task easier?
-- What does "done well" look like?
-- What's the minimum viable outcome?
+**Keep appending to `project-plan/interview-notes.md` as you go**, same as Phase 1.
 
-**When user mentions systems of record** (Notion, Jira, Slack, GitHub, Salesforce, Google Workspace, etc.):
-- Note each data source they mention
-- Keep track for Phase 2.5 (Data Source Setup)
+**Questions to ask** (ONE AT A TIME):
+
+*Purpose – ask these early, they shape everything downstream:*
+- **What's the goal of this work?** What is it actually for?
+- **Who receives it?** Who reads or acts on the output?
+- **Why does it matter?** What goes wrong if it's late, or wrong, or skipped?
+
+*Process:*
+- Walk me through a recent time you did this task
+- **What information sources do you consult?** (ask this proactively)
+- **Where does that live?** (spreadsheets, email, a point-of-sale export, a shared
+  drive, a system like Notion or Salesforce, or just in someone's head)
+- What tools do you use?
+- Where do you get stuck or slowed down?
+- What mistakes creep in sometimes?
+- What would make this easier?
+- What does "done well" look like?
+- What's the minimum useful version?
+
+The purpose questions matter more than they look. "Who reads it" determines the
+format; "why it matters" tells you what must never be wrong. A workflow built
+without them produces something technically complete that nobody wants.
+
+**When they mention a system of record**: note it and keep it for Phase 2.5.
 
 **Output**: Append to `project-plan/interview-notes.md`
 
-**Step: Ideas or known plan** (after the interview, before data source setup)
+**Step: Put your own ideas on the table**
 
-Ask the user directly:
+Don't ask permission to have an opinion. Once you understand the process, **propose
+2–3 concrete, distinct approaches** – then let them react:
 
-"Now that I understand your process – would you like me to suggest a few ideas for how this could work, or do you already know what you want built?"
+"Here's how I'd think about building this:
 
-- **If they want ideas**: Propose 2-3 distinct, concrete automation angles based on everything gathered so far – don't just restate what they already told you. Let them react, mix and match, or pick one. This is deliberately unprompted: form your own view before they tell you theirs.
-- **If they already know**: Confirm their approach briefly and move on.
+**Option A** – [concrete approach, what it does, what they'd do each time]
+**Option B** – [meaningfully different approach, not a variation of A]
+**Option C** – [simpler or more ambitious than the others]
 
-🧭 Guide's note: This is a habit worth building on your own projects – ask your AI what it thinks before you tell it what to do. You get ideas you wouldn't have thought of, and you can always ignore them.
+Or tell me what you had in mind – you know this work better than I do."
 
-**Output**: Append the chosen direction to `project-plan/interview-notes.md`
+Requirements:
+- Make them **genuinely different**, not three flavours of the same thing
+- Ground each in what they actually told you, not generic automation
+- Say what each would feel like *to use*, not how it's built
+- Always include the "or tell me yours" option, last, without pressure
+
+If they already described exactly what they want, still offer one alternative you
+think is worth considering. Then defer to them.
+
+🧭 Guide's note: Worth stealing for your own projects – ask the AI what it would do
+before you tell it what you want. You'll get options you hadn't considered, and it
+costs nothing to ignore them. The trap is describing your solution so precisely that
+you only ever get your own idea back.
+
+**Output**: Append to `project-plan/interview-notes.md`:
+- The chosen direction, and *why* they chose it
+- **The options they didn't pick**, in a `## Ideas not taken` section
+
+Keep the rejected options. When something turns out to be awkward three weeks later,
+the alternative that was already half-considered is the most valuable thing in the
+file – and nobody ever remembers it otherwise.
+
+**Then write the summary.** `interview-notes.md` is a running transcript – useful,
+but nobody rereads it. Distil it into `project-plan/interview-summary.md`:
+
+```markdown
+# [Workflow name] – what we learned
+
+- **The task**: [one sentence]
+- **Goal**: [what it's for]
+- **Audience**: [who receives the output]
+- **Why it matters**: [what goes wrong without it]
+- **Today it takes**: [time] and involves [systems/people]
+- **Data needed**: [sources, and how each is reached]
+- **"Done well" means**: [their quality bar, in their words]
+- **Approach chosen**: [the option they picked, and why]
+- **Explicitly out of scope for V1**: [what's deferred]
+```
+
+Show it to them: "Here's what I've understood – anything wrong or missing?"
+
+This is the last cheap moment to catch a misunderstanding. After this, a wrong
+assumption gets built into a workflow instead of corrected in a sentence.
 
 **📌 Checkpoint**: `"Document current process and chosen direction"`
 
@@ -357,46 +553,58 @@ them in Claude Desktop under Settings → Connectors: pick the tool, sign in, do
 Nothing to install. (You'll sometimes see them called MCP servers – same thing.)
 
 Two nice things about it: you're never handing over a password, and you can switch
-Claude's access off from the other tool's own settings whenever you want.
+Claude's access off from the connected tool's own settings whenever you want.
 ```
 
 **Process**:
 
-1. **List the data sources** they mentioned in the interview, and ask which they
-   already have connected:
+1. **Check what's connected before asking anything.** Call `ListMcpResourcesTool`
+   first – don't make the user answer a question you can answer yourself. Most
+   people don't know what's connected, and asking makes them feel behind.
 
-   "You mentioned [list]. Are any of these already connected to Claude for you?
-   If you're not sure, that's fine – we'll find out."
+   Then tell them what you found:
 
-   To see what's already connected, use `ListMcpResourcesTool`.
+   "I checked – you've got [X and Y] connected already, so I can read those
+   directly. Nothing set up for [Z]."
 
-   If they want to add one, walk them to the UI – don't send them to a config file
-   or an install command:
-   - **Claude Desktop**: Settings → Connectors. Ready-made connectors for common
-     tools are listed there; pick one and sign in. Not listed? "Add custom
-     connector" takes a URL from the vendor.
+2. **For each source, decide the V1 path.** Default to manual, but make it a real
+   choice when a connector plausibly exists:
+
+   **Already connected** → use it. Note it and move on.
+
+   **Not connected, and a connector likely exists** (Notion, Slack, Google, GitHub,
+   Atlassian and similar) → offer both, with a recommendation:
+
+   "For [system] we've got two options:
+
+   - **Paste it in for now** – you export or copy the data when you run the
+     workflow. Takes a minute each time, and we get this working today.
+   - **Set up a connector** – I read it directly, nothing to paste. Adding it is a
+     few minutes in Claude Desktop under Settings → Connectors.
+
+   I'd start with pasting, honestly – get the workflow proven first, then connect it
+   once you know it's worth it. But if you'd rather set it up now, happy to walk you
+   through it."
+
+   If they choose the connector, walk them to the UI – never a config file or an
+   install command:
+   - **Claude Desktop**: Settings → Connectors. Pick from the list and sign in; if
+     it isn't listed, "Add custom connector" takes a URL from the vendor.
    - **Claude Code**: `/mcp`
 
-   Two caveats worth raising before they go hunting: custom connectors need a Pro,
-   Max, Team or Enterprise plan, and on Team/Enterprise an Organization Owner adds
-   them centrally – so it may be a request to their admin rather than something
-   they can do themselves.
+   Flag the two gotchas before they go hunting: custom connectors need a Pro, Max,
+   Team or Enterprise plan, and on Team/Enterprise an Organization Owner adds them
+   centrally – so it may be a request to their admin.
+
+   **Not connected and no connector exists** → manual, no deliberation:
+
+   "There's no connection available for [system], so you'll paste that part in.
+   That's a completely normal way to start."
+
+   Either way, add to `project-plan/IMPROVEMENTS.md`: "V2: connect [system]
+   directly", and document the manual step in the workflow itself.
 
    Don't recite package names. See `.claude/knowledge/connectors.md`.
-
-2. **For each source, pick one of two paths** – and bias hard toward the second:
-
-   **Connected already** → use it. Note it in the checklist and move on.
-
-   **Not connected** → do it manually for V1. Say so plainly and without
-   apology:
-
-   "There's no connection set up for [system], so for the first version you'll
-   paste that part in yourself. That's a completely normal way to start – we get
-   the workflow working end to end, and connecting it properly is a good V2."
-
-   Then add to `project-plan/IMPROVEMENTS.md`: "V2: connect [system] directly",
-   and document the manual step in the workflow itself.
 
 **Do not offer to build a custom MCP server here.** It's a genuine project of its
 own, it requires an authentication decision the user isn't equipped to make yet,
@@ -503,53 +711,36 @@ Adjust based on their response. This becomes part of the plan document's Use Cas
 
 Read `.claude/knowledge/workflow-patterns.md` and `.claude/knowledge/connectors.md` for guidance.
 
-**Process**:
-1. Identify available integrations (MCPs)
-2. Design research phase (parallel data gathering)
-3. Design generation/action phase
-4. Define validation/quality checks
-5. Plan incremental improvements (V1 → V2+)
+**What a good design achieves** – aim at these rather than working through a
+prescribed sequence. You're good at this; the goals matter more than the recipe.
 
-**Key Design Decisions**:
+- **The data the workflow needs is actually reachable** – via a connector, or
+  gathered by the user in a step that's written down
+- **Repeated work is packaged so it reproduces the same way every time** – that's
+  what skills are for
+- **Real code where prose would be flaky** – anything involving arithmetic, dates,
+  parsing or exact formatting is better as a script than as instructions
+- **Independent work happens in parallel**, so the user isn't waiting on a queue
+- **Wrong output gets caught before it's delivered**, not after
+- **V1 is genuinely small** – working and narrow beats complete and unfinished
+- **The user is guided through it** – it should be usable by someone who's forgotten
+  how it works
 
-**MCPs Available?**
-- Check what MCP servers user has installed
-- Suggest alternatives if needed
-- Document missing MCPs as V2 requirement
+**Success criteria for the design itself**:
+- They could run it next week without re-reading anything
+- Every step exists for a reason they'd recognize
+- Nothing in it depends on a system they can't reach
 
-**Research Phase**:
-- What information needs gathering?
-- Can research run in parallel?
-- Design research agents/skills (one per source)
+**How to involve them**: confirm the **goal, the outcome, and the constraints**.
+Don't hand them architecture decisions. "Should this be a skill or an agent?" is not
+a question a restaurant manager can answer, and asking it just erodes confidence.
+Decide, then tell them what you decided and why in one line.
 
-**Generation Phase**:
-- What needs to be created/updated?
-- Serial vs parallel generation?
-- What validation is needed?
-
-**Choose Claude Code Features**:
-
-Read `.claude/knowledge/component-decision-guide.md` for detailed guidance. Quick summary:
-
-Use **Commands** for user-facing entry points:
-- Example: `/close-out`, `/vendor-watch`
-- User types this to start the workflow
-
-Use **Skills** when logic is reusable or composable:
-- Example: validator, researcher, executor
-- Multiple commands can use the same skill
-
-Use **Agents** (via Task tool) for parallel workers:
-- Example: Research Notion, Slack, Jira simultaneously
-- Minimize blocking time with parallel execution
-
-Use **Knowledge files** for reference materials:
-- Example: Interview guides, templates, validation rules
-- Data that changes independently of logic
-
-As you pick each piece, name the concept out loud to the user rather than silently
-choosing – "I'm making this a Skill because you'll want to reuse it." Then show
-them this note once, when you make the first such choice:
+**Use the building blocks where they make sense** – Commands, Skills, Agents,
+Knowledge files. `.claude/knowledge/component-decision-guide.md` has the full
+guidance. Name each choice out loud as you make it – "I'm making this a Skill so it
+can be reused" – so they learn the vocabulary by seeing it applied, not by being
+lectured. Then show this note once, at the first such choice:
 
 ```
 🧭 Guide's note: Commands, Skills, Agents and Knowledge files are the four
@@ -731,13 +922,13 @@ Create `.claude/commands/setup.md` in the user's workflow project using:
 
 Fill in the placeholders:
 - `[WORKFLOW_NAME]` - The name of the workflow
-- `[MCP_LIST]` - Extract from `project-plan/data-source-setup.md` "Required Data Sources" section. Format as:
+- `[MCP_LIST]` - Connectors this workflow uses, from `project-plan/data-source-setup.md`. Format as:
   ```markdown
-  - **notion** - For accessing workspace pages and databases
-  - **slack** - For searching message history
-  - **github** - For repository and PR information
+  - **notion** - reading workspace pages
+  - **google-drive** - reading the weekly export
   ```
-  Only include MCPs (not APIs or manual sources). If no MCPs needed, state: "This workflow doesn't require any MCP servers."
+  Only list connectors, not manual sources. If none are needed, say so plainly:
+  "This workflow doesn't need any connectors – all its data is provided by you."
 - `[WORKFLOW_SESSIONS_DIR]` - Session directory name (e.g., close-out-sessions)
 - `[ENV_VARS_SECTION]` - If using .env, document required variables
 - `[ADDITIONAL_LOCAL_SETTINGS]` - Any other local config beyond permissions
@@ -807,18 +998,36 @@ you're doing.
 - Ensures environment is ready before testing workflow
 - Better user experience (setup catches issues, not workflow execution)
 
-**4.7 Testing**
+**4.7 Fresh-eyes review, then testing**
 
-Test the workflow:
-1. Run command with test data
-2. Verify research phase completes
-3. Check output format
-4. Test error handling
-5. Document any issues in `project-plan/IMPROVEMENTS.md`
+**First, get a second opinion before the user ever sees it run.** Launch a subagent
+with the Task tool to read the generated workflow cold – you've been building it for
+an hour and you're the worst-placed reader of your own instructions.
 
-**If workflow fails due to environment**:
-- Update `/setup` command to catch that issue
-- Re-run `/setup` to verify the fix
+Ask it to check specifically:
+- Would someone who wasn't in this conversation understand what to do?
+- Does it reference any file, connector or step that doesn't exist?
+- Does it assume knowledge the user said they don't have?
+- Is any instruction ambiguous enough to be followed two different ways?
+
+Fix what it finds worth fixing before moving on. Mention that you're doing it:
+
+```
+🧭 Guide's note: Before we test this, I'm having a second Claude read it with fresh
+eyes – it hasn't seen our conversation, so it'll notice anything I've assumed but
+never wrote down. Worth doing on anything you build: the person who wrote it is
+always the worst judge of whether it's clear.
+```
+
+**Then test it**:
+1. Run the command with real (or realistic) data
+2. Verify each phase completes
+3. Check the output is actually what they wanted – show them
+4. Try one thing going wrong, if that's cheap to simulate
+5. Log anything imperfect in `project-plan/IMPROVEMENTS.md`
+
+**If it fails because of the environment**: update `/setup` to catch that case, so
+the next person gets a clear message instead of the same confusion.
 
 **4.8 Documentation**
 
@@ -844,11 +1053,17 @@ guide is always available at github.com/anutron/agent-builder-plugin.
 The previous version is also recoverable from the Phase 0 snapshot, which is one
 more reason that checkpoint happens first.
 
-Create `CLAUDE.md` using template from `.claude/knowledge/templates/CLAUDE.template`:
+**Extend** `CLAUDE.md` – don't overwrite it. It already exists from Phase 0 and holds
+the user's preferences and the decisions recorded along the way; losing those would
+undo the point of writing them down early.
+
+Merge in the relevant sections from `.claude/knowledge/templates/CLAUDE.template`:
 - Project-specific instructions for Claude
 - File organization rules
 - Common patterns
 - Error handling
+
+Keep the existing `## Preferences` and `## Decisions` sections intact at the top.
 
 **📌 Checkpoint**: `"Build V1 of [workflow name]"`
 
@@ -899,8 +1114,20 @@ Keep it to one offer, framed as optional: "No pressure – just flagging it's po
 Git was set up back in Phase 0 and you've been checkpointing along the way, so
 this is just the closing snapshot – not a first-time setup.
 
-If the user declined git in Phase 0, or it couldn't be installed, skip this phase
-entirely – jump to the Final Summary.
+**Always mark the build complete first**, whether or not git is in play. Set
+`project-plan/BUILD-STATE.md` to:
+
+```markdown
+# Build State
+
+- **Status**: complete
+- **Last completed phase**: 6
+- **Workflow name**: [name]
+- **Command**: /[workflow-name]
+```
+
+If the user declined git in Phase 0, or it couldn't be installed, skip the rest of
+this phase – jump to the Final Summary.
 
 1. Take the closing snapshot:
 
@@ -923,7 +1150,28 @@ This commits and then prints the full history under `--- history ---`.
 
 Show the user, in this order:
 
-1. **The habit to build** (the most important thing to land):
+1. **Congratulate them – genuinely, and be specific about what they did.**
+
+   Most people arriving here have never built software before, and they just did.
+   That's worth marking properly rather than moving straight to next steps. Name the
+   actual thing they made and what it saves them:
+
+   ```
+   🎉 You built it. /[workflow-name] is done and working.
+
+   Think about what that actually is: you described how you do [task], and now
+   there's a tool that does it the same careful way every time. That's [X hours a
+   month] you get back – and you built it by having a conversation.
+
+   You didn't write a line of code. You don't need to. The skill is knowing how to
+   describe what you want and improve it as you go, and you just did both.
+   ```
+
+   Adapt it – don't recite it. Make the specifics real: their workflow's name, their
+   task, their time saved. Generic praise reads as hollow; naming what they actually
+   accomplished doesn't.
+
+2. **The habit to build** (the most important thing to land):
    ```
    ✅ Your workflow is ready: /[workflow-name]
 
@@ -931,17 +1179,17 @@ Show the user, in this order:
    That's how this gets better over time instead of staying frozen at V1.
    ```
 
-2. **The other tools available**:
+3. **The other tools available**:
    - `/save-workflow` - Commit changes with context
    - `/review-workflow` - Check code quality, security, best practices
    - `/improve-workflow` - Retrospective after actually using it (the habit above)
 
-3. **Where to find documentation**:
+4. **Where to find documentation**:
    - `README.md` - Usage guide
    - `CLAUDE.md` - Project instructions
    - `project-plan/` - Design decisions and backlog
 
-4. **If they declined git in Phase 0** – and only then – mention it exactly once,
+5. **If they declined git in Phase 0** – and only then – mention it exactly once,
    without pressure, then never again:
    ```
    One thing you skipped earlier: git, which saves snapshots of your work so you
@@ -949,7 +1197,7 @@ Show the user, in this order:
    through it – takes a few minutes.
    ```
 
-5. **Going further** (optional, mention briefly): once this feels comfortable, there
+6. **Going further** (optional, mention briefly): once this feels comfortable, there
    are more Claude Code features worth knowing – `/fewer-permission-prompts` to trim
    repeated approvals, `/mcp` to connect more data sources, global `CLAUDE.md`
    conventions that apply across every project, and `/workflows` if this one ever

@@ -21,7 +21,11 @@ Skill: workflow-improver
 
 ## When to Run This
 
-Run `/improve-workflow` after you've actually *used* your workflow – not right after building it. The habit worth building is: build it, use it, run `/improve-workflow`, use it again.
+**Best moment: right at the end of a session where you just ran the workflow.** Everything that went wrong is still in the conversation – the bits you had to clarify, the output you asked to be redone, the step that took three tries. Run it then and Claude can point those out to you, instead of asking you to remember them.
+
+Running it later still works; you'll just be going from memory.
+
+Either way, run it after you've actually *used* the workflow – not right after building it. The habit worth building is: build it, use it, run `/improve-workflow`, use it again.
 
 This is different from `/review-workflow`, which checks code quality, security, and best practices regardless of whether you've run the workflow yet.
 

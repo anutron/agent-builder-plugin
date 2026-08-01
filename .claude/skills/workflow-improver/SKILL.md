@@ -14,6 +14,31 @@ This is the retrospective step in the loop: **build → use → improve → use 
 - `.claude/knowledge/component-decision-guide.md` - where a given fix belongs, and the "leveling up" menu
 - `.claude/knowledge/workflow-patterns.md` - patterns and anti-patterns to recognize
 
+## Best run right after using the workflow – and mine that session
+
+**The ideal moment for this is the end of the session in which the workflow just
+ran.** Everything that went wrong is right there in the conversation above you: the
+places the user had to clarify, the output they asked you to redo, the step that
+needed three attempts, the question you had to ask because something wasn't written
+down.
+
+**So look before you ask.** If the workflow ran earlier in this conversation, read
+back over it and come to the user with observations rather than a blank question:
+
+"I noticed a few things while we were running it:
+- You had to tell me the report goes to the GM, not the owner – I should have known that
+- We went back and forth twice on the labour format
+- The sales export path was wrong the first time
+
+Do those match what bugged you? Anything else?"
+
+That is a far better retrospective than "how did it go?", because friction is
+extremely easy to forget five minutes after you've worked around it. The user
+smoothed over three things without really noticing; the transcript didn't.
+
+**If the workflow didn't run in this session**, fall back to the interview in Step 1
+– but say which you're doing, so they know whether to jog their own memory.
+
 ## The one rule
 
 **The user is reporting on a real experience. Believe them, and be specific back.**
@@ -43,9 +68,19 @@ questions instead of generic ones.
    before proceeding: "Have you had a chance to use it yet? This works best after a
    real run – if you haven't, we can wait."
 
+5. **Re-read this session, if the workflow ran in it.** This is the richest source
+   available and it disappears when the window closes. Collect: corrections the user
+   made, output they asked you to change, anything you had to ask that should have
+   been written down, retries, and steps that visibly took longer than they should.
+   Bring these to Step 1 as observations rather than starting from a blank question.
+
 ### Step 1: Ask about the most recent run
 
-Open with one question, and make it specific to their workflow:
+**If you gathered observations from this session in Step 0**, lead with those (see
+"Best run right after using the workflow" above) and use the question below only as
+a follow-up. Observations first, question second – it's easier to react than recall.
+
+**Otherwise**, open with one question, specific to their workflow:
 
 "Tell me about the last time you ran `/[workflow-name]`. What worked, what didn't,
 and did anything surprise you?"
