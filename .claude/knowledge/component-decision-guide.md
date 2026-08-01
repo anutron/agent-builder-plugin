@@ -172,10 +172,10 @@ Command: /generate-report
 **Use case:** Expose reusable skill as user command
 
 ```
-Command: /save
+Command: /save-workflow
 └─ Skill: save-progress (git commit with context)
 
-Command: /review
+Command: /review-workflow
 └─ Skill: workflow-reviewer (analyze and recommend)
 ```
 
@@ -321,3 +321,31 @@ Bad architecture has:
 - ❌ Hardcoded data throughout code
 - ❌ Confusing file organization
 - ❌ Becomes harder to maintain over time
+
+## Leveling Up (Post-V1 Ideas)
+
+These are for *after* a V1 workflow is working and proven — not decisions to make during initial design. Offer them opportunistically, tied to something concrete the user just built, not as a checklist to work through.
+
+### Prose → deterministic script
+
+**When**: A step in the workflow follows the exact same procedure every time — parsing a fixed format, calling one API with fixed steps, formatting output a fixed way — and Claude is currently reasoning through it in prose each run.
+
+**Why it's worth it**: A bash (or Python/Node) script embedded in the skill runs the same way every time, faster and without token cost, and can be embedded as a step the skill invokes rather than a prompt Claude re-derives.
+
+**Don't do this for**: judgment calls, anything where the input varies enough that hard-coded steps would break.
+
+### The `/workflows` tool
+
+**When**: The workflow has grown enough independent parallel work (multiple finders, multiple verifiers, a multi-stage pipeline) that manually launching and tracking Task-tool agents each run is getting unwieldy.
+
+**Why it's worth it**: `/workflows` orchestrates fan-out/fan-in, verification passes, and multi-stage pipelines deterministically, with built-in patterns for adversarial verification and loop-until-dry discovery.
+
+**Don't do this for**: a workflow with one or two steps — it's overhead the workflow hasn't earned yet.
+
+### A CLI or small local web server
+
+**When**: The workflow's output would benefit from a repeatable interface that doesn't require Claude Code at all — a dashboard to browse results, a script a teammate can run without a Claude Code session, a visualization of the data the workflow produces.
+
+**Why it's worth it**: Turns a personal Claude Code workflow into something shareable or schedulable outside a conversation.
+
+**Don't do this for**: a workflow that's still evolving — the interface locks in assumptions that are easier to change while it's still just a skill.

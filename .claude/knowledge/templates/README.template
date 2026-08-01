@@ -141,16 +141,21 @@ Phase 3: [Phase name] ([timing])
 
 ### Improving the Workflow
 
-This workflow uses the agent-builder plugin's improvement loops:
+This workflow uses agent-builder's improvement loops:
 
-**After using the workflow**:
+**After actually using the workflow** (the habit worth building):
 ```
-/review
+/improve-workflow
+```
+
+**To check code quality, security, and best practices**:
+```
+/review-workflow
 ```
 
 **To save improvements**:
 ```
-/save
+/save-workflow
 ```
 
 **To check what's planned**:
@@ -220,4 +225,4 @@ See `project-plan/IMPROVEMENTS.md` for details.
 
 ## Acknowledgments
 
-Built using the [agent-builder](https://github.com/your-org/agent-builder) plugin for Claude Code.
+Built using [agent-builder](https://github.com/anutron/agent-builder-plugin) for Claude Code.

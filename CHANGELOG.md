@@ -5,6 +5,50 @@ All notable changes to the agent-builder plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-07-31
+
+### Added
+- New `/improve-workflow` command and `workflow-improver` skill — a trimmed, per-project retrospective loop (build → use → improve → use again), distinct from `/review-workflow`'s code-quality/security checks
+- Generated workflow commands (`command.template`) now close with a standard reminder to run `/improve-workflow` after actual use
+- "Leveling Up" section in `component-decision-guide.md` covering when a workflow is ready for a deterministic bash-embedded skill, the `/workflows` tool, or a CLI/local web server — offered only after V1 works, not during design
+- 🧭 Guide's note callouts woven through `/create-agent` and `workflow-reviewer` narrating real Claude Code features (Plan Mode, Auto mode, Subagents, Skills) as they fire, with a ground-rule explanation at the start of the flow
+- `/create-agent` Phase 0 now detects an existing `project-plan/project-design.md` and offers to either redirect to `/improve-workflow` or set up a fresh folder for a second, unrelated workflow
+- `/create-agent` Phase 2 now offers unprompted automation ideas ("want me to suggest ideas, or do you know what you want built?") before locking in scope
+- `/create-agent` Phase 3 now drafts the goal and constraints back to the user for confirmation instead of asking them to author it from scratch
+- README "Going further" section pointing to global skills/CLAUDE.md, `/promote`, `/fewer-permission-prompts`, and `github.com/anutron/ai`
+
+### Fixed
+- Remaining stale unnamespaced `/save`/`/review` references in `save-progress/SKILL.md` and `component-decision-guide.md`, missed in the 2.0.0 pass
+
+## [2.0.0] - 2026-07-31
+
+### Removed
+- **BREAKING**: Dropped the Claude Code plugin/marketplace distribution model entirely
+  - Removed `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`
+  - No more `/plugin marketplace add` + `/plugin install` flow
+  - No more `/agent-builder:create-agent` namespaced command
+- Removed `.claude/files-to-install/` staging directory and `install.sh`
+  - All tooling now lives directly at the repo root's `.claude/` tree
+  - Nothing to copy: downloading the repo *is* the install step
+- Removed `/update-agent-builder` command
+  - Its entire design assumed a plugin-marketplace cache path to re-run `install.sh` against
+  - No replacement: re-download the repo into a fresh folder if tooling changes
+- Deleted stale working notes `RECOVERY_PLAN.md` and `dogfooding-notes.md`
+  - Documented bugs in the plugin/skill-loading architecture this release removes
+
+### Changed
+- New install flow: download the repo as a zip (curl + unzip, no `git clone` needed) directly into an empty project folder, then run `/create-agent`
+  - Avoids the macOS Xcode Command Line Tools popup that a first `git` invocation triggers on a fresh Mac
+  - Matches Windows, where git is optional and Claude Code's PowerShell fallback handles the download natively
+- Consolidated the two divergent `create-agent` implementations into a single source of truth: `.claude/skills/create-agent/SKILL.md`
+  - Removed `.claude/commands/create-agent.md` (the version the plugin actually loaded, now redundant)
+  - Kept the skill version's Plan Mode integration (`EnterPlanMode`/`ExitPlanMode`), which had been dead code – the plugin never loaded skills
+  - Ported forward the "already know what you want?" Phase 1 fast-path from the old command file
+  - Rewrote Phase 0 from "copy files + restart Claude" to a lightweight presence check, since tooling is already in place at download time
+- Fixed stale references across moved skills/templates: `review.md`/`save.md` → `review-workflow.md`/`save-workflow.md`, and plugin-cache paths (`~/.claude/plugins/marketplaces/...`) → plain `.claude/knowledge/...` paths
+- `workflow-reviewer`'s exclusion list now also skips `.claude/skills/create-agent/*` and agent-builder's own knowledge docs, since they now live in the same folder as the user's generated workflow
+- Rewrote `README.md` for the new download-and-go flow and flat repository structure
+
 ## [0.1.17] - 2025-11-02
 
 ### Fixed

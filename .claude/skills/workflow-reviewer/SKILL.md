@@ -8,10 +8,10 @@ allowed-tools: Task, Read, Write, Edit, Glob, Grep
 
 You are analyzing a workflow project to find improvement opportunities.
 
-**Reference files (from plugin):**
-- `~/.claude/plugins/marketplaces/thanx-agent-builder/.claude/knowledge/workflow-patterns.md` - Best practices from successful projects
-- `~/.claude/plugins/marketplaces/thanx-agent-builder/.claude/knowledge/security-guidelines.md` - Security patterns to check
-- `~/.claude/plugins/marketplaces/thanx-agent-builder/.claude/knowledge/component-decision-guide.md` - Architecture guidance
+**Reference files:**
+- `.claude/knowledge/workflow-patterns.md` - Best practices from successful projects
+- `.claude/knowledge/security-guidelines.md` - Security patterns to check
+- `.claude/knowledge/component-decision-guide.md` - Architecture guidance
 
 ## Your Task
 
@@ -30,16 +30,20 @@ Before launching agents:
    - Create a list of identifiers to filter out later
 3. **If file doesn't exist**: No ignored items yet, proceed normally
 
-**2. Define excluded paths** (files installed by agent-builder plugin):
-Agents should NOT review these files as they're maintained by the plugin:
+**2. Define excluded paths** (files that are part of the agent-builder toolkit, not this workflow):
+Agents should NOT review these files as they're maintained by agent-builder itself:
 - `.claude/commands/review-workflow.md`
 - `.claude/commands/save-workflow.md`
+- `.claude/commands/improve-workflow.md`
 - `.claude/skills/workflow-reviewer/*`
 - `.claude/skills/save-progress/*`
 - `.claude/skills/security-checker/*`
 - `.claude/skills/software-best-practices/*`
+- `.claude/skills/workflow-improver/*`
+- `.claude/skills/create-agent/*`
 - `.claude/agents/review-*.md` (all 5 review agents)
-- `.claude/knowledge/templates/*` (templates from plugin)
+- `.claude/knowledge/templates/*` (agent-builder's own templates)
+- `.claude/knowledge/workflow-patterns.md`, `component-decision-guide.md`, `mcp-integration.md`, `setup-command-guide.md`, `security-guidelines.md` (agent-builder's own reference docs — but review any *other* knowledge file the user added for their workflow)
 
 **Everything else SHOULD be reviewed** - this is just a blacklist, not a whitelist. Review all other files in the project.
 
@@ -49,32 +53,34 @@ Pass these exclusions to all review agents.
 
 Launch these 5 agents simultaneously using the Task tool. **Include the excluded paths in each agent's prompt** so they know which files to skip.
 
+🧭 Guide's note: These are Subagents — independent workers launched via the Task tool that all run at the same time instead of one after another. That's why this finishes in ~30-40 seconds instead of several minutes. Reach for the same pattern any time you have several independent things to check or research at once.
+
 **Agent 1: Duplication and Simplification**
 - Subagent: `review-duplication-simplification`
 - Analyzes: Repeated logic, over-engineering, unnecessary complexity
-- Exclude: Agent-builder plugin files (listed in Step 0)
+- Exclude: Agent-builder toolkit files (listed in Step 0)
 
 **Agent 2: Conflicts and Setup Drift**
 - Subagent: `review-conflicts-setup`
 - Analyzes: Documentation conflicts, setup command accuracy
-- Exclude: Agent-builder plugin files (listed in Step 0)
+- Exclude: Agent-builder toolkit files (listed in Step 0)
 
 **Agent 3: Security Analysis**
 - Subagent: `review-security`
 - Invokes: `security-checker` skill
 - Analyzes: Credentials, secrets, .gitignore patterns
-- Exclude: Agent-builder plugin files (listed in Step 0)
+- Exclude: Agent-builder toolkit files (listed in Step 0)
 
 **Agent 4: Best Practices**
 - Subagent: `review-best-practices`
 - Invokes: `software-best-practices` skill if code exists
 - Analyzes: Code quality, workflow architecture, parallelization opportunities
-- Exclude: Agent-builder plugin files (listed in Step 0)
+- Exclude: Agent-builder toolkit files (listed in Step 0)
 
 **Agent 5: Goal Drift Detection**
 - Subagent: `review-goal-drift`
 - Analyzes: Over-engineered solutions, scope creep
-- Exclude: Agent-builder plugin files (listed in Step 0)
+- Exclude: Agent-builder toolkit files (listed in Step 0)
 
 **IMPORTANT**:
 - Launch all 5 agents in a single message using multiple Task tool calls
@@ -260,7 +266,7 @@ The workflow is in good shape. No changes needed in IMPROVEMENTS.md.
 ## Example User Interaction
 
 ```
-User: /review
+User: /review-workflow
 Assistant: Running comprehensive workflow review with 5 parallel agents...
 
 [Agents complete in 35 seconds]

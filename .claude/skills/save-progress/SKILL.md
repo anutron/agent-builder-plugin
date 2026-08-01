@@ -154,7 +154,7 @@ Updated documentation:
 
 ### Step 9: Offer Review
 
-"Would you like me to run `/review` to analyze the workflow and suggest more improvements?"
+"Would you like me to run `/review-workflow` to analyze the workflow and suggest more improvements?"
 
 ## Error Handling
 
@@ -181,7 +181,7 @@ Updated documentation:
 ## Integration with Self-Improvement Loop
 
 This skill is called:
-1. **Manually** by user via `/save` command
+1. **Manually** by user via `/save-workflow` command
 2. **Autonomously** by Claude after completing improvements:
    - User asks for improvement
    - Claude updates IMPROVEMENTS.md

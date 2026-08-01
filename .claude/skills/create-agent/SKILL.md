@@ -1,6 +1,6 @@
 ---
 name: create-agent
-description: Install agent-builder tools and guide users through creating MCP-powered workflow agents. Conducts use case interview, designs architecture, generates initial files, and creates project plan documentation.
+description: Guide users through creating MCP-powered workflow agents. Conducts a use case interview, designs the architecture, generates initial files, and creates project plan documentation.
 allowed-tools: Read, Write, Edit, Glob, Bash, AskUserQuestion, TodoWrite, EnterPlanMode, ExitPlanMode
 ---
 
@@ -13,68 +13,104 @@ You are guiding a user through building a workflow agent using Claude Code.
 - `.claude/knowledge/component-decision-guide.md` - When to use Commands, Skills, Agents, Knowledge
 - `.claude/knowledge/mcp-integration.md` - How to use MCPs effectively
 - `.claude/knowledge/setup-command-guide.md` - How to implement /setup commands in user workflows
-- `.claude/files-to-install/` - Tools to copy into user's project
+- `.claude/knowledge/templates/` - File templates used during Phase 4
 
 ## Your Task
 
 Guide the user through 6 phases to create a working V1 workflow:
 
-### Phase 0: Install Agent-Builder Tools
+### Phase 0: Confirm Environment
 
-**Goal**: Copy all agent-builder tools into the user's current directory
+**Goal**: Confirm the agent-builder toolkit is present, detect whether a workflow was already built here, and set expectations for the guided experience.
+
+Since you're running this skill, the toolkit downloaded into this folder correctly — there's nothing left to install. Do a couple of quick checks, set the ground rules, then welcome the user.
 
 **Process**:
 
-1. **Verify we're in a good location**:
-   - Check if current directory looks like a project root
-   - If empty directory: perfect
-   - If has files: ask user if they want to install here
+1. **Check the toolkit is present**: Use Glob to confirm `.claude/commands/review-workflow.md` and `.claude/skills/workflow-reviewer/SKILL.md` exist.
 
-2. **Copy all tools from `.claude/files-to-install/` to current directory**:
+   - **If found**: continue to step 2.
+   - **If missing**: something went wrong with the download/unzip. Show:
+     ```
+     ⚠️  I can't find the agent-builder toolkit in this folder (.claude/commands/review-workflow.md is missing).
 
-   **Commands to copy**:
-   - `.claude/files-to-install/commands/review.md` → `.claude/commands/review.md`
-   - `.claude/files-to-install/commands/save.md` → `.claude/commands/save.md`
+     Double-check that you downloaded and unzipped the repo into this exact folder, then run /create-agent again.
+     ```
+     **STOP** — do not continue until this is resolved.
 
-   **Skills to copy**:
-   - `.claude/files-to-install/skills/workflow-reviewer/SKILL.md` → `.claude/skills/workflow-reviewer/SKILL.md`
-   - `.claude/files-to-install/skills/save-progress/SKILL.md` → `.claude/skills/save-progress/SKILL.md`
-   - `.claude/files-to-install/skills/security-checker/SKILL.md` → `.claude/skills/security-checker/SKILL.md`
-   - `.claude/files-to-install/skills/software-best-practices/SKILL.md` → `.claude/skills/software-best-practices/SKILL.md`
+2. **Check for an existing workflow**: Use Glob to check if `project-plan/project-design.md` already exists in this folder.
 
-   **Agents to copy**:
-   - All `.claude/files-to-install/agents/*.md` → `.claude/agents/*.md`
+   - **If it doesn't exist**: this is a first run. Continue to step 3.
+   - **If it exists**: a workflow was already built here. Read the file's title to get its name, then ask (`AskUserQuestion`):
 
-   **Knowledge templates to copy**:
-   - All `.claude/files-to-install/templates/*` → `.claude/knowledge/templates/*`
+     "It looks like you already built **[workflow name]** in this folder. What would you like to do?"
+     - **Build something different** — a second, unrelated workflow is cleaner in its own folder. Ask for a name/path for the new folder, then copy just the toolkit files there (not `project-plan/`, not the existing custom workflow command, not `CLAUDE.md`/`README.md`):
+       ```bash
+       mkdir -p [new-folder]/.claude
+       cp -r .claude/commands/review-workflow.md .claude/commands/save-workflow.md .claude/commands/improve-workflow.md [new-folder]/.claude/commands/
+       cp -r .claude/skills/create-agent .claude/skills/workflow-reviewer .claude/skills/save-progress .claude/skills/security-checker .claude/skills/software-best-practices .claude/skills/workflow-improver [new-folder]/.claude/skills/
+       cp -r .claude/agents [new-folder]/.claude/
+       cp -r .claude/knowledge [new-folder]/.claude/
+       ```
+       Then tell the user: "I've copied the toolkit into `[new-folder]`. Open a new Claude Code session there (new tab, or quit and reopen in that folder) and run `/create-agent` again to start fresh."
+       **STOP** — do not continue in this folder.
+     - **Improve the existing workflow** — this isn't the right tool. Tell the user: "For evolving a workflow you already built, `/improve-workflow` is the better fit — want me to switch to that instead?" If yes, follow the `workflow-improver` skill's instructions instead of continuing here. **STOP** these instructions.
 
-3. **Confirm installation**:
-   - List what was installed
-   - Explain that these tools are now part of their project
-   - They can customize them as needed
+3. **Set the ground rules** (first run only):
+   ```
+   🧭 Guide's note: Throughout this walkthrough you'll see notes marked like this one.
+   These aren't Claude thinking out loud — they're commentary built into this teaching
+   tool that calls out real Claude Code features as they come up, so you start
+   recognizing them for your own future projects.
 
-**Output**:
-```
-Installed agent-builder tools:
-✅ /review command (5 parallel analysis agents)
-✅ /save command (smart git commits)
-✅ workflow-reviewer, save-progress, security-checker, software-best-practices skills
-✅ File templates for workflow generation
+   You're also running in Auto Mode right now, which is why I'll make more calls on my
+   own without stopping to ask at every step — you'll see that pattern throughout.
+   ```
 
-These tools are now part of your project. Let's build your workflow!
-```
+4. **Welcome message**:
+   ```
+   ✅ Agent-builder tools are ready:
+
+   📋 Commands: /review-workflow, /save-workflow, /improve-workflow
+   🧠 Skills: workflow-reviewer, save-progress, security-checker, software-best-practices, workflow-improver
+   🤖 Agents: 5 parallel review agents
+
+   Let's build your workflow!
+   ```
+
+Continue to Phase 1.
 
 ### Phase 1: Use Case Discovery
 
 **Goal**: Identify a repetitive workflow that could benefit from automation
 
-**Process**:
-1. Ask about their work context
+**Step 1: Determine user's starting point**
+
+Ask this question FIRST:
+
+```
+Do you already know what workflow you want to automate?
+
+1. Yes - I have a specific use case in mind
+2. No - Help me discover automation opportunities
+```
+
+**If user selects Option 1 (knows what they want)**:
+- Skip the discovery questions below
+- Jump directly to: "Describe the workflow you want to automate"
+- Continue to Phase 2 (Process Interview) with targeted questions about their specific use case
+
+**If user selects Option 2 (needs help discovering)**:
+- Continue with the discovery process below
+
+**Step 2: Discovery Process** (only if user selected Option 2)
+
+1. Ask about their work context (ONE QUESTION AT A TIME)
 2. Identify repetitive tasks
 3. Evaluate automation potential
 4. Select one use case to start
 
-**Questions to ask** (adapt based on responses):
+**Questions to ask** (ONE AT A TIME - adapt based on responses):
 - What kind of work do you do regularly?
 - What tasks take up most of your time?
 - Which tasks feel repetitive or mechanical?
@@ -110,7 +146,7 @@ These tools are now part of your project. Let's build your workflow!
 4. Understand quality criteria
 5. Identify improvement opportunities
 
-**Questions to ask**:
+**Questions to ask** (ONE AT A TIME):
 - Walk me through a recent time you did this task
 - **What information sources do you consult?** (IMPORTANT: Ask this proactively)
 - **Where does this data live?** (CRMs, wikis like Notion/Confluence, Jira, GitHub, Google Sheets, Gmail, Slack, databases, APIs, etc.)
@@ -126,6 +162,19 @@ These tools are now part of your project. Let's build your workflow!
 - Keep track for Phase 2.5 (Data Source Setup)
 
 **Output**: Append to `project-plan/interview-notes.md`
+
+**Step: Ideas or known plan** (after the interview, before data source setup)
+
+Ask the user directly:
+
+"Now that I understand your process — would you like me to suggest a few ideas for how this could work, or do you already know what you want built?"
+
+- **If they want ideas**: Propose 2-3 distinct, concrete automation angles based on everything gathered so far — don't just restate what they already told you. Let them react, mix and match, or pick one. This is deliberately unprompted: form your own view before they tell you theirs.
+- **If they already know**: Confirm their approach briefly and move on.
+
+🧭 Guide's note: This is a habit worth building on your own projects — ask your AI what it thinks before you tell it what to do. You get ideas you wouldn't have thought of, and you can always ignore them.
+
+**Output**: Append the chosen direction to `project-plan/interview-notes.md`
 
 ### Phase 2.5: Data Source Setup
 
@@ -263,6 +312,8 @@ Before designing the implementation plan, enter plan mode to enable collaborativ
 
 1. Call `EnterPlanMode` tool
 2. Explain to user: "I'm entering plan mode to design your workflow architecture. You'll be able to review and request changes to the plan before we start implementation."
+
+   🧭 Guide's note: Plan Mode is a real Claude Code feature — it lets you review a proposed plan and request changes before any files get touched. Reach for it any time you want to see the approach before committing to it.
 3. Continue to Phase 3 (now in plan mode)
 
 ---
@@ -270,6 +321,18 @@ Before designing the implementation plan, enter plan mode to enable collaborativ
 ### Phase 3: Improvement Plan Design
 
 **Goal**: Design a workflow using Claude Code features
+
+**Step 0: Confirm goal and constraints**
+
+The interview already surfaced most of this — don't make the user re-derive it from scratch. Draft it back to them:
+
+"Here's what I think we're building:
+- **Goal**: [one sentence, drafted from the interview]
+- **Constraints**: [one or two sentences — time, data access, tools, anything that limits the approach]
+
+Did I get that right?"
+
+Adjust based on their response. This becomes part of the plan document's Use Case Summary.
 
 Read `.claude/knowledge/workflow-patterns.md` and `.claude/knowledge/mcp-integration.md` for guidance.
 
@@ -317,6 +380,8 @@ Use **Knowledge files** for reference materials:
 - Example: Interview guides, templates, validation rules
 - Data that changes independently of logic
 
+🧭 Guide's note: When you explain this architecture choice to the user, name the concept out loud (e.g. "I'm making this a Skill because..."). Commands, Skills, Agents, and Knowledge files are the same building blocks used throughout Claude Code, not just here.
+
 **Define V1 Scope** (start minimal):
 - V1: Research + manual generation (prove research works)
 - V2: Add generation (prove quality acceptable)
@@ -339,6 +404,8 @@ Use **Knowledge files** for reference materials:
    [Why this workflow is needed, what problem it solves]
 
    ## Use Case Summary
+   - **Goal**: [One sentence — confirmed with the user in Step 0]
+   - **Constraints**: [Key limits — confirmed with the user in Step 0]
    - **Current process**: [Description]
    - **Time currently**: [Duration]
    - **Pain points**: [Key issues]
@@ -416,7 +483,7 @@ mkdir -p .claude/knowledge
 mkdir -p [work-sessions]  # e.g., prd-sessions, query-sessions
 ```
 
-Add to `.gitignore` (use template from `.claude/files-to-install/templates/gitignore.template`):
+Add to `.gitignore` (use template from `.claude/knowledge/templates/gitignore.template`):
 ```
 [work-sessions]/
 .claude/config.json
@@ -426,7 +493,7 @@ Add to `.gitignore` (use template from `.claude/files-to-install/templates/gitig
 
 **4.2 Permissions Configuration**
 
-Create `.claude/config.json` automatically using the template from `.claude/files-to-install/templates/config.template.json`.
+Create `.claude/config.json` automatically using the template from `.claude/knowledge/templates/config.template.json`.
 
 **Process**:
 1. Read the template file
@@ -445,7 +512,7 @@ This configuration reduces permission prompts within the project directory by al
 **4.2.1 Create /setup Command**
 
 Create `.claude/commands/setup.md` in the user's workflow project using:
-- Template: `.claude/files-to-install/templates/setup.template`
+- Template: `.claude/knowledge/templates/setup.template`
 - Implementation guide: `.claude/knowledge/setup-command-guide.md`
 
 Fill in the placeholders:
@@ -466,7 +533,7 @@ The `/setup` command must capture ALL local configuration that isn't committed t
 
 **4.3 Main Command**
 
-Create `.claude/commands/[workflow-name].md` using template from `.claude/files-to-install/templates/command.template`.
+Create `.claude/commands/[workflow-name].md` using template from `.claude/knowledge/templates/command.template`.
 
 Include:
 - Brief description
@@ -535,14 +602,14 @@ Test the workflow:
 
 **4.8 Documentation**
 
-Create `README.md` using template from `.claude/files-to-install/templates/README.template`:
+Create `README.md` using template from `.claude/knowledge/templates/README.template`:
 - Features
 - Prerequisites (MCPs needed)
 - Installation steps
 - Usage instructions
 - Architecture overview
 
-Create `CLAUDE.md` using template from `.claude/files-to-install/templates/CLAUDE.template`:
+Create `CLAUDE.md` using template from `.claude/knowledge/templates/CLAUDE.template`:
 - Project-specific instructions for Claude
 - File organization rules
 - Common patterns
@@ -553,6 +620,18 @@ Create `CLAUDE.md` using template from `.claude/files-to-install/templates/CLAUD
 ### Phase 5: Iteration Planning
 
 **Goal**: Define next improvements
+
+**Step 0: Offer a "level up" idea** (only after Phase 4 testing succeeds and V1 actually works)
+
+Now that the user has something working, look for ONE well-matched opportunity to make it more capable — tied to something concrete they just built, not a generic list. Examples of the kind of offer to make:
+
+- "Your workflow now produces [concrete output]. Want to try turning [the part that's currently prose] into an actual script? It'll be more consistent than having me reason through it each time."
+- "This now generates [concrete artifact, e.g. a CSV]. Want a small local web page that visualizes it?"
+- "This workflow does [substantial multi-step thing]. If it keeps growing, the `/workflows` tool can orchestrate the parallel pieces more deterministically than manually launching agents — see `.claude/knowledge/component-decision-guide.md` for when that's worth it."
+
+🧭 Guide's note: This is deliberately offered *after* something works, not during design — prove the simple version first, then decide if leveling up is worth it.
+
+Keep it to one offer, framed as optional: "No pressure — just flagging it's possible if you want to push further." If they decline or seem uninterested, drop it and move on.
 
 **Process**:
 1. Review V1 limitations
@@ -605,23 +684,35 @@ Files created:
 
 Next steps:
 - Run workflow: /[workflow-name]
-- Review findings: /review
-- Save improvements: /save
+- After using it, capture lessons: /improve-workflow
+- Review findings: /review-workflow
+- Save improvements: /save-workflow
 "
 ```
 
 ## Final Summary
 
-Show the user:
-1. **How to run their workflow**: `/[workflow-name]`
-2. **How to iterate**:
-   - `/save` - Commit changes with context
-   - `/review` - Get comprehensive recommendations
+Show the user, in this order:
+
+1. **The habit to build** (the most important thing to land):
+   ```
+   ✅ Your workflow is ready: /[workflow-name]
+
+   The loop from here: use it → run /improve-workflow → use it again.
+   That's how this gets better over time instead of staying frozen at V1.
+   ```
+
+2. **The other tools available**:
+   - `/save-workflow` - Commit changes with context
+   - `/review-workflow` - Check code quality, security, best practices
+   - `/improve-workflow` - Retrospective after actually using it (the habit above)
+
 3. **Where to find documentation**:
    - `README.md` - Usage guide
    - `CLAUDE.md` - Project instructions
    - `project-plan/` - Design decisions and backlog
-4. **V2+ roadmap**: What's in `IMPROVEMENTS.md`
+
+4. **Going further** (optional, mention briefly): once this feels comfortable, there's more to explore — promoting a skill you like to use everywhere (`/promote`), cutting down permission prompts (`/fewer-permission-prompts`), global `CLAUDE.md` conventions, connecting more MCPs, and Aaron's own public skill library at `github.com/anutron/ai`.
 
 **Offer to help**:
 "Want to try running the workflow now? I can help debug if anything doesn't work as expected."

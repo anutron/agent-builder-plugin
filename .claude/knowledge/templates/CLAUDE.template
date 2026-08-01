@@ -3,22 +3,28 @@
 ## Workflow Overview
 [Brief description of what this workflow does]
 
-## Tools from Agent-Builder Plugin
+## Tools from Agent-Builder
 
-When working in this project, use these tools from the agent-builder plugin:
+When working in this project, use these tools from agent-builder:
 
-### `/save` - Commit changes
+### `/save-workflow` - Commit changes
 Run this after completing work to:
 - Commit changes with context from IMPROVEMENTS.md
 - Clean up completed improvements
 - Update documentation
 
-### `/review` - Analyze workflow
+### `/review-workflow` - Analyze workflow
 Run this periodically to:
 - Find improvement opportunities
 - Check for security issues
 - Validate best practices
 - Get actionable recommendations
+
+### `/improve-workflow` - Retrospective after use
+Run this after actually *using* the workflow (not just building it):
+- Capture what worked and what didn't
+- Update the workflow's own files based on what was learned
+- Occasionally surfaces a "level up" idea once things are stable
 
 ### `security-checker` skill
 Automatically runs when handling files with potential secrets.
@@ -209,7 +215,7 @@ When user asks "Make X better":
 1. Update IMPROVEMENTS.md with plan
 2. Do the work
 3. Ask user to test
-4. Commit with `/save`
+4. Commit with `/save-workflow`
 5. Clean IMPROVEMENTS.md
 
 ### LLM-Initiated Improvements
