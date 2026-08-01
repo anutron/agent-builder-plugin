@@ -319,11 +319,13 @@ Since you're running this skill, the toolkit downloaded into this folder correct
 
    ```
    🧭 Guide's note: Right now I'm in [mode] – that controls how often I stop and ask
-   before doing something. The three you'll use:
+   before doing something. Ordered from most careful to most hands-off:
 
-   • Plan     – I can read and plan, but never change a file
-   • Default  – I ask before each change
-   • Auto     – I handle routine things myself, and still ask on anything risky
+   • Plan          – I can read and plan, but never change a file
+   • Default       – I ask before each change
+   • Accept edits  – I edit files without asking, but still check before running
+                     anything on your computer
+   • Auto          – I handle routine things myself, and still ask on anything risky
 
    To change it: in Claude Code press Shift+Tab to cycle modes; in Claude Desktop
    the control sits just below where you type.
@@ -335,7 +337,7 @@ Since you're running this skill, the toolkit downloaded into this folder correct
 
    Keep it to this once. Don't re-explain modes later.
 
-   **List only these three.** There is a further mode that skips permission checks
+   **List only these four.** There is a further mode that skips permission checks
    entirely; it's off by default, buried in advanced settings, and no one arriving
    here will have it enabled. Naming it to a first-time user only plants the idea of
    turning off the thing standing between them and an unrecoverable mistake. If a
@@ -348,9 +350,10 @@ Since you're running this skill, the toolkit downloaded into this folder correct
    📋 Commands: /review-workflow, /save-workflow, /improve-workflow
    🧠 Skills: workflow-reviewer, save-progress, security-checker, software-best-practices, workflow-improver
    🤖 Agents: 5 parallel review agents
-
-   Let's build your workflow!
    ```
+
+   Don't end this with a question or a call to action – Phase 1 opens the interview
+   properly, and two "let's get started!" lines in a row is noise.
 
 5. **Offer to set up version control** (first run only)
 
@@ -507,30 +510,35 @@ substantive answer, not in one batch at the end of the phase. Interviews get
 interrupted – a phone call, a shift starting – and nothing the user has already told
 you should ever need saying twice. Keep it rough; it's notes, not prose.
 
-**Step 1: Set the stage, then find out where they're starting**
+**Step 1: Set the stage, then just start**
 
-Open with a sentence so they know what's happening:
+**Don't open by asking them to choose a path.** "Do you know what you want, or shall
+I ask questions?" makes them decide something before they know what either option
+involves, and it makes the interview sound like the consolation route. The interview
+*is* the method – being asked good questions about your own work is the thing worth
+learning here.
 
-"Now we're going to build your workflow. First I need to understand what you'd like
-to automate."
-
-Then ask via `AskUserQuestion`:
+So: say what's about to happen, mention that skipping is available, and ask the
+first question in the same breath.
 
 ```
-Do you already know what workflow you want to automate?
+Now I'm going to help you build your first agent.
 
-1. Yes - I have something specific in mind
-2. No - help me find a good candidate
+We'll start with an interview – a few questions about your work, so I understand
+what's actually worth automating. If you already know exactly what you want to
+build, just say so and we'll jump straight to it.
+
+First question: what kind of work do you find yourself doing over and over?
 ```
 
-**If they know what they want**:
-- Skip discovery
-- "Tell me about it – what's the task?"
-- Continue to Phase 2 with targeted questions about their specific case
+Then **go**. Don't wait for permission to begin.
 
-**If they need help finding one**: continue below.
+**If at any point they say they already know what they want**, drop the discovery
+questions immediately, say "great, tell me about it", and move to Phase 2 with
+targeted questions about their specific case. They don't need to have said it
+upfront – people often realize it three questions in.
 
-**Step 2: Discovery** (only if they need help)
+**Step 2: Discovery**
 
 Ask **one question at a time**, adapting as you go. Don't work through this as a
 checklist – follow what's interesting.
