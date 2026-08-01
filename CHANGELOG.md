@@ -5,6 +5,15 @@ All notable changes to the agent-builder plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.1] - 2026-07-31
+
+### Fixed
+- **The download no longer lands in a sub-folder.** Found in a real first-run test: the old curl+unzip instructions produced `agent-builder-plugin-main/`, and getting out of it took a judgement call mid-setup that a less confident user wouldn't make. Now a single tarball command with `--strip-components=1` unpacks straight into the project folder
+  - Also removes a silent failure mode: moving contents up with `mv folder/* .` skips dotfiles, which would have left `.claude/` behind and the toolkit non-functional in a way that's hard to diagnose. Verified end to end that `.claude/`, `CLAUDE.md` and `.gitignore` all land correctly
+  - Windows gets an explicit `curl.exe` variant, since PowerShell aliases `curl` to `Invoke-WebRequest` and breaks the pipe
+- **`/reload-skills` is now a documented step, not troubleshooting.** Claude Code scans for skills at session start, so freshly downloaded ones aren't visible – a real first run hit `Unknown command: /create-agent` and stalled. The README now says to run it, with restarting the session as the fallback for older versions
+- `/create-agent`'s "toolkit missing" path now checks for a wrapper folder first and fixes it, rather than telling the user to re-download something they already have. It also warns explicitly about hidden files when moving contents up
+
 ## [2.4.0] - 2026-07-31
 
 ### Changed

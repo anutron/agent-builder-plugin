@@ -8,8 +8,8 @@ You do not need to know how to code.
 
 ## Quick start
 
-No git, no plugin marketplace, no install step – just download this repo into an
-empty folder and run one command.
+No git, no plugin marketplace, no install step. Download this repo into an empty
+folder, tell Claude Code to pick it up, and start. Four steps, about two minutes.
 
 **Before you start**, you need Claude Code installed. If you don't have it yet, see
 [claude.com/code](https://claude.com/code). Everything below happens inside Claude
@@ -21,18 +21,37 @@ Code – you'll be typing to Claude, not typing shell commands yourself.
    weekly-report in my Documents and open it."* Naming it after the task you want
    to automate is a good habit.
 
-2. **Ask Claude to fetch this toolkit.** Copy this in:
+2. **Ask Claude to fetch this toolkit.** Copy this in exactly as written:
 
-   > Please download the zip archive of github.com/anutron/agent-builder-plugin
-   > (use curl, no need for git) and unzip it directly into this folder – not into
-   > a subfolder. GitHub's zip unpacks into a folder called
-   > `agent-builder-plugin-main`, so move the contents up into this folder and
-   > remove the empty wrapper.
+   > Run this command in my current folder, then show me what landed:
+   >
+   > `curl -sL https://github.com/anutron/agent-builder-plugin/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1`
+   >
+   > If I'm on Windows, use this instead:
+   >
+   > `curl.exe -sL https://github.com/anutron/agent-builder-plugin/archive/refs/heads/main.tar.gz -o main.tar.gz; tar -xzf main.tar.gz --strip-components=1; del main.tar.gz`
 
-   You'll likely see a one-time prompt asking you to approve network access, and
-   another to approve running the download. Both are expected – approve them.
+   You'll see a one-time prompt approving network access and the download itself.
+   Both are expected – approve them.
 
-3. **Start building:**
+   When it finishes, the folder should contain `README.md`, `CLAUDE.md`,
+   `CHANGELOG.md`, `LICENSE` and a hidden `.claude` folder – **all directly in your
+   project folder, not inside a sub-folder**. That's what `--strip-components=1`
+   is for: GitHub packs everything inside a wrapper folder, and this unpacks it one
+   level up so you don't have to move anything.
+
+3. **Load the new tools.** Type:
+
+   ```
+   /reload-skills
+   ```
+
+   Claude Code scans for skills when a session starts, so the ones you just
+   downloaded aren't visible yet. This tells it to look again – you should see a
+   confirmation that several skills were added. (If your version doesn't have that
+   command, just close this session and open the folder again; same effect.)
+
+4. **Start building:**
 
    ```
    /create-agent
@@ -41,10 +60,13 @@ Code – you'll be typing to Claude, not typing shell commands yourself.
    The first time you use a skill, Claude may ask permission for that too. Approve
    it and you're off.
 
-   **If `/create-agent` doesn't appear** when you type `/`, it usually means the
-   files landed in a subfolder instead of this one. You can also just ask in plain
-   English: *"Use the create-agent skill."* If that doesn't work either, ask Claude
-   to check that `.claude/skills/create-agent/SKILL.md` exists where you are.
+   **If `/create-agent` still isn't recognized**, check these in order:
+   - Did step 3 report that skills were added? If not, run it again or restart the session.
+   - Ask Claude: *"Does `.claude/skills/create-agent/SKILL.md` exist here?"* If it
+     says no, the download landed in the wrong place – ask it to check for a folder
+     called `agent-builder-plugin-main` and move the contents up, **including the
+     hidden `.claude` folder**.
+   - You can also just ask in plain English: *"Use the create-agent skill."*
 
 That's it. `/create-agent` walks you through a short interview and builds your
 first workflow. Expect roughly 30–60 minutes for a first one, most of it you

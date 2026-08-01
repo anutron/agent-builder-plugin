@@ -216,11 +216,26 @@ Since you're running this skill, the toolkit downloaded into this folder correct
 1. **Check the toolkit is present**: Use Glob to confirm `.claude/commands/review-workflow.md` and `.claude/skills/workflow-reviewer/SKILL.md` exist.
 
    - **If found**: continue to step 2.
-   - **If missing**: something went wrong with the download/unzip. Show:
-     ```
-     ⚠️  I can't find the agent-builder toolkit in this folder (.claude/commands/review-workflow.md is missing).
+   - **If missing**: the download didn't land where it should have. Before showing
+     an error, **check whether it's sitting in a wrapper folder** – look for
+     `agent-builder-plugin-main/` or a similar directory here. That's the single
+     most common cause, and you can just fix it:
 
-     Double-check that you downloaded and unzipped the repo into this exact folder, then run /create-agent again.
+     "Found the toolkit one folder down, in `agent-builder-plugin-main`. Moving it
+     up – including the hidden `.claude` folder, which is the part that matters."
+
+     Move **everything**, hidden files included (`.claude`, `.gitignore`, `CLAUDE.md`),
+     then remove the empty wrapper. A plain `mv folder/* .` silently skips
+     dotfiles and leaves the toolkit broken in a way that's hard to spot.
+
+     Only if it genuinely isn't here, show:
+     ```
+     ⚠️  I can't find the agent-builder toolkit in this folder
+     (.claude/commands/review-workflow.md is missing).
+
+     The download either didn't finish or landed somewhere else. Re-run the
+     download command from the README, then type /reload-skills, then try
+     /create-agent again.
      ```
      **STOP** – do not continue until this is resolved.
 
