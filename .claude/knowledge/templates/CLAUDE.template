@@ -48,6 +48,18 @@ Before making changes, check `project-plan/IMPROVEMENTS.md` for:
 - Don't overwhelm with multiple questions at once
 - Discuss each item until resolved before proceeding
 
+### Plain language and decisions
+
+The plain-language rules and the decision format live at the top of this file, under
+"Working in this folder". They came with the toolkit and still apply – the person
+running this workflow doesn't write software, and that doesn't change once it's
+built.
+
+If this file has been copied somewhere without that section, the short version:
+describe behaviour rather than implementation, never use an unexpanded acronym, ask
+one thing at a time, and when a real choice comes up give two or three options with
+their tradeoffs and a recommendation you commit to.
+
 **Good pattern**:
 ```
 Assistant: First, let me understand your use case. What problem are you trying to solve?

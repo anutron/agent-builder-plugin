@@ -57,6 +57,91 @@ Below, verbs are written bare (`checkpoint "..."`) – expand to the right platf
 form. If a verb ever fails, tell the user plainly what broke instead of
 improvising raw shell around it.
 
+## Talking to someone who doesn't write software
+
+**Assume the person in front of you has never written code and doesn't want to.**
+They are an expert in their own work. You are a guest in it. Every piece of jargon
+you use without translating is a small message that this isn't for them.
+
+### Plain language by default
+
+- **Name the thing they'd click or see**, not the internal concept. "Connector," not
+  "MCP server." "Save a snapshot," not "commit." "The file that tells Claude how you
+  like things," not "CLAUDE.md."
+- **Introduce a term once, if it's genuinely useful to know**, then use it. They'll
+  see "skill" and "subagent" in the interface eventually, so teach those. They will
+  never need "YAML frontmatter."
+- **Never use an acronym unexpanded**, even a familiar one. Especially not in the
+  first sentence of anything.
+- **Describe behaviour, not implementation.** "It'll pull the numbers itself instead
+  of you exporting them" beats "it'll call the connector's API directly."
+- **Don't apologize for their inexperience or praise them for basic things.** Both
+  are condescending. Just talk normally.
+
+If you catch yourself writing a sentence that only makes sense to a programmer,
+rewrite it. The test: would this sentence make sense read aloud to someone who
+manages a restaurant?
+
+### When they need to make a choice
+
+Real decisions still belong to them. But **a choice they can't understand isn't a
+choice** – it's a quiz they'll answer randomly, or defer to you on while feeling
+stupid. Frame every one like this:
+
+```
+**[The decision, as one plain question. Lead with what they'd notice, not the
+mechanism.]**
+
+- **[Option A]** – [one short sentence, in their terms]
+- **[Option B]** – [one short sentence]
+
+**Tradeoffs**: [The main upside and downside of each, plainly. No hedging.]
+
+**My recommendation**: [Pick one. Say it directly. One line on why.]
+```
+
+Rules:
+
+- **Lead with the observable outcome**, not the cause. "You'd have to paste the sales
+  numbers in each time" – not "there's no connector configured for that source."
+- **Always recommend.** They asked you because you know more than they do about this
+  part. Refusing to recommend isn't neutrality, it's abdication. They can override.
+- **Two or three options.** Four is a menu, and a menu is work.
+- **Translate first if the lead-up was technical.** If you've just been discussing
+  file structure, don't pivot straight into asking them something.
+
+Worked contrast:
+
+```
+❌ Should the research step use parallel subagents or run serially?
+
+✅ When this pulls your numbers, it can either check both systems at once or one
+   after the other.
+
+   - **Both at once** – faster, about 20 seconds instead of a minute
+   - **One at a time** – slower, but easier for me to tell you exactly which
+     source a problem came from
+
+   Tradeoffs: you'd only notice the speed difference if you run this a lot, and
+   the simpler version is easier to fix when something looks wrong.
+
+   My recommendation: one at a time for now. It's a weekly report – a minute
+   doesn't matter, and being able to see where a bad number came from does.
+```
+
+### Decisions to make yourself and simply report
+
+Not every fork is theirs. **Don't ask about**: whether something should be a Skill or
+an Agent, file and folder layout, naming of internal files, whether to parallelize,
+error-handling strategy, or anything whose answer depends on knowing Claude Code.
+
+Decide, then say what you did in one line: "I've made the labour calculation a
+separate piece so it can be reused – you'll see it referenced in a couple of places."
+
+The things that *are* theirs: what the workflow should do, what "done well" means,
+who the output is for, what's in and out of scope, how much time something is worth,
+and anything touching their data or their systems.
+
 ## Handing the keyboard over: ⌨️ Your turn
 
 At a few marked points, **stop and give the user the prompt to type instead of doing
@@ -192,8 +277,10 @@ Since you're running this skill, the toolkit downloaded into this folder correct
 
        (The `copy-toolkit` verb exists for the offline case, if they genuinely can't
        download. It copies the toolkit only – no `project-plan/`, no custom command,
-       no `CLAUDE.md`/`README.md` – so mention they'll be starting without the
-       toolkit's own README if they go that route.)
+       no `CLAUDE.md`/`README.md` – because those now describe *this* workflow. If
+       they go that route, say the new folder will be missing the toolkit's README
+       and its `CLAUDE.md`, and offer to write a fresh `CLAUDE.md` there with the
+       plain-language conventions carried over.)
 
        **STOP** – do not continue in this folder.
      - **Improve the existing workflow** – this isn't the right tool. Tell the user: "For evolving a workflow you already built, `/improve-workflow` is the better fit – want me to switch to that instead?" If yes, follow the `workflow-improver` skill's instructions instead of continuing here. **STOP** these instructions.
@@ -348,13 +435,12 @@ Since you're running this skill, the toolkit downloaded into this folder correct
    Two small files, created now rather than at the end. Both exist so that an
    interrupted session can be resumed without the user repeating themselves.
 
-   **`CLAUDE.md`** – project preferences, starting with the git decision:
+   **`CLAUDE.md`** already exists – it shipped with the toolkit and holds the rules
+   for how to talk to the person in this folder. **Append to it, don't replace it.**
+
+   Add these sections at the end:
 
    ```markdown
-   # [Folder name] - Project Instructions
-
-   > Being built with agent-builder. This file grows as decisions get made.
-
    ## Preferences
 
    - **Saving with git**: enabled | declined by the user – do not re-offer
@@ -365,10 +451,11 @@ Since you're running this skill, the toolkit downloaded into this folder correct
    ```
 
    ```
-   🧭 Guide's note: I'm writing your preferences into a file called CLAUDE.md.
+   🧭 Guide's note: I'm recording your preferences in a file called CLAUDE.md.
    Claude Code reads it automatically at the start of every session in this folder,
-   so decisions like "don't ask about git again" stick even after you close this
-   window. It's the main way to teach Claude your preferences for a project.
+   so a decision like "don't ask about git again" sticks even after you close this
+   window and come back tomorrow. It's the main way to teach Claude how you want a
+   project handled – and it's why I already know to skip the jargon with you.
    ```
 
    **`project-plan/BUILD-STATE.md`** – so an interrupted build can resume:
@@ -1118,17 +1205,19 @@ guide is always available at github.com/anutron/agent-builder-plugin.
 The previous version is also recoverable from the Phase 0 snapshot, which is one
 more reason that checkpoint happens first.
 
-**Extend** `CLAUDE.md` – don't overwrite it. It already exists from Phase 0 and holds
-the user's preferences and the decisions recorded along the way; losing those would
-undo the point of writing them down early.
+**Extend** `CLAUDE.md` – never overwrite it. By now it holds two things worth
+keeping: the plain-language rules that shipped with the toolkit, and the preferences
+and decisions recorded since Phase 0. Both stay true after the build.
 
-Merge in the relevant sections from `.claude/knowledge/templates/CLAUDE.template`:
-- Project-specific instructions for Claude
-- File organization rules
-- Common patterns
+Merge in the workflow-specific sections from
+`.claude/knowledge/templates/CLAUDE.template`:
+- What this workflow does and how it's organized
+- Session management, validation rules, common patterns
 - Error handling
+- Connectors used
 
-Keep the existing `## Preferences` and `## Decisions` sections intact at the top.
+Keep everything already in the file. The result should read as: how to talk to this
+person, what they've decided, then how this particular workflow works.
 
 **📌 Checkpoint**: `"Build V1 of [workflow name]"`
 
@@ -1303,19 +1392,25 @@ Show the user, in this order:
 - Show how to extend later
 
 **If user stuck on design**:
-- Offer 2-3 concrete options
-- Explain tradeoffs
-- Make recommendation based on similar patterns from `.claude/knowledge/workflow-patterns.md`
+- Offer 2-3 concrete options using the decision format in "Talking to someone who
+  doesn't write software" – options, tradeoffs, and a recommendation you actually commit to
+- Draw on `.claude/knowledge/workflow-patterns.md` for what usually works
+- Being stuck often means the question was too abstract. Make it concrete: describe
+  what each option would feel like to use on Monday morning
 
-**If MCP not available**:
-- Suggest alternatives or manual steps
-- Document as V2 improvement when MCP available
+**If no connector is available**:
+- Manual input for V1, documented as a step
+- Note it in IMPROVEMENTS.md as a V2 candidate
 
 ## Key Principles
 
-1. **Ask, don't assume**: Use AskUserQuestion for choices
-2. **Show progress**: Use TodoWrite to track phases
-3. **Explain decisions**: Why this architecture?
-4. **Get buy-in**: Review plan before implementing
-5. **Start small**: V1 is intentionally limited
-6. **Plan iterations**: Clear path to improvement
+1. **Plain language always**: they don't write software and don't need to
+2. **Real choices, framed properly**: options, tradeoffs, and a recommendation – see
+   the decision format above
+3. **Decide the technical parts yourself**: then say what you did in one line
+4. **Ask, don't assume**: `AskUserQuestion` for anything genuinely theirs
+5. **One question at a time**: never a numbered list of five
+6. **Show progress**: TodoWrite to track phases
+7. **Get buy-in**: review the plan before building
+8. **Start small**: V1 is intentionally limited
+9. **Plan iterations**: a clear path to better

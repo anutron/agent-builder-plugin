@@ -39,6 +39,21 @@ smoothed over three things without really noticing; the transcript didn't.
 **If the workflow didn't run in this session**, fall back to the interview in Step 1
 – but say which you're doing, so they know whether to jog their own memory.
 
+## Keep it in their language
+
+**The person you're talking to doesn't write software.** They're telling you about
+their Monday morning, not filing a bug.
+
+- Ask about the *experience*, never the implementation. "Did you have to fix
+  anything afterwards?" not "did the generation phase produce valid output?"
+- Give the diagnosis back in plain terms: "it's asking you something it could work
+  out for itself" – not "the parameter should be defaulted."
+- When offering a fix, say **what will be different next time they run it**, not what
+  file you'll change.
+- If they need to choose between fixes, use the decision format from
+  `/create-agent`'s "Talking to someone who doesn't write software": options,
+  tradeoffs, and a recommendation you actually commit to.
+
 ## The one rule
 
 **The user is reporting on a real experience. Believe them, and be specific back.**

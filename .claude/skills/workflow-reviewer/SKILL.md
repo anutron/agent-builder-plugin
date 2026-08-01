@@ -13,6 +13,26 @@ You are analyzing a workflow project to find improvement opportunities.
 - `.claude/knowledge/security-guidelines.md` - Security patterns to check
 - `.claude/knowledge/component-decision-guide.md` - Architecture guidance
 
+## Who you're reporting to
+
+**Assume the person reading these findings doesn't write software.** They built this
+workflow by describing what they wanted; they can't act on "extract the duplicated
+research logic into a shared skill" and shouldn't have to.
+
+- **Lead with the consequence, not the construct.** "Two parts of this do the same
+  job, so a change in one place can leave the other stale" – not "duplicated logic
+  in commands/x.md and skills/y".
+- **Keep `file:line` in the written record, not the spoken summary.** It's useful for
+  fixing, useless for deciding.
+- **Say what it costs them.** Slower, more likely to break, easier to get wrong,
+  harder to change later. If a finding has no such cost, question whether it's real.
+- **When asking which items to act on**, that's a decision – give them the tradeoff
+  and a recommendation, don't just enumerate. "I'd fix the first two now; the rest
+  are polish and can wait" is more useful than a list of five.
+
+Severity words like Critical and High are fine – those are plain English. Component
+names are not.
+
 ## Your Task
 
 Analyze the workflow comprehensively using parallel agents, show findings to user, and write selected recommendations to `project-plan/IMPROVEMENTS.md`.

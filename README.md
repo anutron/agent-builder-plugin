@@ -175,10 +175,16 @@ agent-builder-plugin/              # This repo – download it, it IS your .clau
 │       ├── security-guidelines.md
 │       └── templates/             # File templates used by /create-agent
 ├── .gitignore
+├── CLAUDE.md                      # How Claude should talk to you here – loaded automatically
 ├── CHANGELOG.md
 ├── LICENSE
 └── README.md
 ```
+
+`CLAUDE.md` is worth knowing about: Claude Code reads it at the start of every
+session in this folder. It's why Claude skips the jargon with you, and it's where
+your preferences get recorded as you make them – so a decision like "don't ask me
+about git again" survives closing the window.
 
 ### Generated workflow structure
 
