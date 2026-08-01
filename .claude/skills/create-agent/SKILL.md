@@ -15,15 +15,46 @@ You are guiding a user through building a workflow agent using Claude Code.
 - `.claude/knowledge/setup-command-guide.md` - How to implement /setup commands in user workflows
 - `.claude/knowledge/templates/` - File templates used during Phase 4
 
+## Running toolkit commands
+
+**Never write raw shell in this flow.** Every shell operation is a verb on a
+helper script that ships with the toolkit. There are two copies with identical
+verbs and identical output, so pick by platform — you already know which OS you're
+on, so just choose; don't run a command to detect it.
+
+**macOS / Linux**:
+```bash
+bash .claude/scripts/toolkit.sh <verb> [args]
+```
+
+**Windows**:
+```
+powershell -ExecutionPolicy Bypass -File .claude\scripts\toolkit.ps1 <verb> [args]
+```
+
+Both are pre-approved in `.claude/settings.json`, so neither prompts. Invoke the
+`.sh` via `bash` rather than `./` — zip archives don't reliably preserve the
+executable bit. `-ExecutionPolicy Bypass` is required on Windows because files
+extracted from a downloaded zip are blocked by default.
+
+Verbs: `git-probe`, `git-setup`, `checkpoint`, `final-commit`, `scaffold`,
+`settings-init`, `copy-toolkit`.
+
+Below, verbs are written bare (`checkpoint "..."`) — expand to the right platform
+form. If a verb ever fails, tell the user plainly what broke instead of
+improvising raw shell around it.
+
 ## Saving progress as you go
 
 Once git is set up in Phase 0, **take a snapshot at the end of each phase** rather
 than saving everything once at the end. Where a phase says **📌 Checkpoint**, run:
 
-```bash
-git add -A
-git commit -m "[short description of what this phase produced]"
 ```
+checkpoint "[short description of what this phase produced]"
+```
+
+It prints `result=committed`, `result=nothing-to-commit`, or
+`result=skipped-no-git`. Only the first is worth mentioning to the user.
 
 Then tell the user in one line what you saved – "Saved your interview notes" – and
 move on. Don't ask permission each time; don't make a production of it.
@@ -66,14 +97,14 @@ Since you're running this skill, the toolkit downloaded into this folder correct
    - **If it exists**: a workflow was already built here. Read the file's title to get its name, then ask (`AskUserQuestion`):
 
      "It looks like you already built **[workflow name]** in this folder. What would you like to do?"
-     - **Build something different** – a second, unrelated workflow is cleaner in its own folder. Ask for a name/path for the new folder, then copy just the toolkit files there (not `project-plan/`, not the existing custom workflow command, not `CLAUDE.md`/`README.md`):
-       ```bash
-       mkdir -p [new-folder]/.claude
-       cp -r .claude/commands/review-workflow.md .claude/commands/save-workflow.md .claude/commands/improve-workflow.md [new-folder]/.claude/commands/
-       cp -r .claude/skills/create-agent .claude/skills/workflow-reviewer .claude/skills/save-progress .claude/skills/security-checker .claude/skills/software-best-practices .claude/skills/workflow-improver [new-folder]/.claude/skills/
-       cp -r .claude/agents [new-folder]/.claude/
-       cp -r .claude/knowledge [new-folder]/.claude/
+     - **Build something different** – a second, unrelated workflow is cleaner in its own folder. Ask for a name/path for the new folder, then run:
        ```
+       copy-toolkit "[new-folder]"
+       ```
+       This copies only the toolkit (commands, skills, agents, knowledge, scripts,
+       `.gitignore`) and deliberately leaves behind `project-plan/`, the existing
+       custom workflow command, `CLAUDE.md` and `README.md`. Expect `result=copied`.
+
        Then tell the user: "I've copied the toolkit into `[new-folder]`. Open a new Claude Code session there (new tab, or quit and reopen in that folder) and run `/create-agent` again to start fresh."
        **STOP** – do not continue in this folder.
      - **Improve the existing workflow** – this isn't the right tool. Tell the user: "For evolving a workflow you already built, `/improve-workflow` is the better fit – want me to switch to that instead?" If yes, follow the `workflow-improver` skill's instructions instead of continuing here. **STOP** these instructions.
@@ -109,39 +140,40 @@ Since you're running this skill, the toolkit downloaded into this folder correct
    declines still gets a complete, working workflow; they just don't get automatic
    snapshots.
 
-   **a. Probe what's already there – carefully**
+   **a. Probe what's already there**
 
-   ⚠️ On macOS, `/usr/bin/git` exists even when git doesn't. It's a stub that
-   **triggers the Command Line Tools installer popup the moment you run it**. So do
-   NOT run `git --version` to test for git – that fires the very popup you're
-   trying to ask permission for first.
+   Run the `git-probe` verb (see "Running toolkit commands" above):
 
-   Probe without triggering anything:
-   ```bash
-   if [ "$(uname)" = "Darwin" ]; then
-     xcode-select -p >/dev/null 2>&1 && echo "git-ready" || echo "needs-install"
-   else
-     command -v git >/dev/null 2>&1 && echo "git-ready" || echo "needs-install"
-   fi
+   ```
+   git-probe
    ```
 
-   If `git-ready`, it's now safe to check identity:
-   ```bash
-   git config user.name; git config user.email
+   It prints three lines, for example:
    ```
+   git=ready
+   identity=missing
+   repo=no
+   ```
+
+   The script deliberately avoids running `git` itself when checking whether git
+   exists — on macOS that would trigger the Command Line Tools installer popup
+   before the user has been asked whether they want it. Don't work around this by
+   running `git --version` yourself.
 
    **b. Pick the right path based on what you found**
 
-   - **git ready AND both identity values set** → they're already set up. Ask
+   - **`git=ready` AND `identity=set`** → they're already set up. Ask
      nothing, say nothing about it. Go straight to c.
 
-   - **git ready but name or email missing** → small ask:
+   - **`git=ready` but `identity=missing`** → small ask:
 
      "One quick thing: git can save a snapshot of your work after each step, so
      nothing gets lost and we can undo anything. It just needs a name and email to
      label the saves with – takes about a minute. Want to set that up?"
 
-   - **needs-install** → the honest, bigger ask. Use `AskUserQuestion`:
+   - **`git=missing`** → the honest, bigger ask. Use `AskUserQuestion`.
+
+     **On macOS**:
 
      "I'd like to set up git – it saves a snapshot of your work after each step so
      nothing gets lost and we can always go back. Your Mac doesn't have it yet, so
@@ -154,11 +186,14 @@ Since you're running this skill, the toolkit downloaded into this folder correct
 
      Want to set it up now, or skip it and just build?"
 
+     **On Windows**: the install is Git for Windows, a much smaller download and
+     typically **2–3 minutes**. Worth saying that it also improves how Claude Code
+     works on Windows generally, since it brings a proper shell with it. Point them
+     at https://git-scm.com/download/win and wait while they install.
+
+     Either way, offer two options:
      - **Set it up** – snapshots after each step, and you can undo mistakes
      - **Skip it** – we build normally, files save to this folder as usual, no snapshots
-
-     (On Windows or Linux the equivalent install is a much smaller download and
-     usually quicker – adjust the estimate rather than quoting the Mac figure.)
 
    **If they decline (either ask)**: accept it immediately and cheerfully. Say:
    "No problem – we'll build without it. Your files still save to this folder
@@ -167,10 +202,9 @@ Since you're running this skill, the toolkit downloaded into this folder correct
    already said no is worse than not offering. Mention once, in the Final Summary
    only, that they can add it later if they change their mind.
 
-   **If they accept the install**: "macOS will show a popup asking to install the
-   developer tools – click Install. Tell me when it finishes and we'll keep going."
-   Wait for them. Then verify with `git --version`. If it still isn't working,
-   don't fight it – fall back to the declined path above.
+   **If they accept the install**: tell them what to click, wait for them to say
+   it's finished, then re-run `git-probe`. If it still reports `git=missing`, don't
+   fight it – fall back to the declined path above.
 
    **c. Start tracking this folder** (only if they accepted)
 
@@ -180,25 +214,18 @@ Since you're running this skill, the toolkit downloaded into this folder correct
    learn any git commands; I'll handle it and tell you what I'm saving.
    ```
 
-   ```bash
-   git rev-parse --git-dir >/dev/null 2>&1 || git init
-   ```
-   If name or email were missing, set them for this project only:
-   ```bash
-   git config --local user.name "[their name]"
-   git config --local user.email "[their email]"
-   ```
-   These are just labels on their own local snapshots – say so, so nobody worries
-   about what their email is being used for.
+   If `identity=missing`, pass the name and email they gave you. If identity was
+   already set, pass no arguments:
 
-   Then take the first snapshot:
-   ```bash
-   git add -A
-   git commit -m "Starting point: agent-builder toolkit"
+   ```
+   git-setup "[their name]" "[their email]"
    ```
 
-   Tell the user: "Saved a starting snapshot. From here I'll save after each big
-   step, so nothing gets lost."
+   Their name and email are just labels on their own local snapshots – say so, so
+   nobody worries about what their email is being used for.
+
+   Expect `result=committed`. Then tell the user: "Saved a starting snapshot. From
+   here I'll save after each big step, so nothing gets lost."
 
 Continue to Phase 1.
 
@@ -616,13 +643,16 @@ This ensures the design document is:
 
 **4.1 File Structure**
 
-Create directories:
-```bash
-mkdir -p .claude/commands
-mkdir -p .claude/agents  # AND/OR .claude/skills (based on design)
-mkdir -p .claude/knowledge
-mkdir -p [work-sessions]  # e.g., prd-sessions, query-sessions
+Create directories – pass the workflow's session directory name (e.g.
+`prd-sessions`, `query-sessions`), or omit the argument if it doesn't need one:
+
 ```
+scaffold "[work-sessions]"
+```
+
+This creates `.claude/commands`, `.claude/agents`, `.claude/skills`,
+`.claude/knowledge`, `project-plan` and the session directory. Expect
+`result=scaffolded`.
 
 Merge the `.gitignore` template (`.claude/knowledge/templates/gitignore.template`)
 into the existing root `.gitignore` – don't overwrite it, it already has the
@@ -645,15 +675,17 @@ workflow needs.
 
 **4.2 Permissions Configuration**
 
-Create `.claude/settings.json` by copying `.claude/knowledge/templates/settings.template.json`.
+`.claude/settings.json` already exists — it ships with the toolkit, which is why
+you haven't been prompted for permission on every file write so far. There's
+normally nothing to do here.
 
-```bash
-cp .claude/knowledge/templates/settings.template.json .claude/settings.json
+Only if it's somehow missing, reinstall it:
+```
+settings-init
 ```
 
-There is nothing to fill in – the template uses project-relative patterns
-(`Read(**)`), not absolute paths, so it works on any machine and gets committed
-with the project.
+There is nothing to fill in – it uses project-relative patterns (`Read(**)`), not
+absolute paths, so it works on any machine and gets committed with the project.
 
 This reduces permission prompts within the project by pre-approving:
 - Read, write, and edit operations on files in the project (`**` pattern)
@@ -722,12 +754,17 @@ Create `.claude/knowledge/[reference].md` for:
 
 **4.6 Validate Setup**
 
-Run the `/setup` command to validate the environment:
+`/setup` has to be run by the user — Claude cannot invoke its own slash commands,
+so don't try. Ask them to type it:
 
-```bash
-# In the user's workflow project
-/setup
 ```
+Type /setup and paste me what it says — that runs the setup command we just
+built and tells us whether it actually works.
+```
+
+Wait for their output, then act on it. If they'd rather not, walk the `/setup`
+file's checks yourself by reading it and verifying each one, and say that's what
+you're doing.
 
 **What this validates**:
 1. Git is installed and accessible
@@ -843,30 +880,15 @@ this is just the closing snapshot – not a first-time setup.
 If the user declined git in Phase 0, or it couldn't be installed, skip this phase
 entirely – jump to the Final Summary.
 
-1. Stage everything: `git add -A`
-2. Final commit:
+1. Take the closing snapshot:
 
-```bash
-git commit -m "Complete V1 of [workflow-name]
-
-Use case: [brief description]
-
-Built:
-- .claude/commands/[workflow-name].md
-- .claude/[agents|skills]/ (research components)
-- .claude/knowledge/ (reference materials)
-- .claude/settings.json (project permissions)
-- README.md, CLAUDE.md
-- project-plan/ (interview notes, design, improvements)
-
-Next: run /[workflow-name], then /improve-workflow to capture what to fix.
-"
+```
+final-commit "Complete V1 of [workflow-name] - [brief use case description]"
 ```
 
-3. Show the user their history, so the habit is concrete rather than abstract:
-   ```bash
-   git log --oneline
-   ```
+This commits and then prints the full history under `--- history ---`.
+
+2. Show that history to the user, so the habit is concrete rather than abstract.
    Then say: "That's every step we took, saved. If anything ever breaks, we can
    look at what changed or go back to any of these points."
 

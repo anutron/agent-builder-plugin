@@ -5,6 +5,24 @@ All notable changes to the agent-builder plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-07-31
+
+### Added
+- `.claude/scripts/toolkit.sh` and `.claude/scripts/toolkit.ps1` – verb-based helper scripts holding every shell operation the guided flow needs, with identical verbs and identical machine-readable output on both platforms
+  - Verbs: `git-probe`, `git-setup`, `checkpoint`, `final-commit`, `scaffold`, `settings-init`, `copy-toolkit`
+  - `/create-agent` now contains no raw shell at all; it calls verbs and branches on their output
+  - Both are pre-approved in the shipped `.claude/settings.json`, so neither prompts
+- `.claude/settings.json` now ships with the toolkit rather than being created in Phase 4.2, so permissions apply from the very first step instead of halfway through
+
+### Fixed
+- **Windows support.** The flow previously emitted POSIX-only shell (`uname`, `command -v`, `mkdir -p`, `>/dev/null`) which fails on Windows, where Claude Code falls back to PowerShell when Git for Windows isn't installed
+  - Platform choice moved out of shell (where detecting it was circular – the probe's own syntax depended on what it was probing for) and into Claude's knowledge of its own environment
+  - `.ps1` is invoked with `-ExecutionPolicy Bypass`, required because files extracted from a downloaded zip carry the Mark of the Web and are blocked under the default RemoteSigned policy
+  - Shell scripts are invoked via `bash <path>` rather than `./<path>`, since zip archives don't reliably preserve the executable bit
+  - Windows git offer now quotes Git for Windows (~2-3 min) rather than the macOS figure, and notes it also improves Claude Code's shell on Windows
+- Phase 0's "build a second workflow" copy failed outright: it created only `[new-folder]/.claude`, then copied multiple sources into `commands/` and `skills/` subdirectories that didn't exist. Now handled by `copy-toolkit`, which creates every destination directory first (verified against a non-existent target)
+- Phase 4.6 instructed Claude to run `/setup`, which it cannot do – Claude cannot invoke its own slash commands, so the generated `/setup` shipped untested. Now asks the user to run it, with a read-and-verify fallback
+
 ## [2.1.0] - 2026-07-31
 
 ### Added
