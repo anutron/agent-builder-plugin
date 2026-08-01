@@ -172,11 +172,15 @@ the file exists.
 ### Common Patterns
 [Frequently used patterns in this workflow]
 
-## MCPs Used
-[List of MCP servers this workflow depends on]
-- [MCP name]: [Purpose]
-- MCP servers are configured in `~/.claude/settings.json` (all projects) or
-  `.claude/settings.local.json` (this project only)
+## Connectors Used
+[Connectors this workflow depends on]
+- [Connector name]: [Purpose]
+
+Connectors are added per-person, through Claude Desktop → Settings → Connectors or
+`/mcp` in Claude Code – not by this project. This project only declares which
+connector tools are pre-approved, in `.claude/settings.json`.
+
+If a connector isn't available, prefer falling back to a manual step over failing.
 
 ## Error Handling
 [Common errors and how to handle them]

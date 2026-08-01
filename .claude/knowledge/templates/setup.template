@@ -26,27 +26,35 @@ If git not available:
 - Offer to help install
 - Provide installation instructions for their OS
 
-### 2. MCP Servers
+### 2. Connectors
 
-Required MCPs for this workflow:
+Connectors this workflow needs:
 [MCP_LIST]
 
-Use `ListMcpResourcesTool()` to check availability:
-- Call without parameters to list all available servers
-- For each required MCP above:
-  - Check if server name appears in results
-  - Verify it's responding (resources returned = working)
-  - Report status
+Connectors are attached to the person's account, not to this project, so this step
+**verifies** rather than installs.
+
+Use `ListMcpResourcesTool()` to check what's connected:
+- Call without parameters to list everything available
+- For each connector above, check it appears and is responding
+- Report status
 
 **Example output**:
 ```
-Checking MCP servers...
-✅ notion - Connected (12 resources available)
-✅ slack - Connected (8 resources available)
-❌ jira - Not found
-   Install: npm install -g @atlassian/mcp-jira
-   Configure MCP in: ~/.claude/settings.json (global) or .claude/settings.local.json (local)
+Checking connectors...
+✅ notion - connected (12 resources available)
+❌ google-drive - not connected
+
+   To add it: Claude Desktop → Settings → Connectors, find it in the list and
+   sign in. If it isn't listed, use "Add custom connector" with the vendor's
+   remote MCP URL. In Claude Code, /mcp does the same job.
+
+   Note: on a Team or Enterprise plan, custom connectors are added by an
+   Organization Owner under Organization settings → Connectors.
 ```
+
+**Never block on a missing connector.** If this workflow supports a manual
+alternative, say so and let the user continue.
 
 **Note**: Project permissions live in `.claude/settings.json`, which is committed to git. Section 6 below verifies it.
 
@@ -105,7 +113,7 @@ Show comprehensive status:
 🔧 Environment Setup Status
 
 Git: ✅ version 2.39.0
-MCPs: [STATUS]
+Connectors: [STATUS]
 Files: ✅ All directories present
 Security: ✅ No issues found
 Environment: [STATUS]

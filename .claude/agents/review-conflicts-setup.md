@@ -32,14 +32,14 @@ Analyze the workflow for:
 ### Setup Command Drift
 
 **Check for**:
-- Does `/setup` document all MCPs the workflow actually uses?
+- Does `/setup` list every connector the workflow actually uses?
 - Are new environment variables documented in `/setup`?
 - Are new local config files explained in `/setup`?
 - Does `/setup` match current directory structure?
 - Does `/setup` check for all dependencies?
 
 **When drift occurs**:
-- Workflow uses MCP tools not listed in `/setup` MCP check
+- Workflow calls connector tools not listed in `/setup`'s connector check
 - .env files exist but not documented in `/setup`
 - New local config files created but not in `/setup` instructions
 - Directory structure changed but `/setup` still checks old structure
@@ -47,12 +47,13 @@ Analyze the workflow for:
 
 **Example finding**:
 ```markdown
-### Setup Drift: New Jira MCP not documented
-- Workflow now calls Jira MCP tools (found in commands/analyze.md)
-- `/setup` command doesn't check for Jira availability
-- New users will get runtime errors instead of setup validation
-- **Recommendation**: Add jira to MCP check list in setup command
-- **Impact**: Better onboarding experience, catches missing MCPs early
+### Setup Drift: new Google Drive connector not documented
+- Workflow now calls google-drive connector tools (found in commands/analyze.md)
+- `/setup` doesn't check whether that connector is available
+- New users will hit a runtime error instead of a clear setup message
+- **Recommendation**: add google-drive to `/setup`'s connector check, with how to
+  add it (Settings → Connectors) and the manual fallback if there is one
+- **Impact**: better onboarding, catches a missing connector before it fails mid-run
 - **Priority**: High
 ```
 
@@ -67,7 +68,7 @@ Analyze the workflow for:
 
 ### For Setup Drift:
 1. `.claude/commands/setup.md` - Current setup instructions
-2. All `.claude/commands/*.md` - What MCPs are actually used?
+2. All `.claude/commands/*.md` - which connectors are actually used?
 3. `.env.example` vs what setup documents
 4. `.gitignore` - What local files exist?
 5. `project-plan/project-design.md` - Original requirements vs setup
@@ -111,7 +112,7 @@ Return your findings in this format:
 
 ## Important Notes
 
-- Grep for MCP tool usage: search for `mcp__` patterns in command files
+- Grep for connector usage: search for `mcp__` patterns in command files
 - Compare .env.example with what setup documents
 - Check if directory structure in setup matches actual structure
 - If no issues found, say so clearly

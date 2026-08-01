@@ -28,7 +28,7 @@ The `security-checker` skill scans for:
    - Add specific recommendations
 
 3. **Check additional security concerns**:
-   - Are MCP permissions overly broad?
+   - Are connector permissions overly broad (e.g. `mcp__*__*` instead of the specific tools)?
    - Are local config files properly gitignored?
    - Does setup command document credential requirements?
    - Are authentication methods secure (SSO > service accounts > API keys)?
@@ -79,7 +79,7 @@ Return your findings in this format:
 - [ ] All sensitive files in .gitignore
 - [ ] .env.example exists (if .env used)
 - [ ] Local config files properly gitignored
-- [ ] MCP permissions not overly broad
+- [ ] Connector permissions scoped to what the workflow actually calls
 - [ ] Authentication uses SSO/OAuth where possible
 
 ## Summary

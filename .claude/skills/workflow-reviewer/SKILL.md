@@ -45,7 +45,7 @@ Agents should NOT review these files as they're maintained by agent-builder itse
 - `.claude/scripts/toolkit.sh`, `.claude/scripts/toolkit.ps1` (agent-builder's own helpers)
 - `.claude/settings.json` (shipped with the toolkit)
 - `.claude/knowledge/templates/*` (agent-builder's own templates)
-- `.claude/knowledge/workflow-patterns.md`, `component-decision-guide.md`, `mcp-integration.md`, `setup-command-guide.md`, `security-guidelines.md` (agent-builder's own reference docs – but review any *other* knowledge file the user added for their workflow)
+- `.claude/knowledge/workflow-patterns.md`, `component-decision-guide.md`, `connectors.md`, `setup-command-guide.md`, `security-guidelines.md` (agent-builder's own reference docs – but review any *other* knowledge file the user added for their workflow)
 
 **Everything else SHOULD be reviewed** - this is just a blacklist, not a whitelist. Review all other files in the project.
 

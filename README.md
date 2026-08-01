@@ -162,7 +162,7 @@ agent-builder-plugin/              # This repo – download it, it IS your .clau
 │   │   └── toolkit.ps1            # Windows
 │   └── knowledge/
 │       ├── workflow-patterns.md
-│       ├── mcp-integration.md
+│       ├── connectors.md
 │       ├── component-decision-guide.md
 │       ├── setup-command-guide.md
 │       ├── security-guidelines.md
@@ -251,7 +251,7 @@ Code worth exploring:
 
 - **Global skills & `CLAUDE.md`** – conventions that apply across every project
 - **`/fewer-permission-prompts`** – trim repeated permission prompts as you get more comfortable
-- **`/mcp`** – connect more data sources to your workflows
+- **Connectors** – link Claude directly to Notion, Google Drive, Slack and the rest, so a workflow reads your real data instead of you pasting it. In Claude Desktop that's **Settings → Connectors**: pick a tool, sign in, done – nothing to install, and no API key stored anywhere. `/mcp` does the same job in Claude Code
 - **`/workflows`** – orchestrate bigger multi-step jobs once one workflow outgrows a single command
 - **Aaron's public skill library** – `github.com/anutron/ai`, which includes `/promote` for graduating a skill you like from one project to everywhere
 

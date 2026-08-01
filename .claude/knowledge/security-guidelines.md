@@ -179,32 +179,62 @@ api_key = os.getenv("API_KEY")
 # See .env.example for required variables
 ```
 
-## MCP-Specific Security
+## Connector security
 
-### Settings File Location
-`.claude/settings.local.json` should ALWAYS be gitignored:
+### Prefer a connector – it removes the secret entirely
+
+The safest credential is the one that never exists on disk. A connector added through
+**Claude Desktop → Settings → Connectors** (or `/mcp` in Claude Code) authorizes via
+a browser sign-in. No API key is written to any file, so:
+
+- Nothing can be committed by accident
+- Nothing leaks if the laptop is lost
+- Access is revoked from the other service's own settings, instantly, without
+  touching this project
+
+Recommend this before any approach that involves pasting a token somewhere.
+
+### The old style, and why it needs care
+
+A locally-run server configured by hand looks like this – note the secret sitting in
+plain text:
 
 ```json
 {
-  "permissions": {
-    "allow": ["mcp__notion__*:*"]
-  },
   "mcpServers": {
-    "notion": {
+    "some-service": {
       "command": "npx",
-      "args": ["-y", "[current-notion-mcp-package]"],
+      "args": ["-y", "[current-package-name]"],
       "env": {
-        "NOTION_API_KEY": "secret_abc123..."
+        "SOME_SERVICE_API_KEY": "secret_abc123..."
       }
     }
   }
 }
 ```
 
-**Why gitignore**: Contains API keys in `env` section
+If you genuinely need this, the file holding it must be gitignored, forever. That's
+what `.claude/settings.local.json` is for. But treat it as a last resort – a
+connector is both easier and safer.
 
-### User-Specific Settings
-Different developers use different tokens. Settings must be local.
+Note also that Claude Desktop will not load remote servers written into
+`claude_desktop_config.json`; remote connectors only work through the UI. So
+hand-editing config buys you nothing for the common case.
+
+### What the project itself declares
+
+`.claude/settings.json` (committed) says which connector tools are pre-approved:
+
+```json
+{
+  "permissions": {
+    "allow": ["mcp__notion__*:*"]
+  }
+}
+```
+
+That's a permission, not a credential – safe to commit, and worth being specific
+about so an unexpected write to another system still stops and asks.
 
 ## Detecting Secrets in Files
 

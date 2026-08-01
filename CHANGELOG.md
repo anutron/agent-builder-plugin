@@ -5,6 +5,20 @@ All notable changes to the agent-builder plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2026-07-31
+
+### Changed
+- **Reframed all data-source guidance around connectors instead of installing MCP servers by hand.** The repo taught the old path – npm install a package, hand-edit a settings JSON, store an API key – which is both harder and less safe than the current one
+  - Renamed `mcp-integration.md` to `connectors.md` and rewrote its front half: ready-made connectors in **Claude Desktop → Settings → Connectors**, "Add custom connector" by URL for anything not listed, `/mcp` and `claude mcp add --transport http` in Claude Code
+  - Recommendation order is now explicit: ready-made connector → custom connector by URL → manual data for V1 → writing your own server as a genuine last resort
+  - Writing your own server is demoted to an appendix and explicitly excluded from the guided build
+  - Says "connector" to users, and mentions MCP once so the acronym isn't a mystery
+- Documented three things a first-timer would otherwise hit blind: custom connectors need a Pro/Max/Team/Enterprise plan, Team and Enterprise route through an Organization Owner, and Claude Desktop will **not** load remote servers written into `claude_desktop_config.json` – the UI is the only path, so nobody should be sent to that file
+- Security guidance now leads with the strongest argument for connectors: OAuth sign-in means **no long-lived API key on disk**, nothing to leak or accidentally commit, and access revocable from the other service. The hand-configured example is kept as the "old style, handle with care" case
+- `/setup` generation now **verifies** connectors rather than instructing installation – connectors belong to a person's account, not a project, so a workflow can only state what it needs. Reports how to add a missing one and what the manual fallback is, and never blocks
+- `README.template` prerequisites, `CLAUDE.template`, `setup.template` and `setup-command-guide.md` all reworded from "Required MCPs" to connectors, with a manual-steps section alongside
+- Review agents use connector vocabulary; the setup-drift example is now a missing Google Drive connector rather than a Jira npm package
+
 ## [2.3.0] - 2026-07-31
 
 ### Changed

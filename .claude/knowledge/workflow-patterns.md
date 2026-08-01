@@ -154,7 +154,7 @@ starts as a manual CSV drop and gets connected later.
 directly is a V2 goal, not a V1 requirement.
 
 **Pattern**: Connectors hide the messy parts of talking to other systems. Starting
-manual is legitimate – see `mcp-integration.md`, and never block a V1 on a
+manual is legitimate – see `connectors.md`, and never block a V1 on a
 connector that doesn't exist yet.
 
 ### 10. Research before action

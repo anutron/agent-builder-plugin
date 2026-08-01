@@ -26,7 +26,7 @@ Look for:
 **Files to check**:
 - Session directories (if workflow uses them)
 - Any code files in workflow
-- MCP server implementations (if local MCPs exist)
+- Locally-run connector servers, if any exist
 
 ### Check IMPROVEMENTS.md
 
@@ -76,7 +76,7 @@ Look for:
 3. `project-plan/IMPROVEMENTS.md` - Signs of struggle?
 4. Session directories - Complex implementations?
 5. Any code files - Disproportionate to problem?
-6. `mcp-servers/*/` - Custom MCPs more complex than needed?
+6. `mcp-servers/*/` - a hand-written server where a ready-made connector would do?
 
 ## Output Format
 

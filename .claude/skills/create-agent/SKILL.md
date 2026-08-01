@@ -11,7 +11,7 @@ You are guiding a user through building a workflow agent using Claude Code.
 **Reference files:**
 - `.claude/knowledge/workflow-patterns.md` - Common patterns from successful projects
 - `.claude/knowledge/component-decision-guide.md` - When to use Commands, Skills, Agents, Knowledge
-- `.claude/knowledge/mcp-integration.md` - How to use MCPs effectively
+- `.claude/knowledge/connectors.md` - Connecting to real data sources (MCP), and when not to bother
 - `.claude/knowledge/setup-command-guide.md` - How to implement /setup commands in user workflows
 - `.claude/knowledge/templates/` - File templates used during Phase 4
 
@@ -346,13 +346,18 @@ Ask the user directly:
 interesting part. The only question that matters per data source is: *can we reach
 it automatically, or does the user paste it in for now?* Both answers are fine.
 
-**First, explain what an MCP is** – in one sentence, the first time you use the
-word:
+**Talk about connectors, not MCP servers.** Say "connector" – that's the word in
+the interface and the thing they'd click. Mention MCP once, only so the acronym
+isn't a mystery later:
 
 ```
-🧭 Guide's note: You'll hear "MCP" a lot. It just means a connector that lets
-Claude read from a system directly – your Notion, your email, a spreadsheet –
-instead of you copying and pasting. Some tools have one ready to go; some don't.
+🧭 Guide's note: A "connector" lets Claude read from a system directly – your
+Notion, your email, a shared drive – instead of you copying and pasting. You add
+them in Claude Desktop under Settings → Connectors: pick the tool, sign in, done.
+Nothing to install. (You'll sometimes see them called MCP servers – same thing.)
+
+Two nice things about it: you're never handing over a password, and you can switch
+Claude's access off from the other tool's own settings whenever you want.
 ```
 
 **Process**:
@@ -363,13 +368,21 @@ instead of you copying and pasting. Some tools have one ready to go; some don't.
    "You mentioned [list]. Are any of these already connected to Claude for you?
    If you're not sure, that's fine – we'll find out."
 
-   To check what's actually available, look at the connected MCP servers with
-   `ListMcpResourcesTool`. If the user wants to add one, `/mcp` in Claude Code is
-   where connectors are managed, and most major tools (Notion, Slack, GitHub,
-   Google, Atlassian) now offer a hosted connector that needs no install.
+   To see what's already connected, use `ListMcpResourcesTool`.
 
-   Don't recite package names – they change constantly. Offer to help them connect
-   a specific tool if they want it.
+   If they want to add one, walk them to the UI – don't send them to a config file
+   or an install command:
+   - **Claude Desktop**: Settings → Connectors. Ready-made connectors for common
+     tools are listed there; pick one and sign in. Not listed? "Add custom
+     connector" takes a URL from the vendor.
+   - **Claude Code**: `/mcp`
+
+   Two caveats worth raising before they go hunting: custom connectors need a Pro,
+   Max, Team or Enterprise plan, and on Team/Enterprise an Organization Owner adds
+   them centrally – so it may be a request to their admin rather than something
+   they can do themselves.
+
+   Don't recite package names. See `.claude/knowledge/connectors.md`.
 
 2. **For each source, pick one of two paths** – and bias hard toward the second:
 
@@ -388,7 +401,7 @@ instead of you copying and pasting. Some tools have one ready to go; some don't.
 **Do not offer to build a custom MCP server here.** It's a genuine project of its
 own, it requires an authentication decision the user isn't equipped to make yet,
 and it guarantees they never reach a working V1 today. If they explicitly ask for
-one, point them at `.claude/knowledge/mcp-integration.md` and treat it as a
+one, point them at `.claude/knowledge/connectors.md` and treat it as a
 separate piece of work after V1 ships.
 
 3. **Create setup checklist** in `project-plan/data-source-setup.md`:
@@ -488,7 +501,7 @@ Did I get that right?"
 
 Adjust based on their response. This becomes part of the plan document's Use Case Summary.
 
-Read `.claude/knowledge/workflow-patterns.md` and `.claude/knowledge/mcp-integration.md` for guidance.
+Read `.claude/knowledge/workflow-patterns.md` and `.claude/knowledge/connectors.md` for guidance.
 
 **Process**:
 1. Identify available integrations (MCPs)
@@ -782,7 +795,8 @@ you're doing.
 5. Environment variables documented (if applicable)
 
 **If setup finds issues**:
-- Missing MCPs: Add installation instructions to `/setup` command
+- Missing connector: make sure `/setup` says how to add it (Settings → Connectors,
+  or `/mcp`) and what the manual alternative is
 - Incorrect paths: Fix in `/setup` documentation
 - Missing files: Check file structure creation
 - Update `/setup` command based on findings

@@ -1,53 +1,116 @@
-# MCP Integration Best Practices
+# Connecting to your tools (MCP)
 
-## What are MCPs?
+## What this is
 
-Model Context Protocol (MCP) servers provide Claude Code with access to external systems and data sources. They act as bridges between Claude and your tools.
+A **connector** lets Claude read from and write to a system you already use – your
+Notion, your email, a shared drive – instead of you copying and pasting.
+Under the hood connectors speak a standard called MCP (Model Context Protocol), but
+the user almost never needs that word to get anything done.
 
-## Finding MCP servers
+**Say "connector" when talking to a non-technical user.** Say MCP only when they'll
+see the acronym on screen, and define it once when you do.
 
-**Don't hardcode package names anywhere.** This ecosystem churns fast: the old
-`@modelcontextprotocol/server-*` reference packages were archived, and several
-official replacements (Notion's included) have since been superseded again by
-hosted servers needing no install at all. Any list written here is wrong within
-months. The repository history has burned this lesson twice already.
+## Adding a connector – the current way
 
-Find what's actually available instead:
+**Point people at the connectors UI, not at installing packages.** Two paths, both
+click-and-sign-in:
 
-- **`/mcp` in Claude Code** – manage connectors and see what's already connected
-- **`ListMcpResourcesTool`** – programmatically list connected servers, which is
-  what `/setup` uses to verify a workflow's requirements
-- **Most major tools** (Notion, Slack, GitHub, Google, Atlassian) now offer a
-  hosted connector – no npm install, just an authorization step
+### Claude Desktop
 
-When the user needs a system connected, help them find the current official
+**Settings → Connectors.** There's a browsable list of ready-made connectors for
+common tools – click one, sign in, done. Nothing to install, no file to edit.
+
+For something not in the list, **"Add custom connector"** at the bottom of that
+section takes a server URL. Authentication happens through a normal browser sign-in
+(OAuth); "Advanced settings" is only needed if a server requires its own client ID
+and secret.
+
+Two things worth knowing:
+- Custom connectors need a Pro, Max, Team or Enterprise plan
+- On Team and Enterprise, an Organization Owner adds them in **Organization
+  settings → Connectors**, so a regular user may need to ask
+- Claude Desktop will **not** pick up remote servers hand-written into
+  `claude_desktop_config.json` – the UI is the only route. Don't send anyone to
+  that file for a remote connector
+
+### Claude Code
+
+- **`/mcp`** – see what's connected and manage it
+- **`claude mcp add --transport http <name> <url>`** – add a remote connector; HTTP
+  transport handles OAuth natively
+- **`claude mcp add --transport stdio <name> -- <command>`** – for a server running
+  locally on this machine
+
+### Why the click path is the better teaching story
+
+Not just easier – safer. A hosted connector authorized through OAuth leaves **no
+long-lived API key sitting in a file on the user's laptop**, and access can be
+revoked from the other service without touching anything locally. The older style
+means pasting a secret into a config file and keeping it out of git forever after.
+
+Recommend, in order: **a ready-made connector → a custom connector by URL → manual
+data for V1 → a locally-run server** as a genuine last resort.
+
+## Don't hardcode package names
+
+This ecosystem churns fast. The old `@modelcontextprotocol/server-*` reference
+packages were archived, and several official replacements (Notion's included) have
+since been superseded again by hosted connectors needing no install at all. Any
+list written here is wrong within months – this repo has already shipped stale
+names twice.
+
+Check what's actually connected instead:
+
+- **`/mcp`** in Claude Code
+- **`ListMcpResourcesTool`** to list connected servers programmatically, which is
+  what a generated `/setup` command uses to verify requirements
+
+When someone needs a system connected, help them find its current official
 connector at that moment rather than quoting a name from this file.
 
-### When to Use MCPs vs APIs
+### When to use a connector vs. manual data
 
-**Use MCPs when**:
-- Official MCP exists for the system
-- Your org provides custom MCP
-- Need structured, validated access
-- Want automatic retries and error handling
+**Use a connector when**:
+- One already exists for the system, ready-made or by URL
+- Their organization already provides one
+- The workflow runs often enough that manual export becomes the bottleneck
 
-**When no MCP exists**:
+**Use manual data when** it's a first version, the export is a two-minute job, or
+no connector exists yet. This is a legitimate, permanent-if-you-like answer, not a
+failure. See Option B below.
+
+**When no connector exists at all**:
 
 **During `/create-agent`, the answer is always Option B – manual for V1.** Don't
 present this as a choice while someone is still trying to reach a first working
-version. Building a custom MCP server is a project of its own, it needs an
+version. Writing a server from scratch is a project of its own, it needs an
 authentication decision a first-time user isn't equipped to make, and offering it
 mid-flow reliably prevents anyone from finishing anything.
 
-Option A below is here for when a user has a working workflow and explicitly asks
-for it, as a separate piece of work.
+Before concluding that nothing exists, check the actual order of preference:
 
-**Option A: Create local MCP server** (cleaner, but its own project)
-**Option B: Manual data handling for V1** (the default – faster to start, automate later)
+1. A **ready-made connector** in Claude Desktop's Settings → Connectors list
+2. A **custom connector by URL** if the vendor publishes a remote MCP endpoint –
+   still just paste-and-sign-in, no code
+3. **Manual data for V1** – export or paste. Perfectly fine, often permanent
+4. **Writing your own server** – a separate project, only on explicit request
 
-### Option A: Local MCP Server
+Option A below covers step 4, for when a user has a working workflow and explicitly
+asks. It is not part of the guided build.
 
-1. **Inform user of effort**: "No MCP exists for [system]. Building a custom MCP server is tedious but makes your workflow cleaner and more maintainable. Alternatively, we can handle this manually for V1 and build the MCP in V2 once the pattern is proven."
+**Option A: Write your own MCP server** (its own project – rarely the right answer)
+**Option B: Manual data handling for V1** (the default – faster to start, connect later)
+
+### Option A: Writing your own MCP server
+
+Only reach here after steps 1–3 above have genuinely been ruled out. If the vendor
+publishes a remote endpoint, a custom connector by URL gets the same result with
+none of this work.
+
+1. **Inform user of effort**: "There's no ready-made connector for [system], and no
+   remote endpoint we can point a custom connector at. We could write one, but it's
+   a real project on its own. For now I'd handle [system] manually and revisit once
+   the workflow has proven itself."
 
 2. **If user chooses local MCP, create it**:
    - Generate `mcp-servers/[system-name]/` directory in the workflow project
@@ -226,71 +289,62 @@ for attempt in range(max_attempts):
 
 ## Configuration Best Practices
 
-### 1. MCP Configuration: Global vs Local
+### 1. Where connectors live
 
-**Global configuration** (`~/.claude/settings.json`):
-- MCPs available across all projects
-- Good for: Official MCPs you use everywhere (Notion, GitHub, Slack)
-- Survives project deletion
-- Easier for users who work across multiple projects
+**Connectors added through the UI** (Claude Desktop Settings → Connectors, or
+`claude mcp add`) are attached to the user's account or machine, **not to this
+project**. That's usually what you want: connect Notion once, use it everywhere.
 
-**Local configuration** (`.claude/settings.local.json`):
-- MCPs only available in this project
-- Good for: Project-specific MCPs, custom local MCPs
-- Gitignored (doesn't affect other team members)
-- Required for local MCP servers (e.g., `mcp-servers/[system]/`)
+It also means a connector is **not** something the project can install for someone
+else. A workflow can only *state what it needs*; each person adds it themselves.
+That's why the generated `/setup` command verifies rather than installs.
 
-**Example local configuration**:
+**What the project does own** is which connector tools are pre-approved, in
+`.claude/settings.json`:
+
 ```json
 {
   "permissions": {
     "allow": [
-      "mcp__notion__*:*",
-      "mcp__slack__*:*",
-      "mcp__custom_system__*:*"
+      "mcp__notion__*:*"
     ]
-  },
-  "enabledMcpServers": [
-    "notion",
-    "slack",
-    "custom_system"
-  ]
+  }
 }
 ```
 
-**Recommendation**:
-- Use **global** for official MCPs you use regularly
-- Use **local** for project-specific or custom MCPs
-- Document required MCPs in `/setup` command (works with both global and local)
+Machine-specific overrides go in `.claude/settings.local.json`, which is gitignored.
 
-**Why**: Explicit permissions prevent accidental writes to production
+**Why be explicit**: pre-approving only the connectors a workflow actually uses
+means an unexpected write to some other system still stops and asks.
 
-### 2. Environment Variables for Credentials
-Never hardcode API tokens in workflow files:
+### 2. Credentials: mostly not your problem any more
+
+**With a connector added through the UI, there is no credential to manage.** Sign-in
+happens in the browser, the token is held for you, and access is revoked from the
+other service's own settings. Nothing lands in a file, so nothing can leak from one.
+
+This is the single best reason to prefer connectors, and worth saying out loud to a
+user who's nervous about giving an AI access to their systems: *you're not handing
+over a password, and you can switch it off from the other side at any time.*
+
+You only deal with credentials in the old-style case – a server you run locally that
+takes an API key. Then the rules are absolute:
 
 ```bash
-# .env (gitignored)
-NOTION_API_KEY=secret_xyz...
-SLACK_TOKEN=xoxb-...
-GITHUB_TOKEN=ghp_...
+# .env (gitignored, NEVER committed)
+SOME_SERVICE_API_KEY=...
 ```
 
 ```bash
-# .env.example (committed)
-NOTION_API_KEY=
-SLACK_TOKEN=
-GITHUB_TOKEN=
+# .env.example (committed, no real values)
+SOME_SERVICE_API_KEY=
 ```
 
-### 3. Test Connections Early
-Before building complex workflows, verify MCP access:
+### 3. Test the connection early
 
-```javascript
-// Simple test
-notion.pages.search("test")
-slack.conversations.list()
-github.repos.get("owner", "repo")
-```
+Before building anything complex, confirm access actually works – one small read is
+enough. Search for a page, list a channel, fetch a single record. Finding out that a
+connector isn't authorized costs seconds now and an entire debugging session later.
 
 ## Common Patterns from Real Projects
 
@@ -333,47 +387,48 @@ Call: ListMcpResourcesTool()
 Result: [list of available MCP servers]
 ```
 
-**Fix options**:
+**Fix options**, in the order to try them:
 
-1. **If MCP is missing entirely**:
-   - Add the connector with `/mcp`, or find the tool's current official server
-     (see "Finding MCP servers" above – don't guess a package name)
-   - Configure in settings (global OR local):
-     - **Global**: `~/.claude/settings.json` (available in all projects)
-     - **Local**: `.claude/settings.local.json` (project-specific)
-   - Add to `enabledMcpServers` list in whichever settings file you choose
-   - Restart Claude Code for changes to take effect
+1. **Not connected yet** – the common case. Walk the user through adding it:
+   - **Claude Desktop**: Settings → Connectors, pick it from the list, sign in. If
+     it isn't listed, "Add custom connector" and paste the vendor's remote MCP URL
+   - **Claude Code**: `/mcp`, or `claude mcp add --transport http <name> <url>`
+   - Don't send them to `claude_desktop_config.json` for a remote connector – it
+     won't be picked up from there
 
-2. **If MCP is installed but not enabled**:
-   - Check both global (`~/.claude/settings.json`) and local (`.claude/settings.local.json`)
-   - Add server name to `enabledMcpServers` array
-   - Restart Claude Code
+2. **Connected but not visible here** – a fresh connector sometimes needs the
+   session restarted before its tools appear. Check `/mcp` shows it first.
 
-3. **For local-only MCPs** (like custom `mcp-servers/[system]/`):
-   - Must be configured in `.claude/settings.local.json` (not global)
-   - Include path to the MCP server directory
-   - Document in `/setup` command for new users
+3. **On a Team or Enterprise plan** – custom connectors are added by an Organization
+   Owner in Organization settings → Connectors. If the user isn't one, the fix is a
+   request to their admin, not anything they can do locally. Say so plainly rather
+   than letting them hunt.
+
+4. **No connector exists at all** – go manual for V1. See Option B.
 
 ### Permission Denied
 ```
 Error: Permission denied for mcp__notion__pages__create
 ```
 
-**Fix**: Add to `permissions.allow` list
+**Fix**: Add that tool to `permissions.allow` in `.claude/settings.json`. Note this
+is a *project* permission question, not a connector problem – the connection is
+working fine.
 
 ### Rate Limited
 ```
 Error: Rate limit exceeded (429)
 ```
 
-**Fix**: Implement exponential backoff, reduce request frequency
+**Fix**: Back off and retry more slowly; reduce how much you're requesting at once.
 
 ### Authentication Failed
 ```
 Error: Invalid token
 ```
 
-**Fix**: Verify credentials in .env, check token hasn't expired
+**Fix**: For a UI connector, the sign-in has expired or been revoked – reconnect it
+in Settings → Connectors. For a locally-run server, check the value in `.env`.
 
 ## Anti-Patterns
 

@@ -13,12 +13,19 @@
 
 ### Prerequisites
 
-**Required MCPs**:
-- [MCP 1] - [What it's used for]
-- [MCP 2] - [What it's used for]
+**Connectors this workflow uses**:
+- [Connector 1] - [What it's used for]
+- [Connector 2] - [What it's used for]
 
-**Optional MCPs** (for V2+ features):
-- [MCP 3] - [What it enables]
+Add these in **Claude Desktop → Settings → Connectors** (or `/mcp` in Claude Code).
+They're linked to your account rather than to this folder, so each person using this
+workflow adds them once for themselves. `/setup` will tell you if any are missing.
+
+**Manual steps** (no connector needed):
+- [What you paste in or export by hand, if anything]
+
+**Optional, for later**:
+- [Connector 3] - [What it would enable]
 
 ### Setup
 
