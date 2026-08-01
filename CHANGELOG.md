@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.4.1] - 2026-07-31
 
+### Added
+- The interview now tells the user they can **dictate instead of typing**, recommending `/voice tap` (press space once to start, again to send). This is the one place it materially helps - the useful answers are two or three paragraphs about how someone actually works, and most people won't type that but will happily say it. Mentions the microphone requirement and that transcription doesn't count against usage, offers it exactly once, and doesn't debug at length if it fails
+
 ### Changed
 - Phase 1 no longer opens by asking the user to pick a path. "Do you already know what you want, or shall I ask questions?" forces a decision before they know what either option involves, and frames the interview as the fallback route. It now states what's happening, notes that skipping is available, and asks the first question in the same breath - the interview is the method being taught, not a consolation prize. Users who realize mid-interview that they know what they want can still say so at any point
 - Phase 0's welcome no longer ends with "Let's build your workflow!", since Phase 1 immediately opens with its own call to action

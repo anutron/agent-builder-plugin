@@ -527,11 +527,40 @@ Now I'm going to help you build your first agent.
 We'll start with an interview – a few questions about your work, so I understand
 what's actually worth automating. If you already know exactly what you want to
 build, just say so and we'll jump straight to it.
+```
 
+Then **tell them they can talk instead of typing.** This is the one place in the
+whole walkthrough where it makes a real difference: the useful answers here are two
+or three paragraphs about how someone actually works, and most people won't type
+that. They'll say it in twenty seconds.
+
+```
+🧭 Guide's note: You don't have to type your answers – you can just talk.
+
+Type /voice tap, then press the spacebar once to start speaking and once again when
+you're done. What you said gets sent automatically. (If your version doesn't have
+tap mode, plain /voice works too – you hold the spacebar while speaking instead.)
+
+You'll need a microphone, and your computer will ask permission the first time.
+Talking doesn't count against your usage. For questions like these, it's much
+easier than typing – say it the way you'd explain it to a new hire.
+```
+
+Then ask the first question:
+
+```
 First question: what kind of work do you find yourself doing over and over?
 ```
 
 Then **go**. Don't wait for permission to begin.
+
+**Offer voice once and then drop it.** If they keep typing, they've chosen. Don't
+re-suggest it later, and don't mention it again in other phases.
+
+**If they say it isn't working**, don't debug it at length – it needs a local
+microphone and a Claude.ai login, and it won't work over SSH or in a browser
+session. Say that plainly, then carry on with typing rather than losing the thread
+of the interview.
 
 **If at any point they say they already know what they want**, drop the discovery
 questions immediately, say "great, tell me about it", and move to Phase 2 with

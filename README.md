@@ -75,6 +75,11 @@ something different in PowerShell.
 workflow. Expect roughly 30–60 minutes, most of it you talking about how you
 already do the task.
 
+**Tip: you can dictate rather than type.** Type `/voice tap`, then press the
+spacebar once to start speaking and again when you're done. The interview goes much
+faster when you can just explain your work out loud – Claude will remind you when it
+gets there.
+
 **On Windows?** Everything works, but if you don't have git installed you'll be
 offered it during setup – it's a small download and it also gives Claude Code a
 better shell on Windows. Worth taking.
