@@ -1161,19 +1161,46 @@ Create `.claude/knowledge/[reference].md` for:
 - Guidelines (quality criteria)
 - Examples (what good looks like)
 
+**4.5.5 Load the new commands**
+
+**Everything you just wrote is invisible until Claude Code rescans.** Commands and
+skills are picked up when a session starts, so `/setup` and `/[workflow-name]` do
+not exist yet as far as the slash menu is concerned – typing either gets "Unknown
+command", which looks like the build failed.
+
+Do this once, here, before anything tries to use them:
+
+```
+🧭 Guide's note: I've written your new commands, but Claude Code only looks for
+commands when a session starts – so it hasn't noticed them yet.
+
+Type /reload-skills
+
+That tells it to look again. You'll see it confirm some were added. (If your
+version doesn't have that command, close this window and reopen the folder – same
+result.) You'll need this any time you or I add a new command mid-session.
+```
+
+**You cannot run this yourself** – it's a slash command, same as `/setup`. Hand it
+to them and wait for confirmation before continuing.
+
 **4.6 Validate Setup**
 
 `/setup` has to be run by the user – Claude cannot invoke its own slash commands,
-so don't try. Ask them to type it:
+so don't try. Once they've reloaded, ask them to type it:
 
 ```
 Type /setup and paste me what it says – that runs the setup command we just
 built and tells us whether it actually works.
 ```
 
-Wait for their output, then act on it. If they'd rather not, walk the `/setup`
-file's checks yourself by reading it and verifying each one, and say that's what
-you're doing.
+**If they report `Unknown command: /setup`**, the reload didn't happen or didn't
+take. Don't start diagnosing the workflow – ask them to run `/reload-skills` and try
+again, or to reopen the folder in a fresh session.
+
+Wait for their output, then act on it. If they'd rather not run it, walk the
+`/setup` file's checks yourself by reading it and verifying each one, and say that's
+what you're doing.
 
 **What this validates**:
 1. Git is installed and accessible
@@ -1229,8 +1256,13 @@ When it reports back, go through the findings **with** the user rather than sile
 applying them – deciding what's worth fixing is part of the skill too. Fix what
 matters, note the rest in `project-plan/IMPROVEMENTS.md`.
 
-**Then test it**:
-1. Run the command with real (or realistic) data
+**Then test it**. `/[workflow-name]` is a slash command, so the user runs it – you
+can't. Ask them to type it and paste back what happens.
+
+If they get "Unknown command", it's the same reload issue as `/setup`: have them run
+`/reload-skills` and try again. It is not a problem with the workflow.
+
+1. Have them run the command with real (or realistic) data
 2. Verify each phase completes
 3. Check the output is actually what they wanted – show them
 4. Try one thing going wrong, if that's cheap to simulate
@@ -1413,6 +1445,11 @@ Show the user, in this order:
    - `/save-workflow` - Commit changes with context
    - `/review-workflow` - Check code quality, security, best practices
    - `/improve-workflow` - Retrospective after actually using it (the habit above)
+
+   If any command ever comes back as "Unknown command", it just means Claude Code
+   hasn't rescanned since the file appeared – `/reload-skills` fixes it, or reopening
+   the folder. Say this once here so they aren't stuck the first time it happens on
+   their own.
 
 4. **Where to find documentation**:
    - `README.md` - Usage guide

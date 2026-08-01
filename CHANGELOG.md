@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.4.1] - 2026-07-31
 
+### Fixed
+- **Newly generated commands weren't loadable, and the flow didn't say so.** Found in a real build: after Phase 4 wrote `/setup`, typing it returned "Unknown command" - the same session-scan problem as first install, hit a second time in the middle of the build where it reads as the build having failed
+  - New step 4.5.5 hands the user `/reload-skills` once, after all files are written and before anything tries to use them, with a 🧭 note explaining that Claude Code only looks for commands when a session starts
+  - The same guard is now on testing the user's own `/[workflow-name]`, which has exactly the same problem, and the Final Summary says what "Unknown command" means so they aren't stuck the first time it happens alone
+  - Both `/setup` and `/[workflow-name]` are slash commands, so the skill states plainly that Claude cannot run them and must hand them over
+
 ### Added
 - The interview now tells the user they can **dictate instead of typing**, recommending `/voice tap` (press space once to start, again to send). This is the one place it materially helps - the useful answers are two or three paragraphs about how someone actually works, and most people won't type that but will happily say it. Mentions the microphone requirement and that transcription doesn't count against usage, offers it exactly once, and doesn't debug at length if it fails
 
