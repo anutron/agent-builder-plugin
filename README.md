@@ -8,73 +8,76 @@ You do not need to know how to code.
 
 ## Quick start
 
-No git, no plugin marketplace, no install step. Download this repo into an empty
-folder, tell Claude Code to pick it up, and start. Four steps, about two minutes.
+No git, no plugin marketplace, no install step. Make an empty folder, paste one
+thing, and Claude walks you through the rest. About two minutes.
 
 **Before you start**, you need Claude Code installed. If you don't have it yet, see
 [claude.com/code](https://claude.com/code). Everything below happens inside Claude
-Code – you'll be typing to Claude, not typing shell commands yourself.
+Code – you'll be talking to Claude, not typing shell commands yourself.
 
-1. **Make an empty folder for your project** and open it in Claude Code.
+### 1. Make an empty folder and open it in Claude Code
 
-   If you're not sure how, you can just ask Claude: *"Make a new folder called
-   weekly-report in my Documents and open it."* Naming it after the task you want
-   to automate is a good habit.
+Not sure how? Ask Claude: *"Make a new folder called weekly-report in my Documents
+and open it."* Naming it after the task you want to automate is a good habit.
 
-2. **Ask Claude to fetch this toolkit.** Copy this in exactly as written:
+### 2. Paste this in, exactly as written
 
-   > Run this command in my current folder, then show me what landed:
-   >
-   > `curl -sL https://github.com/anutron/agent-builder-plugin/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1`
-   >
-   > If I'm on Windows, use this instead:
-   >
-   > `curl.exe -sL https://github.com/anutron/agent-builder-plugin/archive/refs/heads/main.tar.gz -o main.tar.gz; tar -xzf main.tar.gz --strip-components=1; del main.tar.gz`
+> Set up the agent-builder toolkit in my current folder, then walk me through
+> starting it. Do these in order:
+>
+> **1.** Run this command (macOS or Linux):
+>
+> `curl -sL https://github.com/anutron/agent-builder-plugin/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1`
+>
+> If I'm on Windows, run this instead:
+>
+> `curl.exe -sL https://github.com/anutron/agent-builder-plugin/archive/refs/heads/main.tar.gz -o main.tar.gz; tar -xzf main.tar.gz --strip-components=1; del main.tar.gz`
+>
+> **2.** Confirm the folder now contains `README.md`, `CLAUDE.md` and a hidden
+> `.claude` folder, all at the top level rather than inside a sub-folder. If they
+> ended up in a sub-folder, move everything up – including the hidden files – and
+> delete the empty wrapper.
+>
+> **3.** Then tell me to type `/reload-skills`, and explain in one line why it's
+> needed. Wait for me to do it – you can't run it yourself.
+>
+> **4.** Once I confirm skills were added, tell me to type `/create-agent` to begin.
 
-   You'll see a one-time prompt approving network access and the download itself.
-   Both are expected – approve them.
+That's the whole setup. Claude runs the download, checks it landed properly, and
+hands you the two commands in order – you'll be building a few minutes later.
 
-   When it finishes, the folder should contain `README.md`, `CLAUDE.md`,
-   `CHANGELOG.md`, `LICENSE` and a hidden `.claude` folder – **all directly in your
-   project folder, not inside a sub-folder**. That's what `--strip-components=1`
-   is for: GitHub packs everything inside a wrapper folder, and this unpacks it one
-   level up so you don't have to move anything.
+**Why those last two are yours to type**: Claude can't run its own slash commands.
+`/reload-skills` is needed because Claude Code looks for skills when a session
+*starts*, so anything downloaded mid-session is invisible until you tell it to look
+again. If your version doesn't have that command, closing and reopening the folder
+does the same job.
 
-3. **Load the new tools.** Type:
+### If something goes wrong
 
-   ```
-   /reload-skills
-   ```
+**`/create-agent` isn't recognized**, in order of likelihood:
 
-   Claude Code scans for skills when a session starts, so the ones you just
-   downloaded aren't visible yet. This tells it to look again – you should see a
-   confirmation that several skills were added. (If your version doesn't have that
-   command, just close this session and open the folder again; same effect.)
+- `/reload-skills` didn't run, or didn't report adding skills. Run it again, or
+  restart the session.
+- The download landed in a sub-folder. Ask Claude: *"Does
+  `.claude/skills/create-agent/SKILL.md` exist here?"* If not, have it look for
+  `agent-builder-plugin-main` and move the contents up – **including the hidden
+  `.claude` folder**, which is the part that matters and the part a plain move
+  skips.
+- Still stuck? Ask in plain English: *"Use the create-agent skill."*
 
-4. **Start building:**
+**The download failed.** Approve the network-access prompt if you see one. If
+`curl` isn't found on Windows, use `curl.exe` as written above – plain `curl` means
+something different in PowerShell.
 
-   ```
-   /create-agent
-   ```
+---
 
-   The first time you use a skill, Claude may ask permission for that too. Approve
-   it and you're off.
-
-   **If `/create-agent` still isn't recognized**, check these in order:
-   - Did step 3 report that skills were added? If not, run it again or restart the session.
-   - Ask Claude: *"Does `.claude/skills/create-agent/SKILL.md` exist here?"* If it
-     says no, the download landed in the wrong place – ask it to check for a folder
-     called `agent-builder-plugin-main` and move the contents up, **including the
-     hidden `.claude` folder**.
-   - You can also just ask in plain English: *"Use the create-agent skill."*
-
-That's it. `/create-agent` walks you through a short interview and builds your
-first workflow. Expect roughly 30–60 minutes for a first one, most of it you
-talking about how you already do the task.
+`/create-agent` then walks you through a short interview and builds your first
+workflow. Expect roughly 30–60 minutes, most of it you talking about how you
+already do the task.
 
 **On Windows?** Everything works, but if you don't have git installed you'll be
 offered it during setup – it's a small download and it also gives Claude Code a
-better shell on Windows. Taking the offer is worth it.
+better shell on Windows. Worth taking.
 
 ## What this does
 

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.4.1] - 2026-07-31
 
+### Changed
+- Quick start collapsed to **one paste**. The user now copies a single block that tells Claude to download, verify it landed at the top level, then hand back `/reload-skills` and `/create-agent` in order with an explanation of each. Setup is two steps: make a folder, paste one thing
+  - Claude cannot run its own slash commands, so the prompt explicitly instructs it to hand those two to the user and wait rather than attempting them
+  - Troubleshooting moved into its own section, ordered by likelihood, instead of being nested inside a numbered step
+
 ### Fixed
 - **The download no longer lands in a sub-folder.** Found in a real first-run test: the old curl+unzip instructions produced `agent-builder-plugin-main/`, and getting out of it took a judgement call mid-setup that a less confident user wouldn't make. Now a single tarball command with `--strip-components=1` unpacks straight into the project folder
   - Also removes a silent failure mode: moving contents up with `mv folder/* .` skips dotfiles, which would have left `.claude/` behind and the toolkit non-functional in a way that's hard to diagnose. Verified end to end that `.claude/`, `CLAUDE.md` and `.gitignore` all land correctly
