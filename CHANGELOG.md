@@ -49,6 +49,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `workflow-reviewer`'s exclusion list now also skips `.claude/skills/create-agent/*` and agent-builder's own knowledge docs, since they now live in the same folder as the user's generated workflow
 - Rewrote `README.md` for the new download-and-go flow and flat repository structure
 
+## [1.0.1] - 2026-05-30
+
+Released under the plugin/marketplace model that 2.0.0 removed. Kept here as history.
+
+### Fixed
+- Phase 0 of `/create-agent` no longer hardcodes the marketplace directory name
+  - Install script is now invoked via `${CLAUDE_PLUGIN_ROOT}`, so it resolves regardless of how the user named the marketplace (previously hardcoded `thanx-agent-builder`, which failed with exit 127)
+  - `workflow-reviewer` skill resolves the plugin knowledge directory with a glob (`*agent-builder*`) instead of the stale hardcoded path
+- `.agent-builder-version` is now written by `install.sh` reading the version from `plugin.json` (single source of truth) instead of a hardcoded literal that drifted out of date
+
+### Changed
+- Phase 0 of `/create-agent` continues directly into the interview in the same session
+  - Commands and skills hot-reload, so the forced two-pass restart is gone
+  - After install, it probes that the tools are live (invokes `workflow-reviewer`) and continues to Phase 1 on success
+  - The "please restart your session" message is now a fallback shown only if the probe fails, not the default path
+  - Collapsed the redundant "installed but not loaded" branch into the single probe step
+
 ## [0.1.17] - 2025-11-02
 
 ### Fixed
