@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.4.1] - 2026-07-31
 
 ### Changed
+- The permission-modes explanation lists **three** modes (Plan, Default, Auto), not four. The fourth skips permission checks entirely, is off by default behind advanced settings, and nobody in the target audience will have it enabled - naming it to a first-time user only plants the idea of disabling the thing standing between them and an unrecoverable mistake. The skill now says explicitly not to introduce it, while answering honestly if a user raises it
 - Quick start collapsed to **one paste**. The user now copies a single block that tells Claude to download, verify it landed at the top level, then hand back `/reload-skills` and `/create-agent` in order with an explanation of each. Setup is two steps: make a folder, paste one thing
   - Claude cannot run its own slash commands, so the prompt explicitly instructs it to hand those two to the user and wait rather than attempting them
   - Troubleshooting moved into its own section, ordered by likelihood, instead of being nested inside a numbered step

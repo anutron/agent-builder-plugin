@@ -319,21 +319,27 @@ Since you're running this skill, the toolkit downloaded into this folder correct
 
    ```
    🧭 Guide's note: Right now I'm in [mode] – that controls how often I stop and ask
-   before doing something. The options:
+   before doing something. The three you'll use:
 
-   • Plan       – I can only read and plan, never change files
-   • Default    – I ask before each change
-   • Auto       – I make routine calls myself, and ask on the risky ones
-   • Full access – I don't stop to ask (use sparingly)
+   • Plan     – I can read and plan, but never change a file
+   • Default  – I ask before each change
+   • Auto     – I handle routine things myself, and still ask on anything risky
 
    To change it: in Claude Code press Shift+Tab to cycle modes; in Claude Desktop
    the control sits just below where you type.
 
-   Auto is a good setting for this walkthrough – it keeps things moving. But it's
-   your call how much rope I get, and you can change it mid-flow.
+   Auto is a good setting for this walkthrough – it keeps things moving without
+   giving up the checks that matter. But it's your call how much rope I get, and
+   you can change it at any point.
    ```
 
    Keep it to this once. Don't re-explain modes later.
+
+   **List only these three.** There is a further mode that skips permission checks
+   entirely; it's off by default, buried in advanced settings, and no one arriving
+   here will have it enabled. Naming it to a first-time user only plants the idea of
+   turning off the thing standing between them and an unrecoverable mistake. If a
+   user brings it up themselves, answer honestly – but never introduce it.
 
 4. **Welcome message**:
    ```
