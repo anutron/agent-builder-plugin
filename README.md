@@ -41,6 +41,11 @@ Code – you'll be typing to Claude, not typing shell commands yourself.
    The first time you use a skill, Claude may ask permission for that too. Approve
    it and you're off.
 
+   **If `/create-agent` doesn't appear** when you type `/`, it usually means the
+   files landed in a subfolder instead of this one. You can also just ask in plain
+   English: *"Use the create-agent skill."* If that doesn't work either, ask Claude
+   to check that `.claude/skills/create-agent/SKILL.md` exists where you are.
+
 That's it. `/create-agent` walks you through a short interview and builds your
 first workflow. Expect roughly 30–60 minutes for a first one, most of it you
 talking about how you already do the task.

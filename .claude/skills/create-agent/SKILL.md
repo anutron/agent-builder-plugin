@@ -115,9 +115,15 @@ Since you're running this skill, the toolkit downloaded into this folder correct
    These aren't Claude thinking out loud – they're commentary built into this teaching
    tool that calls out real Claude Code features as they come up, so you start
    recognizing them for your own future projects.
+   ```
 
-   You're also running in Auto Mode right now, which is why I'll make more calls on my
-   own without stopping to ask at every step – you'll see that pattern throughout.
+   **Only if you are actually in Auto mode**, add this. Don't assert it blindly —
+   the user may be in a mode where you stop and ask far more often, and claiming
+   otherwise will confuse them when it doesn't match what they see:
+   ```
+   🧭 Guide's note: You're in Auto mode right now – that's the setting where I make
+   more calls on my own instead of stopping to ask at every step. It's why this will
+   feel fast. You can change it any time; it's your call how much rope I get.
    ```
 
 4. **Welcome message**:
