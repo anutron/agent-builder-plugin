@@ -22,7 +22,7 @@
 
 ### Setup
 
-If you built this workflow on this machine, it's already set up — skip to Usage.
+If you built this workflow on this machine, it's already set up – skip to Usage.
 These steps are for getting it running somewhere else, or after a fresh start.
 
 1. **Open this folder in Claude Code.**
@@ -42,7 +42,7 @@ These steps are for getting it running somewhere else, or after a fresh start.
    ```
    It checks git, MCPs, file structure and permissions, and tells you what's
    missing. Project permissions live in `.claude/settings.json`, which is already
-   committed — nothing to configure by hand.
+   committed – nothing to configure by hand.
 
 ## Usage
 

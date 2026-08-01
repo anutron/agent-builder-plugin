@@ -8,9 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.1.0] - 2026-07-31
 
 ### Added
-- New `/improve-workflow` command and `workflow-improver` skill — a trimmed, per-project retrospective loop (build → use → improve → use again), distinct from `/review-workflow`'s code-quality/security checks
+- New `/improve-workflow` command and `workflow-improver` skill – a trimmed, per-project retrospective loop (build → use → improve → use again), distinct from `/review-workflow`'s code-quality/security checks
 - Generated workflow commands (`command.template`) now close with a standard reminder to run `/improve-workflow` after actual use
-- "Leveling Up" section in `component-decision-guide.md` covering when a workflow is ready for a deterministic bash-embedded skill, the `/workflows` tool, or a CLI/local web server — offered only after V1 works, not during design
+- "Leveling Up" section in `component-decision-guide.md` covering when a workflow is ready for a deterministic bash-embedded skill, the `/workflows` tool, or a CLI/local web server – offered only after V1 works, not during design
 - 🧭 Guide's note callouts woven through `/create-agent` and `workflow-reviewer` narrating real Claude Code features (Plan Mode, Auto mode, Subagents, Skills) as they fire, with a ground-rule explanation at the start of the flow
 - `/create-agent` Phase 0 now detects an existing `project-plan/project-design.md` and offers to either redirect to `/improve-workflow` or set up a fresh folder for a second, unrelated workflow
 - `/create-agent` Phase 2 now offers unprompted automation ideas ("want me to suggest ideas, or do you know what you want built?") before locking in scope

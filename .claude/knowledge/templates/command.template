@@ -113,7 +113,7 @@ Error handling:
 ✅ Done! [Brief description of what was produced/where]
 
 Once you've had a chance to use this, run `/improve-workflow` to capture what worked
-and what didn't — that's how this workflow gets better over time.
+and what didn't – that's how this workflow gets better over time.
 ```
 
 ## State Management
@@ -228,5 +228,5 @@ See `examples/` directory for:
 
 - `/review-workflow` - Analyze this workflow for improvements
 - `/save-workflow` - Commit changes to workflow
-- `/improve-workflow` - Retrospective after actually using it — run this each time you use the workflow
+- `/improve-workflow` - Retrospective after actually using it – run this each time you use the workflow
 - `/setup` - Verify environment configuration

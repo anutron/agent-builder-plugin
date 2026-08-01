@@ -25,10 +25,12 @@ git add -A
 git commit -m "[short description of what this phase produced]"
 ```
 
-Then tell the user in one line what you saved — "Saved your interview notes" — and
+Then tell the user in one line what you saved – "Saved your interview notes" – and
 move on. Don't ask permission each time; don't make a production of it.
 
-If git was unavailable in Phase 0, skip every checkpoint silently.
+**If the user declined git in Phase 0, or it couldn't be installed, skip every
+checkpoint silently.** Don't announce the skip, don't re-offer, don't hint. They
+already answered.
 
 Why this matters: it's the habit that makes AI-assisted work safe to experiment
 with. If a later step goes wrong, there's a known-good point to return to. Say
@@ -43,7 +45,7 @@ including a 2.5 for data sources):
 
 **Goal**: Confirm the agent-builder toolkit is present, detect whether a workflow was already built here, and set expectations for the guided experience.
 
-Since you're running this skill, the toolkit downloaded into this folder correctly — there's nothing left to install. Do a couple of quick checks, set the ground rules, then welcome the user.
+Since you're running this skill, the toolkit downloaded into this folder correctly – there's nothing left to install. Do a couple of quick checks, set the ground rules, then welcome the user.
 
 **Process**:
 
@@ -56,7 +58,7 @@ Since you're running this skill, the toolkit downloaded into this folder correct
 
      Double-check that you downloaded and unzipped the repo into this exact folder, then run /create-agent again.
      ```
-     **STOP** — do not continue until this is resolved.
+     **STOP** – do not continue until this is resolved.
 
 2. **Check for an existing workflow**: Use Glob to check if `project-plan/project-design.md` already exists in this folder.
 
@@ -64,7 +66,7 @@ Since you're running this skill, the toolkit downloaded into this folder correct
    - **If it exists**: a workflow was already built here. Read the file's title to get its name, then ask (`AskUserQuestion`):
 
      "It looks like you already built **[workflow name]** in this folder. What would you like to do?"
-     - **Build something different** — a second, unrelated workflow is cleaner in its own folder. Ask for a name/path for the new folder, then copy just the toolkit files there (not `project-plan/`, not the existing custom workflow command, not `CLAUDE.md`/`README.md`):
+     - **Build something different** – a second, unrelated workflow is cleaner in its own folder. Ask for a name/path for the new folder, then copy just the toolkit files there (not `project-plan/`, not the existing custom workflow command, not `CLAUDE.md`/`README.md`):
        ```bash
        mkdir -p [new-folder]/.claude
        cp -r .claude/commands/review-workflow.md .claude/commands/save-workflow.md .claude/commands/improve-workflow.md [new-folder]/.claude/commands/
@@ -73,18 +75,18 @@ Since you're running this skill, the toolkit downloaded into this folder correct
        cp -r .claude/knowledge [new-folder]/.claude/
        ```
        Then tell the user: "I've copied the toolkit into `[new-folder]`. Open a new Claude Code session there (new tab, or quit and reopen in that folder) and run `/create-agent` again to start fresh."
-       **STOP** — do not continue in this folder.
-     - **Improve the existing workflow** — this isn't the right tool. Tell the user: "For evolving a workflow you already built, `/improve-workflow` is the better fit — want me to switch to that instead?" If yes, follow the `workflow-improver` skill's instructions instead of continuing here. **STOP** these instructions.
+       **STOP** – do not continue in this folder.
+     - **Improve the existing workflow** – this isn't the right tool. Tell the user: "For evolving a workflow you already built, `/improve-workflow` is the better fit – want me to switch to that instead?" If yes, follow the `workflow-improver` skill's instructions instead of continuing here. **STOP** these instructions.
 
 3. **Set the ground rules** (first run only):
    ```
    🧭 Guide's note: Throughout this walkthrough you'll see notes marked like this one.
-   These aren't Claude thinking out loud — they're commentary built into this teaching
+   These aren't Claude thinking out loud – they're commentary built into this teaching
    tool that calls out real Claude Code features as they come up, so you start
    recognizing them for your own future projects.
 
    You're also running in Auto Mode right now, which is why I'll make more calls on my
-   own without stopping to ask at every step — you'll see that pattern throughout.
+   own without stopping to ask at every step – you'll see that pattern throughout.
    ```
 
 4. **Welcome message**:
@@ -98,57 +100,98 @@ Since you're running this skill, the toolkit downloaded into this folder correct
    Let's build your workflow!
    ```
 
-5. **Set up version control now** (first run only)
+5. **Offer to set up version control** (first run only)
 
-   Do this at the START, not the end. Two reasons: the very first `git` command on
-   a fresh Mac can trigger a system popup, and it's far better for that to happen
-   now — while the user is settled in and you can explain it — than after an hour
-   of unsaved work. And once git is working, you can save progress as you go.
+   Do this at the START, not the end – if it's worth doing at all, it's worth doing
+   before there's an hour of unsaved work to lose.
 
-   ```
-   🧭 Guide's note: Before we build anything, I'm setting up git — a tool that saves
-   a snapshot of your work every time we finish a step. If we ever break something,
-   we can go back. You don't need to learn any git commands; I'll handle it and tell
-   you what I'm saving.
-   ```
+   **This is an offer, not a requirement. Never block the flow on it.** A user who
+   declines still gets a complete, working workflow; they just don't get automatic
+   snapshots.
 
-   **a. Is git installed?**
+   **a. Probe what's already there – carefully**
+
+   ⚠️ On macOS, `/usr/bin/git` exists even when git doesn't. It's a stub that
+   **triggers the Command Line Tools installer popup the moment you run it**. So do
+   NOT run `git --version` to test for git – that fires the very popup you're
+   trying to ask permission for first.
+
+   Probe without triggering anything:
    ```bash
-   git --version
+   if [ "$(uname)" = "Darwin" ]; then
+     xcode-select -p >/dev/null 2>&1 && echo "git-ready" || echo "needs-install"
+   else
+     command -v git >/dev/null 2>&1 && echo "git-ready" || echo "needs-install"
+   fi
    ```
-   - **If a version prints**: continue to b.
-   - **If macOS shows a "command line developer tools" popup**: tell the user
-     plainly: "macOS is asking to install its developer tools — that's normal and
-     expected, it's what provides git. Click Install, and tell me when it finishes."
-     Wait for them, then re-run `git --version`.
-   - **If git is genuinely unavailable** and the user doesn't want to install it:
-     don't block. Say: "No problem — we'll build your workflow without automatic
-     saving. Your files are still written to this folder normally." Then set a
-     mental flag: **skip every commit step for the rest of this flow** and don't
-     mention git again.
 
-   **b. Does git know who the user is?**
-
-   Git refuses to save a snapshot until it knows a name and email. Check both:
+   If `git-ready`, it's now safe to check identity:
    ```bash
    git config user.name; git config user.email
    ```
-   - **If both print values**: continue to c.
-   - **If either is empty**: ask the user for a name and an email address, in plain
-     terms — "Git labels each save with a name and email. What should I use?" Note
-     that these are only labels on their own local snapshots. Then set them for
-     this project only, after `git init` in step c:
-     ```bash
-     git config --local user.name "[their name]"
-     git config --local user.email "[their email]"
-     ```
 
-   **c. Start tracking this folder**
-   ```bash
-   git rev-parse --git-dir 2>/dev/null || git init
+   **b. Pick the right path based on what you found**
+
+   - **git ready AND both identity values set** → they're already set up. Ask
+     nothing, say nothing about it. Go straight to c.
+
+   - **git ready but name or email missing** → small ask:
+
+     "One quick thing: git can save a snapshot of your work after each step, so
+     nothing gets lost and we can undo anything. It just needs a name and email to
+     label the saves with – takes about a minute. Want to set that up?"
+
+   - **needs-install** → the honest, bigger ask. Use `AskUserQuestion`:
+
+     "I'd like to set up git – it saves a snapshot of your work after each step so
+     nothing gets lost and we can always go back. Your Mac doesn't have it yet, so
+     macOS will pop up asking to install its developer tools (about a 1 GB
+     download from Apple).
+
+     **Usually 5–10 minutes, though it can take longer on a slow connection.** You
+     only ever do this once, and it's the same tooling every developer on a Mac
+     has.
+
+     Want to set it up now, or skip it and just build?"
+
+     - **Set it up** – snapshots after each step, and you can undo mistakes
+     - **Skip it** – we build normally, files save to this folder as usual, no snapshots
+
+     (On Windows or Linux the equivalent install is a much smaller download and
+     usually quicker – adjust the estimate rather than quoting the Mac figure.)
+
+   **If they decline (either ask)**: accept it immediately and cheerfully. Say:
+   "No problem – we'll build without it. Your files still save to this folder
+   normally." Then set a mental flag: **skip every 📌 Checkpoint and all of Phase 6
+   for the rest of this flow, and do not bring git up again.** Nagging a user who
+   already said no is worse than not offering. Mention once, in the Final Summary
+   only, that they can add it later if they change their mind.
+
+   **If they accept the install**: "macOS will show a popup asking to install the
+   developer tools – click Install. Tell me when it finishes and we'll keep going."
+   Wait for them. Then verify with `git --version`. If it still isn't working,
+   don't fight it – fall back to the declined path above.
+
+   **c. Start tracking this folder** (only if they accepted)
+
    ```
-   Then apply their identity from step b if it was missing, and take the first
-   snapshot:
+   🧭 Guide's note: I'm setting up git – it saves a snapshot of your work each time
+   we finish a step, so we can always go back if something breaks. You don't need to
+   learn any git commands; I'll handle it and tell you what I'm saving.
+   ```
+
+   ```bash
+   git rev-parse --git-dir >/dev/null 2>&1 || git init
+   ```
+   If name or email were missing, set them for this project only:
+   ```bash
+   git config --local user.name "[their name]"
+   git config --local user.email "[their email]"
+   ```
+   These are just labels on their own local snapshots – say so, so nobody worries
+   about what their email is being used for.
+
+   Then take the first snapshot:
    ```bash
    git add -A
    git commit -m "Starting point: agent-builder toolkit"
@@ -214,7 +257,7 @@ Do you already know what workflow you want to automate?
 
 **Output**: Document to `project-plan/interview-notes.md`
 
-**📌 Checkpoint**: `"Capture use case: [workflow name]"` — this is the first
+**📌 Checkpoint**: `"Capture use case: [workflow name]"` – this is the first
 checkpoint, so briefly explain what saving means (see "Saving progress as you go").
 
 ### Phase 2: Process Interview
@@ -249,12 +292,12 @@ checkpoint, so briefly explain what saving means (see "Saving progress as you go
 
 Ask the user directly:
 
-"Now that I understand your process — would you like me to suggest a few ideas for how this could work, or do you already know what you want built?"
+"Now that I understand your process – would you like me to suggest a few ideas for how this could work, or do you already know what you want built?"
 
-- **If they want ideas**: Propose 2-3 distinct, concrete automation angles based on everything gathered so far — don't just restate what they already told you. Let them react, mix and match, or pick one. This is deliberately unprompted: form your own view before they tell you theirs.
+- **If they want ideas**: Propose 2-3 distinct, concrete automation angles based on everything gathered so far – don't just restate what they already told you. Let them react, mix and match, or pick one. This is deliberately unprompted: form your own view before they tell you theirs.
 - **If they already know**: Confirm their approach briefly and move on.
 
-🧭 Guide's note: This is a habit worth building on your own projects — ask your AI what it thinks before you tell it what to do. You get ideas you wouldn't have thought of, and you can always ignore them.
+🧭 Guide's note: This is a habit worth building on your own projects – ask your AI what it thinks before you tell it what to do. You get ideas you wouldn't have thought of, and you can always ignore them.
 
 **Output**: Append the chosen direction to `project-plan/interview-notes.md`
 
@@ -399,7 +442,7 @@ Before designing the implementation plan, enter plan mode to enable collaborativ
 1. Call `EnterPlanMode` tool
 2. Explain to user: "I'm entering plan mode to design your workflow architecture. You'll be able to review and request changes to the plan before we start implementation."
 
-   🧭 Guide's note: Plan Mode is a real Claude Code feature — it lets you review a proposed plan and request changes before any files get touched. Reach for it any time you want to see the approach before committing to it.
+   🧭 Guide's note: Plan Mode is a real Claude Code feature – it lets you review a proposed plan and request changes before any files get touched. Reach for it any time you want to see the approach before committing to it.
 3. Continue to Phase 3 (now in plan mode)
 
 ---
@@ -410,11 +453,11 @@ Before designing the implementation plan, enter plan mode to enable collaborativ
 
 **Step 0: Confirm goal and constraints**
 
-The interview already surfaced most of this — don't make the user re-derive it from scratch. Draft it back to them:
+The interview already surfaced most of this – don't make the user re-derive it from scratch. Draft it back to them:
 
 "Here's what I think we're building:
 - **Goal**: [one sentence, drafted from the interview]
-- **Constraints**: [one or two sentences — time, data access, tools, anything that limits the approach]
+- **Constraints**: [one or two sentences – time, data access, tools, anything that limits the approach]
 
 Did I get that right?"
 
@@ -490,8 +533,8 @@ Use **Knowledge files** for reference materials:
    [Why this workflow is needed, what problem it solves]
 
    ## Use Case Summary
-   - **Goal**: [One sentence — confirmed with the user in Step 0]
-   - **Constraints**: [Key limits — confirmed with the user in Step 0]
+   - **Goal**: [One sentence – confirmed with the user in Step 0]
+   - **Constraints**: [Key limits – confirmed with the user in Step 0]
    - **Current process**: [Description]
    - **Time currently**: [Duration]
    - **Pain points**: [Key issues]
@@ -528,7 +571,7 @@ Use **Knowledge files** for reference materials:
    content as the plan text.
 
    **Do NOT try to write the plan to a file here.** Plan mode intentionally blocks
-   file writes — that's the whole point of it, and attempting a Write will fail.
+   file writes – that's the whole point of it, and attempting a Write will fail.
    Hold the plan content and persist it in Phase 4, after it's approved.
 
 4. **If the user requests changes**: revise and call `ExitPlanMode` again. Stay in
@@ -546,8 +589,8 @@ Use **Knowledge files** for reference materials:
 
 Plan mode has now exited, so writes work again.
 
-1. Write the plan you just got approved — the same content you passed to
-   `ExitPlanMode` — to `project-plan/project-design.md`.
+1. Write the plan you just got approved – the same content you passed to
+   `ExitPlanMode` – to `project-plan/project-design.md`.
 2. Inform user: "I've saved the approved plan to `project-plan/project-design.md` for your reference."
 
 **📌 Checkpoint**: `"Save approved design for [workflow name]"`
@@ -582,7 +625,7 @@ mkdir -p [work-sessions]  # e.g., prd-sessions, query-sessions
 ```
 
 Merge the `.gitignore` template (`.claude/knowledge/templates/gitignore.template`)
-into the existing root `.gitignore` — don't overwrite it, it already has the
+into the existing root `.gitignore` – don't overwrite it, it already has the
 security patterns. Add the workflow's session directory:
 ```
 [work-sessions]/
@@ -608,7 +651,7 @@ Create `.claude/settings.json` by copying `.claude/knowledge/templates/settings.
 cp .claude/knowledge/templates/settings.template.json .claude/settings.json
 ```
 
-There is nothing to fill in — the template uses project-relative patterns
+There is nothing to fill in – the template uses project-relative patterns
 (`Read(**)`), not absolute paths, so it works on any machine and gets committed
 with the project.
 
@@ -621,7 +664,7 @@ Genuinely risky operations (rm, force-push) still prompt every time.
 
 🧭 Guide's note: Claude Code reads project permissions from `.claude/settings.json`.
 If you ever find yourself approving the same action over and over in a project,
-that file is where to fix it — and `.claude/settings.local.json` is the gitignored
+that file is where to fix it – and `.claude/settings.local.json` is the gitignored
 version for machine-specific overrides you don't want to share.
 
 **Note**: `/setup` verifies this file exists and can re-copy it from the template
@@ -726,13 +769,13 @@ Write `README.md` using template from `.claude/knowledge/templates/README.templa
 - Usage instructions
 - Architecture overview
 
-**Heads up — this replaces a file the user has been reading.** Right now the root
+**Heads up – this replaces a file the user has been reading.** Right now the root
 `README.md` is agent-builder's own guide (it came out of the zip). From here on
 this folder is *their* workflow project, so its README should describe their
 workflow. Before writing, tell them plainly:
 
 ```
-I'm about to replace README.md — right now it's the agent-builder guide that came
+I'm about to replace README.md – right now it's the agent-builder guide that came
 with the download, and from here it should describe YOUR workflow instead.
 
 The toolkit's own reference docs stay in .claude/knowledge/, and the original
@@ -758,15 +801,15 @@ Create `CLAUDE.md` using template from `.claude/knowledge/templates/CLAUDE.templ
 
 **Step 0: Offer a "level up" idea** (only after Phase 4 testing succeeds and V1 actually works)
 
-Now that the user has something working, look for ONE well-matched opportunity to make it more capable — tied to something concrete they just built, not a generic list. Examples of the kind of offer to make:
+Now that the user has something working, look for ONE well-matched opportunity to make it more capable – tied to something concrete they just built, not a generic list. Examples of the kind of offer to make:
 
 - "Your workflow now produces [concrete output]. Want to try turning [the part that's currently prose] into an actual script? It'll be more consistent than having me reason through it each time."
 - "This now generates [concrete artifact, e.g. a CSV]. Want a small local web page that visualizes it?"
-- "This workflow does [substantial multi-step thing]. If it keeps growing, the `/workflows` tool can orchestrate the parallel pieces more deterministically than manually launching agents — see `.claude/knowledge/component-decision-guide.md` for when that's worth it."
+- "This workflow does [substantial multi-step thing]. If it keeps growing, the `/workflows` tool can orchestrate the parallel pieces more deterministically than manually launching agents – see `.claude/knowledge/component-decision-guide.md` for when that's worth it."
 
-🧭 Guide's note: This is deliberately offered *after* something works, not during design — prove the simple version first, then decide if leveling up is worth it.
+🧭 Guide's note: This is deliberately offered *after* something works, not during design – prove the simple version first, then decide if leveling up is worth it.
 
-Keep it to one offer, framed as optional: "No pressure — just flagging it's possible if you want to push further." If they decline or seem uninterested, drop it and move on.
+Keep it to one offer, framed as optional: "No pressure – just flagging it's possible if you want to push further." If they decline or seem uninterested, drop it and move on.
 
 **Process**:
 1. Review V1 limitations
@@ -795,9 +838,10 @@ Keep it to one offer, framed as optional: "No pressure — just flagging it's po
 ### Phase 6: Final Save
 
 Git was set up back in Phase 0 and you've been checkpointing along the way, so
-this is just the closing snapshot — not a first-time setup.
+this is just the closing snapshot – not a first-time setup.
 
-If git was unavailable in Phase 0, skip this phase entirely.
+If the user declined git in Phase 0, or it couldn't be installed, skip this phase
+entirely – jump to the Final Summary.
 
 1. Stage everything: `git add -A`
 2. Final commit:
@@ -828,7 +872,7 @@ Next: run /[workflow-name], then /improve-workflow to capture what to fix.
 
 4. **Mention pushing, but don't do it.** If they want an off-machine backup:
    "Right now these snapshots only exist on this computer. If you want a backup
-   you can reach from anywhere, GitHub is the usual next step — say the word and I
+   you can reach from anywhere, GitHub is the usual next step – say the word and I
    can walk you through it." Don't create accounts or push anything on their behalf.
 
 ## Final Summary
@@ -853,7 +897,15 @@ Show the user, in this order:
    - `CLAUDE.md` - Project instructions
    - `project-plan/` - Design decisions and backlog
 
-4. **Going further** (optional, mention briefly): once this feels comfortable, there's more to explore — promoting a skill you like to use everywhere (`/promote`), cutting down permission prompts (`/fewer-permission-prompts`), global `CLAUDE.md` conventions, connecting more MCPs, and Aaron's own public skill library at `github.com/anutron/ai`.
+4. **If they declined git in Phase 0** – and only then – mention it exactly once,
+   without pressure, then never again:
+   ```
+   One thing you skipped earlier: git, which saves snapshots of your work so you
+   can undo changes. If you ever want it, just say "set up git" and I'll walk you
+   through it – takes a few minutes.
+   ```
+
+5. **Going further** (optional, mention briefly): once this feels comfortable, there's more to explore – promoting a skill you like to use everywhere (`/promote`), cutting down permission prompts (`/fewer-permission-prompts`), global `CLAUDE.md` conventions, connecting more MCPs, and Aaron's own public skill library at `github.com/anutron/ai`.
 
 **Offer to help**:
 "Want to try running the workflow now? I can help debug if anything doesn't work as expected."

@@ -14,7 +14,7 @@ This is the retrospective step in the loop: **build → use → improve → use 
 
 ### Step 1: Confirm there's something to reflect on
 
-Check for `project-plan/project-design.md`. If it doesn't exist, this workflow hasn't been through `/create-agent` yet — tell the user and stop.
+Check for `project-plan/project-design.md`. If it doesn't exist, this workflow hasn't been through `/create-agent` yet – tell the user and stop.
 
 ### Step 2: Ask about the most recent run
 
@@ -33,7 +33,7 @@ Append to `project-plan/IMPROVEMENTS.md` under a `## Lessons from using this wor
 - What should change (if anything)
 - Date
 
-If the user reports no friction at all, that's a valid outcome — log it briefly and move on. Don't manufacture problems.
+If the user reports no friction at all, that's a valid outcome – log it briefly and move on. Don't manufacture problems.
 
 ### Step 4: Offer to make the change
 
@@ -46,7 +46,7 @@ Ask before changing anything: "Want me to make that change now?"
 
 ### Step 5: Occasionally offer a "level up"
 
-If this is at least the 2nd or 3rd time `/improve-workflow` has been run on this project (count existing entries under "Lessons from using this workflow") and things have been running smoothly for a couple of rounds, consider offering ONE contextual "level up" idea — the same kind of offer `/create-agent`'s Phase 5 makes after the first successful build (see `.claude/knowledge/component-decision-guide.md` for the menu: code instead of prose, a local web server, the `/workflows` tool, etc.). Tie it to something concrete the workflow actually does. Keep it low-pressure — this is an offer, not a recommendation to rebuild.
+If this is at least the 2nd or 3rd time `/improve-workflow` has been run on this project (count existing entries under "Lessons from using this workflow") and things have been running smoothly for a couple of rounds, consider offering ONE contextual "level up" idea – the same kind of offer `/create-agent`'s Phase 5 makes after the first successful build (see `.claude/knowledge/component-decision-guide.md` for the menu: code instead of prose, a local web server, the `/workflows` tool, etc.). Tie it to something concrete the workflow actually does. Keep it low-pressure – this is an offer, not a recommendation to rebuild.
 
 🧭 Guide's note: This mirrors the real habit of running a retrospective after using something you built, not just when you build it.
 
@@ -58,4 +58,4 @@ If this is at least the 2nd or 3rd time `/improve-workflow` has been run on this
 
 **If no `IMPROVEMENTS.md` exists yet**: create it with the "Lessons from using this workflow" section.
 
-**If the user has nothing to report**: don't push. Log "Ran cleanly, no issues" and move on quickly — the goal is building the habit of checking in, not manufacturing work.
+**If the user has nothing to report**: don't push. Log "Ran cleanly, no issues" and move on quickly – the goal is building the habit of checking in, not manufacturing work.

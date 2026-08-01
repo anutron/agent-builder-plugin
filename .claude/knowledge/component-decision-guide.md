@@ -324,11 +324,11 @@ Bad architecture has:
 
 ## Leveling Up (Post-V1 Ideas)
 
-These are for *after* a V1 workflow is working and proven — not decisions to make during initial design. Offer them opportunistically, tied to something concrete the user just built, not as a checklist to work through.
+These are for *after* a V1 workflow is working and proven – not decisions to make during initial design. Offer them opportunistically, tied to something concrete the user just built, not as a checklist to work through.
 
 ### Prose → deterministic script
 
-**When**: A step in the workflow follows the exact same procedure every time — parsing a fixed format, calling one API with fixed steps, formatting output a fixed way — and Claude is currently reasoning through it in prose each run.
+**When**: A step in the workflow follows the exact same procedure every time – parsing a fixed format, calling one API with fixed steps, formatting output a fixed way – and Claude is currently reasoning through it in prose each run.
 
 **Why it's worth it**: A bash (or Python/Node) script embedded in the skill runs the same way every time, faster and without token cost, and can be embedded as a step the skill invokes rather than a prompt Claude re-derives.
 
@@ -340,12 +340,12 @@ These are for *after* a V1 workflow is working and proven — not decisions to m
 
 **Why it's worth it**: `/workflows` orchestrates fan-out/fan-in, verification passes, and multi-stage pipelines deterministically, with built-in patterns for adversarial verification and loop-until-dry discovery.
 
-**Don't do this for**: a workflow with one or two steps — it's overhead the workflow hasn't earned yet.
+**Don't do this for**: a workflow with one or two steps – it's overhead the workflow hasn't earned yet.
 
 ### A CLI or small local web server
 
-**When**: The workflow's output would benefit from a repeatable interface that doesn't require Claude Code at all — a dashboard to browse results, a script a teammate can run without a Claude Code session, a visualization of the data the workflow produces.
+**When**: The workflow's output would benefit from a repeatable interface that doesn't require Claude Code at all – a dashboard to browse results, a script a teammate can run without a Claude Code session, a visualization of the data the workflow produces.
 
 **Why it's worth it**: Turns a personal Claude Code workflow into something shareable or schedulable outside a conversation.
 
-**Don't do this for**: a workflow that's still evolving — the interface locks in assumptions that are easier to change while it's still just a skill.
+**Don't do this for**: a workflow that's still evolving – the interface locks in assumptions that are easier to change while it's still just a skill.

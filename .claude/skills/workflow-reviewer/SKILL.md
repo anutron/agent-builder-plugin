@@ -43,7 +43,7 @@ Agents should NOT review these files as they're maintained by agent-builder itse
 - `.claude/skills/create-agent/*`
 - `.claude/agents/review-*.md` (all 5 review agents)
 - `.claude/knowledge/templates/*` (agent-builder's own templates)
-- `.claude/knowledge/workflow-patterns.md`, `component-decision-guide.md`, `mcp-integration.md`, `setup-command-guide.md`, `security-guidelines.md` (agent-builder's own reference docs — but review any *other* knowledge file the user added for their workflow)
+- `.claude/knowledge/workflow-patterns.md`, `component-decision-guide.md`, `mcp-integration.md`, `setup-command-guide.md`, `security-guidelines.md` (agent-builder's own reference docs – but review any *other* knowledge file the user added for their workflow)
 
 **Everything else SHOULD be reviewed** - this is just a blacklist, not a whitelist. Review all other files in the project.
 
@@ -53,7 +53,7 @@ Pass these exclusions to all review agents.
 
 Launch these 5 agents simultaneously using the Task tool. **Include the excluded paths in each agent's prompt** so they know which files to skip.
 
-🧭 Guide's note: These are Subagents — independent workers launched via the Task tool that all run at the same time instead of one after another. That's why this finishes in ~30-40 seconds instead of several minutes. Reach for the same pattern any time you have several independent things to check or research at once.
+🧭 Guide's note: These are Subagents – independent workers launched via the Task tool that all run at the same time instead of one after another. That's why this finishes in ~30-40 seconds instead of several minutes. Reach for the same pattern any time you have several independent things to check or research at once.
 
 **Agent 1: Duplication and Simplification**
 - Subagent: `review-duplication-simplification`
