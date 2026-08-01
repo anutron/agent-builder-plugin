@@ -57,6 +57,37 @@ Below, verbs are written bare (`checkpoint "..."`) – expand to the right platf
 form. If a verb ever fails, tell the user plainly what broke instead of
 improvising raw shell around it.
 
+## Handing the keyboard over: ⌨️ Your turn
+
+At a few marked points, **stop and give the user the prompt to type instead of doing
+it yourself.** The whole point of this walkthrough is that they leave able to do this
+without it, and prompting is the skill. Watching good prompting teaches nobody
+anything; writing one teaches a lot.
+
+The format, every time – the prompt, then why it works:
+
+```
+⌨️ Your turn – try typing this:
+
+> [the exact prompt, short enough to retype from memory later]
+
+[One short paragraph: what that prompt actually asks Claude to do, and why it's a
+technique worth keeping.]
+```
+
+Rules for these:
+
+- **Actually stop and wait.** Don't narrate the prompt and then run it yourself –
+  that defeats the entire purpose.
+- **Keep the prompt short and reusable.** They should be able to half-remember it on
+  a different project next month. Long, precise prompts don't transfer.
+- **Explain the mechanism, not just the instruction.** "This uses a subagent, which
+  is a separate worker with its own fresh context" is the useful part.
+- **Never insist.** If they'd rather you did it, do it immediately and without
+  comment. Some people are tired, or just want the thing built.
+- **Use them sparingly** – the marked spots below and nowhere else. A walkthrough
+  that constantly hands over the keyboard is exhausting and stops feeling guided.
+
 ## Saving progress as you go
 
 Once git is set up in Phase 0, **take a snapshot at the end of each phase** rather
@@ -173,6 +204,11 @@ Since you're running this skill, the toolkit downloaded into this folder correct
    These aren't Claude thinking out loud – they're commentary built into this teaching
    tool that calls out real Claude Code features as they come up, so you start
    recognizing them for your own future projects.
+
+   You'll also see ⌨️ Your turn a few times. Those are moments where I'll hand you
+   something to type yourself instead of doing it for me. Watching someone prompt
+   well doesn't teach you to prompt well – doing it does. They're always optional,
+   and I'll explain what each one is actually doing.
    ```
 
    Then explain the permission modes once. **Describe the mode you're actually in** –
@@ -683,13 +719,29 @@ separate piece of work after V1 ships.
 
 **IMPORTANT: Enter Plan Mode**
 
-Before designing the implementation plan, enter plan mode to enable collaborative review:
+Before designing the implementation plan, hand this one to the user. Asking for a
+plan before work starts is the single most useful habit in this whole walkthrough,
+and it's one line of typing.
 
-1. Call `EnterPlanMode` tool
-2. Explain to user: "I'm entering plan mode to design your workflow architecture. You'll be able to review and request changes to the plan before we start implementation."
+```
+⌨️ Your turn – we're about to design how your workflow actually works. Before I
+change anything, let's get the plan in front of you. Try typing this:
 
-   🧭 Guide's note: Plan Mode is a real Claude Code feature – it lets you review a proposed plan and request changes before any files get touched. Reach for it any time you want to see the approach before committing to it.
-3. Continue to Phase 3 (now in plan mode)
+> Before you build anything, work out a plan and show it to me first.
+
+That puts Claude in Plan Mode: it can read and think, but it can't touch a single
+file until you approve what it proposes. You'll get the whole approach laid out,
+and you can change it, argue with it, or throw it out – all before any work exists
+to be wasted. Worth doing on anything that isn't trivial.
+```
+
+Then:
+
+1. Call `EnterPlanMode`.
+2. If they'd rather not type it, or just say "go ahead", call it yourself and say:
+   "I'm entering Plan Mode – you'll see the whole approach and can change it before
+   I build anything."
+3. Continue to Phase 3 (now in plan mode).
 
 ---
 
@@ -1000,24 +1052,37 @@ you're doing.
 
 **4.7 Fresh-eyes review, then testing**
 
-**First, get a second opinion before the user ever sees it run.** Launch a subagent
-with the Task tool to read the generated workflow cold – you've been building it for
-an hour and you're the worst-placed reader of your own instructions.
+**First, get a second opinion before the user ever sees it run** – and have *them*
+ask for it. You've been building this for an hour; you are the worst-placed reader
+of your own instructions, and that's a lesson worth handing over rather than
+demonstrating.
 
-Ask it to check specifically:
+```
+⌨️ Your turn – before we test this, let's get a second opinion. Try typing this:
+
+> Spawn a fresh worker sub-agent to review what we've done with fresh eyes and
+> report back what it finds.
+
+This tells Claude to use a *subagent* – a separate worker that doesn't share the
+conversation we've been having. Because it hasn't watched us build this, it isn't
+attached to any of it, and it notices things we've stopped seeing: steps that only
+make sense if you were here, instructions that could be read two ways, references to
+things that don't exist. Reach for this any time you've been deep in something and
+want an outside read.
+```
+
+Wait for them to send it. **If they'd rather you just ran it, do so immediately** –
+launch the subagent with the Task tool, no comment needed.
+
+Either way, the subagent should check:
 - Would someone who wasn't in this conversation understand what to do?
 - Does it reference any file, connector or step that doesn't exist?
 - Does it assume knowledge the user said they don't have?
 - Is any instruction ambiguous enough to be followed two different ways?
 
-Fix what it finds worth fixing before moving on. Mention that you're doing it:
-
-```
-🧭 Guide's note: Before we test this, I'm having a second Claude read it with fresh
-eyes – it hasn't seen our conversation, so it'll notice anything I've assumed but
-never wrote down. Worth doing on anything you build: the person who wrote it is
-always the worst judge of whether it's clear.
-```
+When it reports back, go through the findings **with** the user rather than silently
+applying them – deciding what's worth fixing is part of the skill too. Fix what
+matters, note the rest in `project-plan/IMPROVEMENTS.md`.
 
 **Then test it**:
 1. Run the command with real (or realistic) data
@@ -1084,6 +1149,24 @@ Now that the user has something working, look for ONE well-matched opportunity t
 🧭 Guide's note: This is deliberately offered *after* something works, not during design – prove the simple version first, then decide if leveling up is worth it.
 
 Keep it to one offer, framed as optional: "No pressure – just flagging it's possible if you want to push further." If they decline or seem uninterested, drop it and move on.
+
+**If they want to try it, hand them the keyboard** – this is the first change they'll
+drive themselves, and that's the whole point of the walkthrough:
+
+```
+⌨️ Your turn – you don't need me to drive this. Describe the change in your own
+words, something like:
+
+> The part where you work out the labour hours – make that an actual script so it
+> comes out the same every time.
+
+Notice there's nothing technical in that sentence. You said which part and what you
+wanted instead; deciding how is my job. That's the whole trick, and it's how you'll
+change this workflow from now on – including six months from now when you've
+forgotten how any of it works.
+```
+
+Adapt the example to their actual workflow. Then do what they ask.
 
 **Process**:
 1. Review V1 limitations

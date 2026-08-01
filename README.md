@@ -63,13 +63,20 @@ Agent-builder helps you create Claude Code workflows that:
 - ✅ Get better through use, rather than staying frozen at version one
 - ✅ Include security and good practice by default
 
-## A note on the 🧭 icon
+## Two icons you'll see
 
-Throughout `/create-agent` and the other tools, you'll see notes marked 🧭 **Guide's
-note**. These aren't Claude thinking out loud – they're commentary built into this
-teaching tool that calls out real Claude Code features (Plan Mode, Auto mode,
-Skills, Subagents, and so on) as they come up, so you start recognizing them for
-your own future projects.
+**🧭 Guide's note** – commentary built into this teaching tool, not Claude thinking
+out loud. It calls out real Claude Code features (Plan Mode, Auto mode, Skills,
+Subagents) as they come up, so you start recognizing them in your own projects.
+
+**⌨️ Your turn** – a moment where Claude hands *you* the prompt to type instead of
+doing it silently. There are only a few, at the points where the technique is worth
+keeping: asking for a plan before anything gets built, getting a fresh-eyes review
+from a subagent, and making your first change yourself.
+
+They're always optional – say "just do it" and Claude will. But prompting is the
+actual skill here, and you don't learn it by watching. The goal is that you leave
+able to do this without the walkthrough.
 
 ## How it works
 
